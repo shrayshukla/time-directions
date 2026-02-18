@@ -4,1518 +4,782 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>⏰ Time & Directions Adventure!</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --sky: #4FC3F7;
-    --sun: #FFD600;
-    --grass: #66BB6A;
-    --night: #1a1a4e;
-    --pink: #FF7EB3;
-    --purple: #9C6FDE;
-    --orange: #FF8C42;
-    --teal: #26C6DA;
-    --white: #FFFDF7;
-    --card-bg: rgba(255,255,255,0.92);
-    --shadow: 0 8px 32px rgba(80,60,140,0.13);
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'Nunito', sans-serif;
-    background: linear-gradient(160deg, #e0f7fa 0%, #e8f5e9 50%, #fff9c4 100%);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* FLOATING STARS */
-  .star {
-    position: fixed;
-    pointer-events: none;
-    z-index: 0;
-    font-size: 1.3rem;
-    animation: floatStar linear infinite;
-    opacity: 0.5;
-  }
-  @keyframes floatStar {
-    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-    10% { opacity: 0.6; }
-    90% { opacity: 0.6; }
-    100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
-  }
-
-  /* HEADER */
-  header {
-    text-align: center;
-    padding: 32px 20px 16px;
-    position: relative;
-    z-index: 2;
-  }
-  header h1 {
-    font-family: 'Baloo 2', cursive;
-    font-size: clamp(2rem, 6vw, 3.5rem);
-    font-weight: 800;
-    background: linear-gradient(90deg, #FF7043, #FF7EB3, #9C6FDE, #4FC3F7);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.1));
-    animation: titlePop 0.7s cubic-bezier(.36,1.56,.64,1) both;
-  }
-  @keyframes titlePop {
-    from { transform: scale(0.5); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-  }
-  header p {
-    font-size: 1.15rem;
-    color: #6d4c9f;
-    font-weight: 700;
-    margin-top: 4px;
-  }
-
-  /* STAR BAR */
-  .star-bar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin: 8px auto 16px;
-    font-size: 1rem;
-    font-weight: 800;
-    color: #7b3f00;
-    background: linear-gradient(90deg, #fff9c4, #ffe082, #fff9c4);
-    border-radius: 50px;
-    padding: 8px 24px;
-    max-width: 280px;
-    box-shadow: 0 4px 12px rgba(255,180,0,0.3);
-    border: 2px solid #FFD600;
-  }
-  .star-count { font-size: 1.3rem; }
-
-  /* NAV */
-  nav {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 12px;
-    padding: 0 16px 20px;
-    position: relative;
-    z-index: 2;
-  }
-  nav button {
-    font-family: 'Baloo 2', cursive;
-    font-size: 1rem;
-    font-weight: 700;
-    border: none;
-    border-radius: 50px;
-    padding: 10px 22px;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(.36,1.56,.64,1);
-    box-shadow: 0 4px 0 rgba(0,0,0,0.15), var(--shadow);
-    position: relative;
-    top: 0;
-  }
-  nav button:hover { transform: translateY(-3px) scale(1.06); box-shadow: 0 7px 0 rgba(0,0,0,0.15), var(--shadow); }
-  nav button:active { top: 4px; box-shadow: 0 0 0 rgba(0,0,0,0.15); }
-  nav button.active { transform: scale(1.08); box-shadow: 0 0 0 4px white, 0 0 0 7px var(--purple); }
-  .btn-learn { background: linear-gradient(135deg, #FF7EB3, #FF4081); color: white; }
-  .btn-clock { background: linear-gradient(135deg, #FFD600, #FF8C42); color: white; }
-  .btn-calendar { background: linear-gradient(135deg, #66BB6A, #26A69A); color: white; }
-  .btn-directions { background: linear-gradient(135deg, #4FC3F7, #7E57C2); color: white; }
-  .btn-quiz { background: linear-gradient(135deg, #9C6FDE, #E040FB); color: white; }
-  .btn-rewards { background: linear-gradient(135deg, #FF8C42, #FF5722); color: white; }
-
-  /* PANELS */
-  .panel {
-    display: none;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 0 16px 40px;
-    position: relative;
-    z-index: 2;
-    animation: panelIn 0.4s cubic-bezier(.36,1.56,.64,1) both;
-  }
-  .panel.active { display: block; }
-  @keyframes panelIn {
-    from { transform: translateY(30px) scale(0.97); opacity: 0; }
-    to { transform: none; opacity: 1; }
-  }
-
-  /* CARDS */
-  .card {
-    background: var(--card-bg);
-    border-radius: 24px;
-    padding: 28px;
-    margin-bottom: 20px;
-    box-shadow: var(--shadow);
-    border: 2px solid rgba(255,255,255,0.8);
-    backdrop-filter: blur(8px);
-  }
-  .card h2 {
-    font-family: 'Baloo 2', cursive;
-    font-size: 1.6rem;
-    font-weight: 800;
-    color: #5c35a0;
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .card p, .card li {
-    font-size: 1.05rem;
-    color: #444;
-    line-height: 1.7;
-  }
-
-  /* TIME OF DAY visual */
-  .tod-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 14px;
-    margin-top: 16px;
-  }
-  .tod-card {
-    border-radius: 20px;
-    padding: 18px 12px;
-    text-align: center;
-    cursor: pointer;
-    transition: transform 0.2s cubic-bezier(.36,1.56,.64,1);
-    font-weight: 700;
-    font-size: 0.95rem;
-  }
-  .tod-card:hover { transform: scale(1.07) rotate(-1deg); }
-  .tod-morning { background: linear-gradient(160deg, #fff9c4, #FFE082); color: #7b3f00; }
-  .tod-noon { background: linear-gradient(160deg, #B3E5FC, #4FC3F7); color: #01579b; }
-  .tod-afternoon { background: linear-gradient(160deg, #FFCCBC, #FF8A65); color: #bf360c; }
-  .tod-evening { background: linear-gradient(160deg, #CE93D8, #7B1FA2); color: white; }
-  .tod-night { background: linear-gradient(160deg, #1a1a4e, #283593); color: #90CAF9; }
-  .tod-card .icon { font-size: 2.4rem; margin-bottom: 6px; display: block; }
-
-  /* CLOCK */
-  #clock-panel .clock-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-  }
-  .clock-svg-wrap {
-    position: relative;
-    width: 240px;
-    height: 240px;
-  }
-  #interactive-clock {
-    cursor: pointer;
-    filter: drop-shadow(0 8px 24px rgba(100,60,180,0.25));
-  }
-  .clock-time-display {
-    font-family: 'Baloo 2', cursive;
-    font-size: 2.8rem;
-    font-weight: 800;
-    color: #5c35a0;
-    letter-spacing: 2px;
-  }
-  .clock-label {
-    font-size: 1rem;
-    color: #888;
-    font-weight: 700;
-  }
-  .clock-controls {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .clock-btn {
-    background: linear-gradient(135deg, #9C6FDE, #E040FB);
-    color: white;
-    border: none;
-    border-radius: 50px;
-    padding: 8px 20px;
-    font-family: 'Baloo 2', cursive;
-    font-weight: 700;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: transform 0.15s;
-    box-shadow: 0 4px 12px rgba(156,111,222,0.3);
-  }
-  .clock-btn:hover { transform: scale(1.08); }
-
-  /* AMPM INFO */
-  .ampm-cards {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    margin-top: 14px;
-  }
-  .ampm-card {
-    border-radius: 18px;
-    padding: 18px;
-    text-align: center;
-    font-weight: 700;
-  }
-  .am-card { background: linear-gradient(135deg, #fff9c4, #FFE082); color: #7b3f00; }
-  .pm-card { background: linear-gradient(135deg, #E1BEE7, #AB47BC); color: white; }
-  .ampm-card .big { font-size: 2rem; font-family: 'Baloo 2', cursive; font-weight: 800; }
-
-  /* CALENDAR */
-  .month-display {
-    text-align: center;
-    margin-bottom: 16px;
-  }
-  .cal-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 6px;
-    margin-bottom: 16px;
-  }
-  .cal-header {
-    font-weight: 800;
-    font-size: 0.85rem;
-    text-align: center;
-    padding: 8px 4px;
-    border-radius: 10px;
-    color: white;
-    background: linear-gradient(135deg, #9C6FDE, #E040FB);
-  }
-  .cal-day {
-    background: rgba(255,255,255,0.8);
-    border-radius: 10px;
-    padding: 8px 4px;
-    text-align: center;
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: #333;
-    cursor: pointer;
-    transition: all 0.15s;
-    border: 2px solid transparent;
-    min-height: 42px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .cal-day:hover { transform: scale(1.1); border-color: #9C6FDE; background: #f3e8ff; }
-  .cal-day.today { background: linear-gradient(135deg, #FFD600, #FF8C42); color: white; border-color: #FF8C42; }
-  .cal-day.empty { background: transparent; cursor: default; }
-  .cal-day.empty:hover { transform: none; border-color: transparent; }
-  .months-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 10px;
-  }
-  .month-chip {
-    background: linear-gradient(135deg, #4FC3F7, #7E57C2);
-    color: white;
-    border-radius: 14px;
-    padding: 10px 8px;
-    text-align: center;
-    font-weight: 700;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: transform 0.15s;
-    box-shadow: 0 3px 10px rgba(126,87,194,0.2);
-  }
-  .month-chip:hover { transform: scale(1.08) rotate(-1deg); }
-  .month-chip .days { font-size: 0.75rem; opacity: 0.85; margin-top: 2px; }
-
-  /* DAYS INFO */
-  .days-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 12px;
-  }
-  .day-chip {
-    background: linear-gradient(135deg, #FF7EB3, #FF4081);
-    color: white;
-    border-radius: 50px;
-    padding: 7px 16px;
-    font-weight: 700;
-    font-size: 0.9rem;
-    animation: popIn 0.4s cubic-bezier(.36,1.56,.64,1) both;
-  }
-
-  /* DIRECTIONS */
-  .compass-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    padding: 20px 0;
-  }
-  .compass {
-    position: relative;
-    width: 220px;
-    height: 220px;
-  }
-  .compass-ring {
-    width: 220px;
-    height: 220px;
-    border-radius: 50%;
-    background: conic-gradient(from 0deg, #FFE082, #FF7043, #CE93D8, #90CAF9, #FFE082);
-    padding: 12px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-    animation: compassSpin 20s linear infinite;
-  }
-  @keyframes compassSpin { to { transform: rotate(360deg); } }
-  .compass-inner {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    animation: compassSpin 20s linear infinite reverse;
-  }
-  .compass-arrow {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 2.5rem;
-    animation: compassSpin 20s linear infinite;
-  }
-  .compass-dirs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    width: 100%;
-  }
-  .dir-card {
-    border-radius: 18px;
-    padding: 16px;
-    text-align: center;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 0.2s cubic-bezier(.36,1.56,.64,1);
-    position: relative;
-    overflow: hidden;
-  }
-  .dir-card:hover { transform: scale(1.05) rotate(-1deg); }
-  .dir-n { background: linear-gradient(135deg, #B3E5FC, #0288D1); color: white; }
-  .dir-s { background: linear-gradient(135deg, #FFCCBC, #E64A19); color: white; }
-  .dir-e { background: linear-gradient(135deg, #C8E6C9, #388E3C); color: white; }
-  .dir-w { background: linear-gradient(135deg, #E1BEE7, #7B1FA2); color: white; }
-  .dir-card .dir-letter { font-family: 'Baloo 2', cursive; font-size: 2.5rem; font-weight: 800; opacity: 0.3; position: absolute; top: 5px; right: 10px; }
-  .dir-card p { font-size: 0.88rem; margin-top: 4px; opacity: 0.9; }
-
-  /* QUIZ */
-  .quiz-progress {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-  }
-  .q-dot {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #e0e0e0;
-    transition: all 0.3s;
-  }
-  .q-dot.done { background: linear-gradient(135deg, #66BB6A, #26A69A); }
-  .q-dot.wrong { background: linear-gradient(135deg, #FF5252, #FF1744); }
-  .q-dot.current { background: linear-gradient(135deg, #FFD600, #FF8C42); transform: scale(1.3); }
-
-  .quiz-card {
-    background: var(--card-bg);
-    border-radius: 24px;
-    padding: 28px;
-    box-shadow: var(--shadow);
-    border: 2px solid rgba(255,255,255,0.8);
-    min-height: 200px;
-  }
-  .quiz-question {
-    font-family: 'Baloo 2', cursive;
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: #4a2080;
-    margin-bottom: 20px;
-    line-height: 1.4;
-  }
-  .quiz-options {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-  .quiz-opt {
-    background: rgba(255,255,255,0.9);
-    border: 2.5px solid #e0d0f8;
-    border-radius: 16px;
-    padding: 14px 16px;
-    font-size: 1rem;
-    font-weight: 700;
-    color: #444;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(.36,1.56,.64,1);
-    text-align: left;
-    font-family: 'Nunito', sans-serif;
-  }
-  .quiz-opt:hover { transform: scale(1.04); border-color: #9C6FDE; background: #f3e8ff; }
-  .quiz-opt.correct { background: linear-gradient(135deg, #C8E6C9, #66BB6A); border-color: #388E3C; color: #1b5e20; }
-  .quiz-opt.wrong { background: linear-gradient(135deg, #FFCDD2, #FF5252); border-color: #b71c1c; color: #b71c1c; }
-  .quiz-opt:disabled { cursor: default; transform: none; }
-
-  .quiz-feedback {
-    text-align: center;
-    font-family: 'Baloo 2', cursive;
-    font-size: 1.5rem;
-    font-weight: 800;
-    margin-top: 16px;
-    min-height: 50px;
-    animation: popIn 0.4s cubic-bezier(.36,1.56,.64,1) both;
-  }
-  @keyframes popIn {
-    from { transform: scale(0.5) rotate(-10deg); opacity: 0; }
-    to { transform: none; opacity: 1; }
-  }
-  .feedback-correct { color: #2e7d32; }
-  .feedback-wrong { color: #c62828; }
-
-  .next-btn {
-    display: block;
-    margin: 16px auto 0;
-    background: linear-gradient(135deg, #9C6FDE, #E040FB);
-    color: white;
-    border: none;
-    border-radius: 50px;
-    padding: 12px 36px;
-    font-family: 'Baloo 2', cursive;
-    font-weight: 700;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: transform 0.2s;
-    box-shadow: 0 4px 0 rgba(0,0,0,0.15);
-  }
-  .next-btn:hover { transform: scale(1.05); }
-
-  /* REWARDS */
-  .badges-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 16px;
-  }
-  .badge {
-    background: var(--card-bg);
-    border-radius: 20px;
-    padding: 18px 12px;
-    text-align: center;
-    box-shadow: var(--shadow);
-    transition: transform 0.2s cubic-bezier(.36,1.56,.64,1);
-    border: 2px solid rgba(255,255,255,0.8);
-    position: relative;
-    overflow: hidden;
-  }
-  .badge:hover { transform: scale(1.05) rotate(-1deg); }
-  .badge.locked { filter: grayscale(0.8); opacity: 0.5; }
-  .badge .badge-icon { font-size: 2.8rem; margin-bottom: 6px; }
-  .badge .badge-name { font-weight: 800; font-size: 0.88rem; color: #5c35a0; }
-  .badge .badge-desc { font-size: 0.75rem; color: #888; margin-top: 3px; }
-  .badge .lock-overlay { position: absolute; top: 8px; right: 10px; font-size: 1.1rem; }
-  .badge.unlocked { animation: badgeUnlock 0.6s cubic-bezier(.36,1.56,.64,1) both; }
-  @keyframes badgeUnlock {
-    0% { transform: scale(0.3) rotate(-20deg); }
-    70% { transform: scale(1.15) rotate(5deg); }
-    100% { transform: scale(1); }
-  }
-
-  /* CONFETTI */
-  .confetti-piece {
-    position: fixed;
-    width: 12px;
-    height: 12px;
-    border-radius: 2px;
-    pointer-events: none;
-    z-index: 999;
-    animation: confettiFall 1.5s ease-in forwards;
-  }
-  @keyframes confettiFall {
-    0% { opacity: 1; transform: translateY(-20px) rotate(0deg); }
-    100% { opacity: 0; transform: translateY(90vh) rotate(720deg); }
-  }
-
-  /* TOOLTIP / MODAL */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.4);
-    z-index: 500;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(4px);
-  }
-  .modal-overlay.open { display: flex; }
-  .modal-box {
-    background: white;
-    border-radius: 28px;
-    padding: 36px 32px;
-    max-width: 400px;
-    width: 92%;
-    text-align: center;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-    animation: panelIn 0.4s cubic-bezier(.36,1.56,.64,1);
-  }
-  .modal-box h2 { font-family: 'Baloo 2', cursive; font-size: 2rem; font-weight: 800; color: #5c35a0; margin-bottom: 10px; }
-  .modal-box p { font-size: 1.1rem; color: #555; margin-bottom: 20px; }
-  .modal-close {
-    background: linear-gradient(135deg, #9C6FDE, #E040FB);
-    color: white;
-    border: none;
-    border-radius: 50px;
-    padding: 12px 32px;
-    font-family: 'Baloo 2', cursive;
-    font-weight: 700;
-    font-size: 1.1rem;
-    cursor: pointer;
-  }
-
-  /* CLOCK QUIZ SPECIFIC */
-  .clock-quiz-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    padding: 10px 0;
-  }
-
-  /* INFO PILLS */
-  .info-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: linear-gradient(90deg, #f3e8ff, #e8f5e9);
-    border-radius: 50px;
-    padding: 6px 16px;
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: #5c35a0;
-    margin: 4px;
-  }
-
-  /* SCROLL NOTE */
-  .fact-box {
-    background: linear-gradient(135deg, #fff9c4, #FFE082);
-    border-radius: 16px;
-    padding: 14px 18px;
-    margin-top: 12px;
-    font-weight: 700;
-    color: #7b3f00;
-    font-size: 0.95rem;
-    border-left: 5px solid #FFD600;
-  }
-
-  .section-title {
-    font-family: 'Baloo 2', cursive;
-    font-size: 1.2rem;
-    font-weight: 800;
-    color: #9C6FDE;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  /* BEAT animation */
-  .beat { animation: beat 1s ease infinite; }
-  @keyframes beat {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.15); }
-  }
-
-  /* Responsive */
-  @media (max-width: 500px) {
-    .quiz-options { grid-template-columns: 1fr; }
-    .ampm-cards { grid-template-columns: 1fr; }
-    .clock-svg-wrap { width: 200px; height: 200px; }
-  }
-
-  .learn-list { list-style: none; padding: 0; }
-  .learn-list li {
-    background: rgba(255,255,255,0.8);
-    border-radius: 14px;
-    padding: 10px 16px;
-    margin-bottom: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #333;
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-    border-left: 4px solid #9C6FDE;
-  }
-  .learn-list li::before { content: attr(data-icon); font-size: 1.2rem; flex-shrink: 0; }
-
-  .dir-body-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-  }
-  .dir-body-img {
-    font-size: 5rem;
-    position: relative;
-  }
-  .dir-label {
-    position: absolute;
-    font-family: 'Baloo 2', cursive;
-    font-size: 1rem;
-    font-weight: 800;
-    background: white;
-    border-radius: 8px;
-    padding: 3px 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-    white-space: nowrap;
-  }
-
-  .sun-scene {
-    border-radius: 20px;
-    overflow: hidden;
-    background: linear-gradient(180deg, #87CEEB 0%, #87CEEB 70%, #5DBB63 70%, #5DBB63 100%);
-    height: 140px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 16px;
-  }
-  .sun-anim {
-    position: absolute;
-    font-size: 2.8rem;
-    transition: all 0.8s cubic-bezier(.36,1.56,.64,1);
-  }
-  .sun-controls {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .sun-btn {
-    background: white;
-    border: 2.5px solid #FFD600;
-    border-radius: 50px;
-    padding: 7px 16px;
-    font-family: 'Baloo 2', cursive;
-    font-weight: 700;
-    font-size: 0.9rem;
-    cursor: pointer;
-    color: #7b3f00;
-    transition: all 0.15s;
-  }
-  .sun-btn:hover, .sun-btn.active { background: #FFD600; }
-
-  .leap-year-box {
-    background: linear-gradient(135deg, #e8f5e9, #C8E6C9);
-    border-radius: 16px;
-    padding: 16px 20px;
-    margin-top: 12px;
-    border-left: 5px solid #66BB6A;
-  }
-  .poem-box {
-    background: linear-gradient(135deg, #f3e8ff, #E1BEE7);
-    border-radius: 16px;
-    padding: 18px 20px;
-    margin-top: 12px;
-    border-left: 5px solid #9C6FDE;
-    font-style: italic;
-    font-size: 1rem;
-    font-weight: 700;
-    color: #4a2080;
-    line-height: 1.8;
-  }
-  .poem-box .poem-title { font-style: normal; font-size: 0.85rem; color: #9C6FDE; margin-bottom: 8px; font-weight: 800; }
+:root{--purple:#9C6FDE;--pink:#FF7EB3;--orange:#FF8C42;--green:#66BB6A;--sky:#4FC3F7;--sun:#FFD600;--card:#ffffffee;--shadow:0 8px 32px rgba(80,60,140,.15);--r:24px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"Nunito",sans-serif;background:linear-gradient(160deg,#e0f7fa 0%,#e8f5e9 50%,#fff9c4 100%);min-height:100vh;overflow-x:hidden;}
+.particle{position:fixed;pointer-events:none;z-index:0;font-size:1.2rem;animation:floatUp linear infinite;opacity:.4;}
+@keyframes floatUp{0%{transform:translateY(105vh) rotate(0deg);opacity:0}10%{opacity:.5}90%{opacity:.5}100%{transform:translateY(-10vh) rotate(360deg);opacity:0}}
+header{text-align:center;padding:24px 20px 10px;position:relative;z-index:2;}
+header h1{font-family:"Baloo 2",cursive;font-size:clamp(1.8rem,5vw,3rem);font-weight:900;background:linear-gradient(90deg,#FF7043,#FF7EB3,#9C6FDE,#4FC3F7,#66BB6A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:titleBounce .8s cubic-bezier(.36,1.56,.64,1) both;}
+@keyframes titleBounce{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.mascot{font-size:2.8rem;animation:wave 2s ease-in-out infinite;display:inline-block;cursor:pointer;}
+@keyframes wave{0%,100%{transform:rotate(-10deg) scale(1)}50%{transform:rotate(15deg) scale(1.15)}}
+.starbar{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(90deg,#fff9c4,#ffe082,#fff9c4);border-radius:50px;padding:8px 22px;border:2.5px solid #FFD600;box-shadow:0 4px 14px rgba(255,180,0,.25);font-weight:800;color:#7b3f00;font-size:1rem;margin:6px auto 14px;cursor:pointer;transition:transform .15s;}
+.starbar:hover{transform:scale(1.05);}
+.star-num{font-size:1.4rem;font-weight:900;transition:transform .3s cubic-bezier(.36,1.56,.64,1);display:inline-block;}
+.star-num.pop{transform:scale(1.7);}
+nav{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;padding:0 12px 16px;position:relative;z-index:2;}
+nav button{font-family:"Baloo 2",cursive;font-size:.92rem;font-weight:700;border:none;border-radius:50px;padding:9px 18px;cursor:pointer;transition:all .2s cubic-bezier(.36,1.56,.64,1);box-shadow:0 4px 0 rgba(0,0,0,.18);position:relative;top:0;}
+nav button:hover{transform:translateY(-3px) scale(1.07);box-shadow:0 7px 0 rgba(0,0,0,.14);}
+nav button:active{top:3px;box-shadow:0 0px 0 rgba(0,0,0,.14);}
+nav button.active{box-shadow:0 0 0 3px white,0 0 0 6px var(--purple);transform:scale(1.08);}
+.nb1{background:linear-gradient(135deg,#FF7EB3,#FF4081);color:#fff}
+.nb2{background:linear-gradient(135deg,#FFD600,#FF8C42);color:#fff}
+.nb3{background:linear-gradient(135deg,#66BB6A,#26A69A);color:#fff}
+.nb4{background:linear-gradient(135deg,#4FC3F7,#7E57C2);color:#fff}
+.nb5{background:linear-gradient(135deg,#9C6FDE,#E040FB);color:#fff}
+.nb6{background:linear-gradient(135deg,#FF8C42,#FF5722);color:#fff}
+.panel{display:none;max-width:920px;margin:0 auto;padding:0 12px 50px;position:relative;z-index:2;animation:pIn .4s cubic-bezier(.36,1.56,.64,1) both;}
+.panel.active{display:block;}
+@keyframes pIn{from{transform:translateY(28px) scale(.97);opacity:0}to{transform:none;opacity:1}}
+.card{background:var(--card);border-radius:var(--r);padding:22px;margin-bottom:16px;box-shadow:var(--shadow);border:2px solid rgba(255,255,255,.85);}
+.card h2{font-family:"Baloo 2",cursive;font-size:1.45rem;font-weight:800;color:#5c35a0;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+/* SKY */
+.sky-scene{border-radius:20px;overflow:hidden;position:relative;height:190px;background:linear-gradient(180deg,#FFE082 0%,#87CEEB 40%,#87CEEB 75%,#5DBB63 75%,#4CAF50 100%);cursor:crosshair;margin-bottom:14px;transition:background 1s;user-select:none;touch-action:none;}
+.cloud{position:absolute;animation:cloudDrift linear infinite;pointer-events:none;}
+@keyframes cloudDrift{0%{transform:translateX(-80px)}100%{transform:translateX(110vw)}}
+.drag-sun{position:absolute;font-size:3rem;cursor:grab;filter:drop-shadow(0 4px 12px rgba(255,180,0,.5));z-index:5;transition:filter .3s;touch-action:none;}
+.drag-sun:active{cursor:grabbing;}
+.sky-label{position:absolute;top:8px;left:50%;transform:translateX(-50%);font-family:"Baloo 2",cursive;font-weight:800;font-size:1.2rem;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.4);background:rgba(0,0,0,.18);border-radius:50px;padding:3px 14px;pointer-events:none;}
+.drag-hint{position:absolute;bottom:8px;right:10px;font-size:.72rem;background:rgba(255,255,255,.75);border-radius:10px;padding:3px 9px;font-weight:700;color:#5c35a0;pointer-events:none;}
+/* TOD */
+.tod-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:11px;margin-top:11px;}
+.tod-card{border-radius:18px;padding:14px 10px;text-align:center;cursor:pointer;transition:transform .2s cubic-bezier(.36,1.56,.64,1),box-shadow .2s;font-weight:700;font-size:.85rem;position:relative;overflow:hidden;}
+.tod-card:hover{transform:scale(1.09) rotate(-2deg);box-shadow:0 10px 28px rgba(0,0,0,.15);}
+.tod-card:active{transform:scale(.96);}
+.tod-card .ti{font-size:2rem;margin-bottom:5px;display:block;transition:transform .3s;}
+.tod-card:hover .ti{transform:scale(1.3) rotate(10deg);}
+.tod-morning{background:linear-gradient(160deg,#fff9c4,#FFE082);color:#7b3f00;}
+.tod-noon{background:linear-gradient(160deg,#B3E5FC,#4FC3F7);color:#01579b;}
+.tod-afternoon{background:linear-gradient(160deg,#FFCCBC,#FF8A65);color:#bf360c;}
+.tod-evening{background:linear-gradient(160deg,#CE93D8,#7B1FA2);color:#fff;}
+.tod-night{background:linear-gradient(160deg,#3949AB,#1a1a4e);color:#90CAF9;}
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.4);transform:scale(0);animation:rAnim .6s linear;pointer-events:none;}
+@keyframes rAnim{to{transform:scale(4);opacity:0}}
+/* UNITS */
+.unit-chain{display:flex;flex-wrap:wrap;gap:0;align-items:center;margin:14px 0;}
+.unit-block{background:linear-gradient(135deg,#f3e8ff,#e8d8ff);border:2.5px solid #9C6FDE;border-radius:14px;padding:9px 14px;font-weight:800;font-size:.85rem;color:#5c35a0;cursor:pointer;transition:all .2s cubic-bezier(.36,1.56,.64,1);}
+.unit-block:hover{transform:scale(1.12);background:linear-gradient(135deg,#9C6FDE,#E040FB);color:#fff;box-shadow:0 4px 16px rgba(156,111,222,.4);}
+.unit-block.active-unit{background:linear-gradient(135deg,#9C6FDE,#E040FB);color:#fff;}
+.unit-arrow{font-size:1.3rem;color:#9C6FDE;padding:0 5px;}
+/* AMPM FLIP */
+.ampm-wrap{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:13px;}
+.ampm-flip{perspective:600px;cursor:pointer;height:130px;}
+.ampm-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.36,1.56,.64,1);}
+.ampm-flip.flipped .ampm-inner{transform:rotateY(180deg);}
+.af,.ab{position:absolute;inset:0;border-radius:18px;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;}
+.ab{transform:rotateY(180deg);}
+.af.am{background:linear-gradient(135deg,#fff9c4,#FFE082);color:#7b3f00;}
+.ab.am2{background:linear-gradient(135deg,#FFD600,#FF8C42);color:#fff;}
+.af.pm{background:linear-gradient(135deg,#E1BEE7,#AB47BC);color:#fff;}
+.ab.pm2{background:linear-gradient(135deg,#7B1FA2,#4A148C);color:#fff;}
+.abig{font-family:"Baloo 2",cursive;font-size:2rem;font-weight:900;}
+/* CLOCK */
+.clock-svg-wrap{position:relative;width:230px;height:230px;cursor:grab;touch-action:none;}
+.clock-time-display{font-family:"Baloo 2",cursive;font-size:2.5rem;font-weight:800;color:#5c35a0;}
+.clock-controls{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;}
+.cbtn{background:linear-gradient(135deg,#9C6FDE,#E040FB);color:#fff;border:none;border-radius:50px;padding:8px 16px;font-family:"Baloo 2",cursive;font-weight:700;font-size:.9rem;cursor:pointer;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 12px rgba(156,111,222,.3);}
+.cbtn:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(156,111,222,.4);}
+.cbtn:active{transform:scale(.95);}
+.spin-hint{font-size:.82rem;color:#9C6FDE;font-weight:700;margin:3px 0 8px;animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:.7}50%{opacity:1}}
+/* SET TIME */
+.set-time-card{background:linear-gradient(135deg,#f3e8ff,#e8f5e9);border-radius:18px;padding:18px;margin-top:12px;text-align:center;}
+.target-t{font-family:"Baloo 2",cursive;font-size:1.9rem;font-weight:900;color:#5c35a0;margin:8px 0;}
+/* CALENDAR */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px;}
+.cal-h{font-weight:800;font-size:.78rem;text-align:center;padding:6px 3px;border-radius:9px;color:#fff;background:linear-gradient(135deg,#9C6FDE,#E040FB);}
+.cal-day{background:rgba(255,255,255,.8);border-radius:9px;padding:6px 3px;text-align:center;font-size:.88rem;font-weight:700;color:#333;cursor:pointer;transition:all .2s cubic-bezier(.36,1.56,.64,1);border:2px solid transparent;min-height:38px;display:flex;align-items:center;justify-content:center;}
+.cal-day:hover:not(.empty){transform:scale(1.2) rotate(-2deg);border-color:#9C6FDE;background:#f3e8ff;z-index:2;position:relative;}
+.cal-day.today{background:linear-gradient(135deg,#FFD600,#FF8C42);color:#fff;border-color:#FF8C42;animation:todayPulse 2s ease-in-out infinite;}
+@keyframes todayPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,180,0,.5)}50%{box-shadow:0 0 0 6px rgba(255,180,0,0)}}
+.cal-day.empty{background:transparent;cursor:default;}
+.cal-day.visited{background:linear-gradient(135deg,#C8E6C9,#66BB6A);color:#1b5e20;border-color:#66BB6A;}
+/* DAYS DRAG */
+.drag-match{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;}
+.drag-src,.drag-tgt{display:flex;flex-direction:column;gap:7px;flex:1;min-width:130px;}
+.draggable-day{background:linear-gradient(135deg,#FF7EB3,#FF4081);color:#fff;border-radius:50px;padding:7px 16px;font-weight:800;font-size:.88rem;cursor:grab;transition:transform .15s,opacity .15s;user-select:none;text-align:center;}
+.draggable-day:active{cursor:grabbing;opacity:.6;transform:scale(1.08);}
+.drop-tgt{background:rgba(255,255,255,.6);border:2.5px dashed #9C6FDE;border-radius:50px;padding:7px 16px;font-weight:800;font-size:.88rem;color:#bbb;transition:all .2s;text-align:center;min-height:38px;}
+.drop-tgt.over{background:#f3e8ff;border-color:#E040FB;transform:scale(1.04);}
+.drop-tgt.correct{background:linear-gradient(135deg,#C8E6C9,#66BB6A);color:#1b5e20;border-color:#66BB6A;border-style:solid;}
+.drop-tgt.wrong{background:linear-gradient(135deg,#FFCDD2,#FF5252);color:#b71c1c;border-color:#b71c1c;border-style:solid;animation:shake .3s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+/* MONTHS */
+.months-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;}
+.month-chip{border-radius:13px;padding:9px 5px;text-align:center;font-weight:700;font-size:.8rem;cursor:pointer;transition:transform .2s cubic-bezier(.36,1.56,.64,1);box-shadow:0 3px 10px rgba(0,0,0,.1);color:#fff;position:relative;}
+.month-chip:hover{transform:scale(1.13) rotate(-2deg);}
+.month-chip:active{transform:scale(.96);}
+.month-chip.picked::after{content:"✓";position:absolute;top:3px;right:5px;font-size:.78rem;font-weight:900;}
+/* POEM */
+.poem-line{cursor:pointer;padding:3px 7px;border-radius:8px;transition:all .2s;font-style:italic;font-size:.96rem;font-weight:700;color:#4a2080;line-height:1.9;}
+.poem-line:hover{background:rgba(156,111,222,.15);transform:translateX(8px);font-style:normal;}
+.poem-line.lit{background:rgba(156,111,222,.3);font-weight:900;font-style:normal;}
+/* COMPASS */
+.compass-outer{width:210px;height:210px;border-radius:50%;background:conic-gradient(from 0deg,#FFE082 0deg,#FF7043 90deg,#CE93D8 180deg,#90CAF9 270deg,#FFE082 360deg);padding:13px;box-shadow:0 8px 32px rgba(0,0,0,.15);cursor:grab;user-select:none;touch-action:none;}
+.compass-outer:active{cursor:grabbing;}
+.compass-inner{width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff 0%,#f3e8ff 100%);display:flex;align-items:center;justify-content:center;position:relative;}
+.clabel{position:absolute;font-family:"Baloo 2",cursive;font-weight:900;font-size:1.25rem;cursor:pointer;transition:transform .2s cubic-bezier(.36,1.56,.64,1);}
+.clabel:hover{transform:scale(1.35);}
+.cn{top:7px;left:50%;transform:translateX(-50%);color:#0288D1;}
+.cs{bottom:7px;left:50%;transform:translateX(-50%);color:#E64A19;}
+.ce{right:7px;top:50%;transform:translateY(-50%);color:#388E3C;}
+.cw{left:7px;top:50%;transform:translateY(-50%);color:#7B1FA2;}
+.dir-cards{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+.dir-card{border-radius:18px;padding:15px;cursor:pointer;transition:transform .2s cubic-bezier(.36,1.56,.64,1),box-shadow .2s;position:relative;overflow:hidden;}
+.dir-card:hover{transform:scale(1.05) rotate(-1deg);box-shadow:0 10px 28px rgba(0,0,0,.15);}
+.dir-card:active{transform:scale(.97);}
+.dir-n{background:linear-gradient(135deg,#B3E5FC,#0288D1);color:#fff;}
+.dir-s{background:linear-gradient(135deg,#FFCCBC,#E64A19);color:#fff;}
+.dir-e{background:linear-gradient(135deg,#C8E6C9,#388E3C);color:#fff;}
+.dir-w{background:linear-gradient(135deg,#E1BEE7,#7B1FA2);color:#fff;}
+.dir-letter{font-family:"Baloo 2",cursive;font-size:2.6rem;font-weight:900;opacity:.2;position:absolute;top:2px;right:8px;}
+/* POSITION WORDS */
+.pos-scene{background:linear-gradient(180deg,#87CEEB 0%,#87CEEB 65%,#5DBB63 65%,#4CAF50 100%);border-radius:18px;padding:16px;position:relative;min-height:170px;margin:12px 0;}
+.pos-object{position:absolute;font-size:1.9rem;transition:all .4s cubic-bezier(.36,1.56,.64,1);}
+.pos-word-btns{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px;}
+.pos-btn{background:rgba(255,255,255,.88);border:2.5px solid #9C6FDE;border-radius:50px;padding:5px 12px;font-weight:800;font-size:.82rem;color:#5c35a0;cursor:pointer;transition:all .2s cubic-bezier(.36,1.56,.64,1);}
+.pos-btn:hover{background:#9C6FDE;color:#fff;transform:scale(1.12);}
+.pos-btn:active{transform:scale(.94);}
+/* MAZE */
+.maze-wrap{border-radius:18px;overflow:hidden;position:relative;border:3px solid #9C6FDE;background:#f5f5f5;}
+.maze-canvas{display:block;width:100%;max-width:400px;margin:0 auto;}
+.maze-controls{display:flex;gap:9px;justify-content:center;margin-top:11px;flex-wrap:wrap;}
+.mbtn{background:linear-gradient(135deg,#4FC3F7,#7E57C2);color:#fff;border:none;border-radius:50px;padding:10px 18px;font-family:"Baloo 2",cursive;font-weight:700;font-size:1rem;cursor:pointer;transition:transform .15s;box-shadow:0 4px 12px rgba(126,87,194,.3);}
+.mbtn:hover{transform:scale(1.12);}
+.mbtn:active{transform:scale(.94);}
+/* QUIZ */
+.quiz-progress{display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap;}
+.q-dot{width:15px;height:15px;border-radius:50%;background:#e0e0e0;transition:all .3s;}
+.q-dot.done{background:linear-gradient(135deg,#66BB6A,#26A69A);}
+.q-dot.wrong2{background:linear-gradient(135deg,#FF5252,#FF1744);}
+.q-dot.curr{background:linear-gradient(135deg,#FFD600,#FF8C42);transform:scale(1.35);}
+.quiz-q{font-family:"Baloo 2",cursive;font-size:1.25rem;font-weight:700;color:#4a2080;margin-bottom:16px;line-height:1.4;}
+.quiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.qopt{background:rgba(255,255,255,.92);border:2.5px solid #e0d0f8;border-radius:15px;padding:12px 13px;font-size:.95rem;font-weight:700;color:#444;cursor:pointer;transition:all .2s cubic-bezier(.36,1.56,.64,1);text-align:left;font-family:"Nunito",sans-serif;position:relative;overflow:hidden;}
+.qopt:hover{transform:scale(1.05) rotate(-.5deg);border-color:#9C6FDE;background:#f3e8ff;}
+.qopt:active{transform:scale(.97);}
+.qopt.correct{background:linear-gradient(135deg,#C8E6C9,#66BB6A);border-color:#388E3C;color:#1b5e20;animation:cBounce .4s cubic-bezier(.36,1.56,.64,1);}
+@keyframes cBounce{0%{transform:scale(.9)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+.qopt.wrong{background:linear-gradient(135deg,#FFCDD2,#FF5252);border-color:#b71c1c;color:#b71c1c;animation:shake .3s;}
+.quiz-fb{text-align:center;font-family:"Baloo 2",cursive;font-size:1.35rem;font-weight:800;min-height:45px;margin-top:12px;animation:popIn .4s cubic-bezier(.36,1.56,.64,1) both;}
+@keyframes popIn{from{transform:scale(.5) rotate(-10deg);opacity:0}to{transform:none;opacity:1}}
+.fb-ok{color:#2e7d32;}.fb-bad{color:#c62828;}
+.next-btn{display:block;margin:12px auto 0;background:linear-gradient(135deg,#9C6FDE,#E040FB);color:#fff;border:none;border-radius:50px;padding:10px 32px;font-family:"Baloo 2",cursive;font-weight:700;font-size:1rem;cursor:pointer;transition:transform .2s;box-shadow:0 4px 0 rgba(0,0,0,.15);}
+.next-btn:hover{transform:scale(1.07);}
+/* BADGES */
+.badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(115px,1fr));gap:12px;}
+.badge{background:var(--card);border-radius:17px;padding:14px 9px;text-align:center;box-shadow:var(--shadow);transition:transform .2s cubic-bezier(.36,1.56,.64,1);border:2px solid rgba(255,255,255,.85);cursor:pointer;position:relative;}
+.badge:hover{transform:scale(1.08) rotate(-1.5deg);}
+.badge.locked{filter:grayscale(.8);opacity:.5;}
+.badge .bi{font-size:2.4rem;margin-bottom:5px;transition:transform .3s;display:block;}
+.badge:hover .bi{transform:scale(1.25) rotate(10deg);}
+.badge .bn{font-weight:800;font-size:.8rem;color:#5c35a0;}
+.badge .bd{font-size:.68rem;color:#888;margin-top:2px;}
+.badge .lk{position:absolute;top:5px;right:7px;font-size:.95rem;}
+/* MISC */
+.fact-box{background:linear-gradient(135deg,#fff9c4,#FFE082);border-radius:13px;padding:11px 15px;margin-top:9px;font-weight:700;color:#7b3f00;font-size:.9rem;border-left:5px solid #FFD600;}
+.info-pill{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(90deg,#f3e8ff,#e8f5e9);border-radius:50px;padding:5px 13px;font-size:.85rem;font-weight:700;color:#5c35a0;margin:3px;cursor:pointer;transition:transform .15s;}
+.info-pill:hover{transform:scale(1.12);}
+.beat{animation:beat 1.4s ease infinite;display:inline-block;}
+@keyframes beat{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+.poem-box{background:linear-gradient(135deg,#f3e8ff,#E1BEE7);border-radius:15px;padding:15px 17px;margin-top:12px;border-left:5px solid #9C6FDE;}
+.leap-box{background:linear-gradient(135deg,#e8f5e9,#C8E6C9);border-radius:15px;padding:15px;margin-top:12px;border-left:5px solid #66BB6A;}
+.section-title{font-family:"Baloo 2",cursive;font-size:1.05rem;font-weight:800;color:#9C6FDE;margin-bottom:7px;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#fff;border-radius:26px;padding:30px 26px;max-width:370px;width:92%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.22);animation:pIn .4s cubic-bezier(.36,1.56,.64,1);}
+.modal-box h2{font-family:"Baloo 2",cursive;font-size:1.8rem;font-weight:800;color:#5c35a0;margin-bottom:8px;}
+.modal-close{background:linear-gradient(135deg,#9C6FDE,#E040FB);color:#fff;border:none;border-radius:50px;padding:10px 28px;font-family:"Baloo 2",cursive;font-weight:700;font-size:1rem;cursor:pointer;transition:transform .15s;margin-top:14px;display:inline-block;}
+.modal-close:hover{transform:scale(1.07);}
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);background:linear-gradient(135deg,#9C6FDE,#E040FB);color:#fff;font-family:"Baloo 2",cursive;font-weight:700;font-size:1rem;padding:10px 24px;border-radius:50px;box-shadow:0 8px 24px rgba(156,111,222,.4);z-index:9999;opacity:0;transition:all .35s cubic-bezier(.36,1.56,.64,1);white-space:nowrap;pointer-events:none;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.conf{position:fixed;width:10px;height:10px;border-radius:2px;pointer-events:none;z-index:999;animation:confFall 1.4s ease-in forwards;}
+@keyframes confFall{0%{opacity:1;transform:translateY(-20px) rotate(0deg)}100%{opacity:0;transform:translateY(88vh) rotate(720deg)}}
+.cq-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;padding:6px 0;}
+@media(max-width:500px){.quiz-opts{grid-template-columns:1fr}.ampm-wrap{grid-template-columns:1fr}.dir-cards{grid-template-columns:1fr}.clock-svg-wrap{width:200px;height:200px}}
 </style>
 </head>
 <body>
-
-<!-- Floating decorations -->
-<div class="star" style="left:5%;animation-duration:12s;animation-delay:0s">⭐</div>
-<div class="star" style="left:15%;animation-duration:9s;animation-delay:2s">🌟</div>
-<div class="star" style="left:30%;animation-duration:14s;animation-delay:4s">✨</div>
-<div class="star" style="left:50%;animation-duration:10s;animation-delay:1s">⭐</div>
-<div class="star" style="left:70%;animation-duration:11s;animation-delay:3s">🌟</div>
-<div class="star" style="left:85%;animation-duration:8s;animation-delay:5s">✨</div>
-<div class="star" style="left:95%;animation-duration:13s;animation-delay:2s">⭐</div>
-
+<div class="particle" style="left:4%;animation-duration:13s;animation-delay:0s">⭐</div>
+<div class="particle" style="left:14%;animation-duration:9s;animation-delay:2s">🌟</div>
+<div class="particle" style="left:28%;animation-duration:15s;animation-delay:4s">✨</div>
+<div class="particle" style="left:42%;animation-duration:10s;animation-delay:1s">🌙</div>
+<div class="particle" style="left:58%;animation-duration:12s;animation-delay:3s">☀️</div>
+<div class="particle" style="left:72%;animation-duration:8s;animation-delay:5s">⭐</div>
+<div class="particle" style="left:88%;animation-duration:14s;animation-delay:2s">🌈</div>
 <header>
-  <h1>⏰ Time & Directions Adventure! 🧭</h1>
-  <p>Welcome, Explorer! Learn, Play & Earn Stars! 🌟</p>
-  <div class="star-bar">
-    <span class="beat">⭐</span>
-    <span>Stars Earned:</span>
-    <span class="star-count" id="star-display">0</span>
+  <div class="mascot" id="mascot">🦉</div>
+  <h1>⏰ Time &amp; Directions Adventure! 🧭</h1>
+  <p style="color:#6d4c9f;font-weight:700;font-size:1rem;">Welcome, Explorer! Learn, Play &amp; Earn Stars!</p>
+  <div class="starbar" onclick="showStarCelebration()">
+    <span class="beat">⭐</span><span>Stars:</span>
+    <span class="star-num" id="star-display">0</span>
+    &nbsp;🏆 Badges: <span id="badge-count">0</span>
   </div>
 </header>
-
 <nav>
-  <button class="btn-learn active" onclick="showPanel('learn')">📖 Learn Time</button>
-  <button class="btn-clock" onclick="showPanel('clock')">🕐 Clock Fun</button>
-  <button class="btn-calendar" onclick="showPanel('calendar')">📅 Calendar</button>
-  <button class="btn-directions" onclick="showPanel('directions')">🧭 Directions</button>
-  <button class="btn-quiz" onclick="showPanel('quiz')">🎯 Quiz!</button>
-  <button class="btn-rewards" onclick="showPanel('rewards')">🏆 Rewards</button>
+  <button class="nb1 active" onclick="showPanel('learn',this)">📖 Learn Time</button>
+  <button class="nb2" onclick="showPanel('clock',this)">🕐 Clock Fun</button>
+  <button class="nb3" onclick="showPanel('calendar',this)">📅 Calendar</button>
+  <button class="nb4" onclick="showPanel('directions',this)">🧭 Directions</button>
+  <button class="nb5" onclick="showPanel('quiz',this)">🎯 Quiz!</button>
+  <button class="nb6" onclick="showPanel('rewards',this)">🏆 Rewards</button>
 </nav>
 
-<!-- ========== LEARN TIME PANEL ========== -->
+<!-- LEARN -->
 <div id="learn-panel" class="panel active">
-
-  <div class="card">
-    <h2>☀️ Times of the Day</h2>
-    <p>A day has <strong>24 hours</strong>. The Sun helps us know the time! Click each card to learn more.</p>
-
-    <div class="sun-scene" id="sun-scene">
-      <div class="sun-anim" id="sun-anim" style="left:10%;top:70%;transform:translateY(-50%)">🌅</div>
+<div class="card">
+  <h2>☀️ Drag the Sun Across the Sky!</h2>
+  <div class="sky-scene" id="sky-scene">
+    <div id="clouds-layer"></div>
+    <div class="sky-label" id="sky-label">🌅 Morning</div>
+    <div class="drag-sun" id="drag-sun" style="left:5%;top:55%;transform:translateY(-50%)">🌅</div>
+    <div class="drag-hint">☝️ Drag the sun!</div>
+  </div>
+  <div class="tod-grid">
+    <div class="tod-card tod-morning" onclick="clickTod(this,'morning')"><span class="ti">🌅</span><strong>Morning</strong><div style="font-size:.75rem;margin-top:3px">Sun rises in the East</div></div>
+    <div class="tod-card tod-noon" onclick="clickTod(this,'noon')"><span class="ti">☀️</span><strong>Noon</strong><div style="font-size:.75rem;margin-top:3px">Sun over our head</div></div>
+    <div class="tod-card tod-afternoon" onclick="clickTod(this,'afternoon')"><span class="ti">🌤️</span><strong>Afternoon</strong><div style="font-size:.75rem;margin-top:3px">Between noon &amp; evening</div></div>
+    <div class="tod-card tod-evening" onclick="clickTod(this,'evening')"><span class="ti">🌇</span><strong>Evening</strong><div style="font-size:.75rem;margin-top:3px">Sun sets in the West</div></div>
+    <div class="tod-card tod-night" onclick="clickTod(this,'night')"><span class="ti">🌙</span><strong>Night</strong><div style="font-size:.75rem;margin-top:3px">Stars come out!</div></div>
+  </div>
+  <div id="tod-info" class="fact-box" style="display:none;margin-top:12px;"></div>
+</div>
+<div class="card">
+  <h2>⏱️ Time Units — Tap Each!</h2>
+  <div class="unit-chain" id="unit-chain"></div>
+  <div id="unit-info" style="min-height:44px;margin-top:7px;font-weight:700;font-size:.97rem;color:#5c35a0;text-align:center;"></div>
+</div>
+<div class="card">
+  <h2>🔄 A.M. &amp; P.M. — Tap to Flip!</h2>
+  <p style="margin-bottom:11px;">Tap each card to flip and learn!</p>
+  <div class="ampm-wrap">
+    <div class="ampm-flip" onclick="this.classList.toggle('flipped')">
+      <div class="ampm-inner">
+        <div class="af am"><div class="abig">a.m.</div><div style="font-size:.85rem;margin-top:3px">Tap to flip!</div></div>
+        <div class="ab am2"><div class="abig">🌅→☀️</div><div style="font-size:.82rem;margin-top:5px;text-align:center;">Midnight to Noon<br>12:00am → 12:00pm</div></div>
+      </div>
     </div>
-
-    <div class="sun-controls">
-      <button class="sun-btn active" onclick="moveSun('morning', this)">🌅 Morning</button>
-      <button class="sun-btn" onclick="moveSun('noon', this)">☀️ Noon</button>
-      <button class="sun-btn" onclick="moveSun('afternoon', this)">🌤️ Afternoon</button>
-      <button class="sun-btn" onclick="moveSun('evening', this)">🌇 Evening</button>
-      <button class="sun-btn" onclick="moveSun('night', this)">🌙 Night</button>
-    </div>
-
-    <div class="tod-grid" style="margin-top:18px;">
-      <div class="tod-card tod-morning" onclick="awardStar(1,'You learned about Morning!')">
-        <span class="icon">🌅</span>
-        <strong>Morning</strong>
-        <div style="font-size:0.8rem;margin-top:4px;">Sun rises in the East. Our day begins!</div>
-      </div>
-      <div class="tod-card tod-noon" onclick="awardStar(1,'You learned about Noon!')">
-        <span class="icon">☀️</span>
-        <strong>Noon</strong>
-        <div style="font-size:0.8rem;margin-top:4px;">Sun is right over our head. 12:00 in the day!</div>
-      </div>
-      <div class="tod-card tod-afternoon" onclick="awardStar(1,'You learned about Afternoon!')">
-        <span class="icon">🌤️</span>
-        <strong>Afternoon</strong>
-        <div style="font-size:0.8rem;margin-top:4px;">The time between noon and evening.</div>
-      </div>
-      <div class="tod-card tod-evening" onclick="awardStar(1,'You learned about Evening!')">
-        <span class="icon">🌇</span>
-        <strong>Evening</strong>
-        <div style="font-size:0.8rem;margin-top:4px;">Sun sets in the West. The sky turns orange!</div>
-      </div>
-      <div class="tod-card tod-night" onclick="awardStar(1,'You learned about Night!')">
-        <span class="icon">🌙</span>
-        <strong>Night</strong>
-        <div style="font-size:0.8rem;margin-top:4px;">Stars come out. Time to sleep! 12:00 at night = midnight.</div>
+    <div class="ampm-flip" onclick="this.classList.toggle('flipped')">
+      <div class="ampm-inner">
+        <div class="af pm"><div class="abig">p.m.</div><div style="font-size:.85rem;margin-top:3px">Tap to flip!</div></div>
+        <div class="ab pm2"><div class="abig">🌇→🌙</div><div style="font-size:.82rem;margin-top:5px;text-align:center;">Noon to Midnight<br>12:00pm → 12:00am</div></div>
       </div>
     </div>
   </div>
-
-  <div class="card">
-    <h2>⏱️ Time Units</h2>
-    <ul class="learn-list">
-      <li data-icon="⏱️">60 seconds = 1 minute</li>
-      <li data-icon="🕐">60 minutes = 1 hour</li>
-      <li data-icon="🌞">24 hours = 1 day</li>
-      <li data-icon="📅">7 days = 1 week</li>
-      <li data-icon="🗓️">4 weeks (+ 2-3 days) = 1 month</li>
-      <li data-icon="📆">12 months = 1 year</li>
-      <li data-icon="🗓️">1 year = 365 days (or 366 in a leap year!)</li>
-    </ul>
-    <div class="fact-box">💡 A day is divided into morning, noon, afternoon, evening and night!</div>
-  </div>
-
-  <div class="card">
-    <h2>🕐 A.M. & P.M.</h2>
-    <p>We use <strong>a.m.</strong> and <strong>p.m.</strong> to tell if it's before or after noon.</p>
-    <div class="ampm-cards">
-      <div class="ampm-card am-card">
-        <div class="big">a.m.</div>
-        <div>Midnight → Noon</div>
-        <div style="font-size:0.8rem;margin-top:6px;">🌙 12:00 midnight to ☀️ 12:00 noon</div>
-      </div>
-      <div class="ampm-card pm-card">
-        <div class="big">p.m.</div>
-        <div>Noon → Midnight</div>
-        <div style="font-size:0.8rem;margin-top:6px;">☀️ 12:00 noon to 🌙 12:00 midnight</div>
-      </div>
-    </div>
-    <div class="fact-box" style="margin-top:14px;">💡 Noon (12:00 in the day) and Midnight (12:00 at night) are special times!</div>
-  </div>
-
+  <div class="fact-box" style="margin-top:13px;">💡 <strong>Noon</strong> = 12:00 midday &nbsp;|&nbsp; <strong>Midnight</strong> = 12:00 at night</div>
+</div>
 </div>
 
-<!-- ========== CLOCK PANEL ========== -->
+<!-- CLOCK -->
 <div id="clock-panel" class="panel">
-  <div class="card">
-    <h2>🕐 Interactive Clock</h2>
-    <p>Click the buttons to change the time. Watch the hands move!</p>
-    <div class="clock-container">
-      <div class="clock-svg-wrap">
-        <svg id="interactive-clock" width="240" height="240" viewBox="0 0 240 240">
-          <!-- Clock face -->
-          <circle cx="120" cy="120" r="115" fill="white" stroke="#E0D0F8" stroke-width="6"/>
-          <circle cx="120" cy="120" r="108" fill="url(#clockGrad)"/>
-          <defs>
-            <radialGradient id="clockGrad" cx="40%" cy="35%">
-              <stop offset="0%" stop-color="#f3e8ff"/>
-              <stop offset="100%" stop-color="#e8d8ff"/>
-            </radialGradient>
-          </defs>
-          <!-- Hour markers -->
-          <g id="hour-markers"></g>
-          <!-- Numbers -->
-          <g id="clock-numbers"></g>
-          <!-- Hour hand -->
-          <line id="hour-hand" x1="120" y1="120" x2="120" y2="68" stroke="#5c35a0" stroke-width="7" stroke-linecap="round"/>
-          <!-- Minute hand -->
-          <line id="minute-hand" x1="120" y1="120" x2="120" y2="48" stroke="#FF7EB3" stroke-width="4.5" stroke-linecap="round"/>
-          <!-- Center -->
-          <circle cx="120" cy="120" r="7" fill="#5c35a0"/>
-        </svg>
-      </div>
-      <div class="clock-time-display" id="clock-time-text">8:00</div>
-      <div class="clock-label" id="clock-ampm-label">a.m.</div>
-      <div class="clock-controls">
-        <button class="clock-btn" onclick="changeHour(-1)">◀ Hour</button>
-        <button class="clock-btn" onclick="changeHour(1)">Hour ▶</button>
-        <button class="clock-btn" onclick="changeMin(-5)">◀ 5 Min</button>
-        <button class="clock-btn" onclick="changeMin(5)">5 Min ▶</button>
-        <button class="clock-btn" onclick="setNow()">🕐 Live Time</button>
-      </div>
-    </div>
-    <div class="fact-box" style="margin-top:16px;">
-      💡 The <strong>shorter hand</strong> = hours &nbsp;|&nbsp; The <strong>longer hand</strong> = minutes
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>🎯 Clock Reading Challenge</h2>
-    <p>What time does this clock show? Pick the right answer!</p>
-    <div class="clock-quiz-wrap" id="clock-quiz-wrap">
-      <svg id="cq-clock" width="180" height="180" viewBox="0 0 240 240">
-        <circle cx="120" cy="120" r="115" fill="white" stroke="#E0D0F8" stroke-width="6"/>
-        <circle cx="120" cy="120" r="108" fill="#f3e8ff"/>
-        <g id="cq-numbers"></g>
-        <line id="cq-hour" x1="120" y1="120" x2="120" y2="68" stroke="#5c35a0" stroke-width="7" stroke-linecap="round"/>
-        <line id="cq-minute" x1="120" y1="120" x2="120" y2="48" stroke="#FF7EB3" stroke-width="4.5" stroke-linecap="round"/>
-        <circle cx="120" cy="120" r="7" fill="#5c35a0"/>
+<div class="card">
+  <h2>🕐 Interactive Clock</h2>
+  <p class="spin-hint">☝️ Drag around the clock face OR use the buttons!</p>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:13px;">
+    <div class="clock-svg-wrap" id="clock-wrap">
+      <svg id="interactive-clock" width="230" height="230" viewBox="0 0 240 240">
+        <defs><radialGradient id="cg" cx="38%" cy="33%"><stop offset="0%" stop-color="#f3e8ff"/><stop offset="100%" stop-color="#ddd0f8"/></radialGradient></defs>
+        <circle cx="120" cy="120" r="116" fill="white" stroke="#E0D0F8" stroke-width="5"/>
+        <circle cx="120" cy="120" r="109" fill="url(#cg)"/>
+        <g id="tick-marks"></g>
+        <g id="clock-numbers"></g>
+        <line id="hour-hand" x1="120" y1="120" x2="120" y2="70" stroke="#5c35a0" stroke-width="7" stroke-linecap="round"/>
+        <line id="minute-hand" x1="120" y1="120" x2="120" y2="46" stroke="#FF7EB3" stroke-width="4.5" stroke-linecap="round"/>
+        <line id="second-hand" x1="120" y1="120" x2="120" y2="38" stroke="#FF5252" stroke-width="2.5" stroke-linecap="round" style="display:none"/>
+        <circle cx="120" cy="120" r="7" fill="#5c35a0"/><circle cx="120" cy="120" r="3" fill="white"/>
       </svg>
-      <div class="quiz-options" id="cq-options" style="width:100%;max-width:360px;"></div>
-      <div class="quiz-feedback" id="cq-feedback"></div>
+    </div>
+    <div class="clock-time-display" id="clock-time-text">12:00</div>
+    <div style="font-size:.95rem;font-weight:700;color:#9C6FDE;" id="clock-ampm-label">p.m.</div>
+    <div class="clock-controls">
+      <button class="cbtn" onclick="changeHour(-1)">◀ Hour</button>
+      <button class="cbtn" onclick="changeHour(1)">Hour ▶</button>
+      <button class="cbtn" onclick="changeMin(-5)">◀ 5 min</button>
+      <button class="cbtn" onclick="changeMin(5)">5 min ▶</button>
+      <button class="cbtn" onclick="setNow()">⏱ Live!</button>
+      <button class="cbtn" onclick="toggleSec()">🔴 Seconds</button>
     </div>
   </div>
+  <div class="fact-box" style="margin-top:14px;">💡 <strong>Short hand</strong> = hours &nbsp;|&nbsp; <strong>Long hand</strong> = minutes &nbsp;|&nbsp; <strong>Red</strong> = seconds</div>
+</div>
+<div class="card">
+  <h2>🎯 Set the Time Challenge!</h2>
+  <p>Use the clock above to show the target time, then check!</p>
+  <div class="set-time-card">
+    <div style="font-size:.95rem;font-weight:700;color:#5c35a0;">Set the clock to:</div>
+    <div class="target-t" id="target-time">--:--</div>
+    <button class="cbtn" onclick="checkSetTime()" style="margin:4px auto;display:block;">✅ Check!</button>
+    <div id="set-time-result" style="font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;min-height:30px;margin-top:6px;"></div>
+  </div>
+</div>
+<div class="card">
+  <h2>🖼️ Clock Reading Challenge</h2>
+  <p style="margin-bottom:7px;">What time does this clock show?</p>
+  <div class="cq-wrap">
+    <svg id="cq-clock" width="175" height="175" viewBox="0 0 240 240">
+      <circle cx="120" cy="120" r="116" fill="white" stroke="#E0D0F8" stroke-width="5"/>
+      <circle cx="120" cy="120" r="109" fill="#f3e8ff"/>
+      <g id="cq-numbers"></g>
+      <line id="cq-hour" x1="120" y1="120" x2="120" y2="70" stroke="#5c35a0" stroke-width="7" stroke-linecap="round"/>
+      <line id="cq-minute" x1="120" y1="120" x2="120" y2="46" stroke="#FF7EB3" stroke-width="4.5" stroke-linecap="round"/>
+      <circle cx="120" cy="120" r="7" fill="#5c35a0"/>
+    </svg>
+    <div class="quiz-opts" id="cq-options" style="width:100%;max-width:330px;"></div>
+    <div class="quiz-fb" id="cq-feedback"></div>
+  </div>
+</div>
 </div>
 
-<!-- ========== CALENDAR PANEL ========== -->
+<!-- CALENDAR -->
 <div id="calendar-panel" class="panel">
-  <div class="card">
-    <h2>📅 February 2026</h2>
-    <p style="margin-bottom:12px;">This is the current month! Today is highlighted. <strong>February has 28 days this year</strong> (2026 is not a leap year).</p>
-    <div class="cal-grid" id="cal-grid"></div>
-    <div class="fact-box">💡 Today is <strong id="today-label"></strong>! Tap any date on the calendar!</div>
+<div class="card">
+  <h2>📅 February 2026</h2>
+  <p style="margin-bottom:9px;">Today is highlighted! <strong>Click any date</strong> to find out what day of the week it is.</p>
+  <div class="cal-grid" id="cal-grid"></div>
+  <div class="fact-box">📍 Today: <strong id="today-label"></strong></div>
+</div>
+<div class="card">
+  <h2>🗓️ Days of the Week — Drag to Order!</h2>
+  <p style="margin-bottom:9px;">Drag the days into the correct order! <strong>Sunday goes first.</strong></p>
+  <div class="drag-match">
+    <div class="drag-src" id="day-source"></div>
+    <div class="drag-tgt" id="day-targets"></div>
   </div>
-
-  <div class="card">
-    <h2>📖 Days of the Week</h2>
-    <div class="section-title">✏️ The 7 Days</div>
-    <div class="days-row" id="days-row"></div>
-    <div class="fact-box" style="margin-top:12px;">💡 There are <strong>7 days</strong> in a week. Sunday comes before Monday!</div>
-  </div>
-
-  <div class="card">
-    <h2>🗓️ All 12 Months</h2>
-    <p style="margin-bottom:14px;">Click a month to see how many days it has!</p>
-    <div class="months-grid" id="months-grid"></div>
-
-    <div class="leap-year-box" style="margin-top:16px;">
-      <div class="section-title">🐸 What is a Leap Year?</div>
-      <p>Every <strong>4 years</strong>, February gets an extra day — <strong>29 days</strong> instead of 28! That year is called a <strong>Leap Year</strong> and has <strong>366 days</strong>.</p>
-    </div>
-
-    <div class="poem-box" style="margin-top:14px;">
-      <div class="poem-title">🎵 Days in a Month Poem</div>
-      Thirty days have September,<br>
-      April, June and November,<br>
-      All the rest have thirty-one,<br>
-      Except February alone,<br>
-      Which has only twenty-eight days,<br>
-      And twenty-nine in each leap year.
-    </div>
+  <button class="next-btn" onclick="checkDayOrder()" style="margin-top:10px;background:linear-gradient(135deg,#66BB6A,#26A69A);">✅ Check Order!</button>
+  <div id="day-order-result" style="text-align:center;font-family:'Baloo 2',cursive;font-size:1.15rem;font-weight:800;margin-top:9px;min-height:28px;"></div>
+</div>
+<div class="card">
+  <h2>🗓️ All 12 Months — Tap Each!</h2>
+  <div class="months-grid" id="months-grid"></div>
+  <div id="month-info-box" style="min-height:46px;margin-top:11px;text-align:center;font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;color:#5c35a0;"></div>
+  <div class="leap-box"><div class="section-title">🐸 Leap Year!</div><p>Every <strong>4th year</strong>, February gets <strong>29 days</strong> — that year has <strong>366 days</strong> and is called a <strong>Leap Year!</strong> Next leap year: 2028.</p></div>
+  <div class="poem-box">
+    <div class="section-title" style="margin-bottom:4px;">🎵 Days-in-a-Month Poem — tap each line!</div>
+    <div id="poem-lines"></div>
   </div>
 </div>
+</div>
 
-<!-- ========== DIRECTIONS PANEL ========== -->
+<!-- DIRECTIONS -->
 <div id="directions-panel" class="panel">
-  <div class="card">
-    <h2>🧭 What are Directions?</h2>
-    <p>Directions help us find our way! When we travel, we need to know which way to go so we don't get lost.</p>
-    <ul class="learn-list" style="margin-top:14px;">
-      <li data-icon="📍">A <strong>direction</strong> is the path we take when moving from one place to another.</li>
-      <li data-icon="🌞">The Sun rises in the <strong>East</strong> and sets in the <strong>West</strong>.</li>
-      <li data-icon="🤲">Words like <strong>left, right, near, far, up, down, front, behind</strong> help us describe where things are.</li>
-    </ul>
-  </div>
-
-  <div class="card">
-    <h2>🌍 The Four Main Directions</h2>
-    <p style="margin-bottom:16px;">There are four main directions. They never change! Click each to learn:</p>
-    <div class="compass-container">
-      <div style="position:relative;width:200px;height:200px;">
-        <svg viewBox="0 0 200 200" width="200" height="200">
-          <circle cx="100" cy="100" r="95" fill="#f3e8ff" stroke="#9C6FDE" stroke-width="4"/>
-          <!-- compass lines -->
-          <line x1="100" y1="10" x2="100" y2="190" stroke="#ccc" stroke-width="2"/>
-          <line x1="10" y1="100" x2="190" y2="100" stroke="#ccc" stroke-width="2"/>
-          <!-- N arrow -->
-          <polygon points="100,15 93,55 100,45 107,55" fill="#0288D1"/>
-          <!-- S arrow -->
-          <polygon points="100,185 93,145 100,155 107,145" fill="#E64A19"/>
-          <!-- E arrow -->
-          <polygon points="185,100 145,93 155,100 145,107" fill="#388E3C"/>
-          <!-- W arrow -->
-          <polygon points="15,100 55,93 45,100 55,107" fill="#7B1FA2"/>
-          <text x="100" y="32" text-anchor="middle" font-family="Baloo 2" font-weight="800" font-size="22" fill="#0288D1">N</text>
-          <text x="100" y="178" text-anchor="middle" font-family="Baloo 2" font-weight="800" font-size="22" fill="#E64A19">S</text>
-          <text x="170" y="106" text-anchor="middle" font-family="Baloo 2" font-weight="800" font-size="22" fill="#388E3C">E</text>
-          <text x="30" y="106" text-anchor="middle" font-family="Baloo 2" font-weight="800" font-size="22" fill="#7B1FA2">W</text>
-          <circle cx="100" cy="100" r="10" fill="#5c35a0"/>
-        </svg>
+<div class="card">
+  <h2>🧭 Spin the Compass!</h2>
+  <p style="margin-bottom:12px;"><strong>Spin the compass</strong> by dragging. Click each direction label to learn!</p>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:14px;">
+    <div class="compass-outer" id="compass-outer">
+      <div class="compass-inner" id="compass-inner">
+        <div style="display:flex;flex-direction:column;align-items:center;position:relative;height:100%;justify-content:center;">
+          <div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:40px solid #E64A19;"></div>
+          <div style="width:11px;height:11px;background:#5c35a0;border-radius:50%;margin:-1px 0;z-index:2;"></div>
+          <div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:40px solid #bbb;"></div>
+        </div>
+        <span class="clabel cn" onclick="showDirInfo('North','⬆️ North — When you face the rising Sun (East), your LEFT hand points North!')">N</span>
+        <span class="clabel cs" onclick="showDirInfo('South','⬇️ South — When you face East, your RIGHT hand points South!')">S</span>
+        <span class="clabel ce" onclick="showDirInfo('East','➡️ East — The Sun RISES in the East every morning!')">E</span>
+        <span class="clabel cw" onclick="showDirInfo('West','⬅️ West — The Sun SETS in the West every evening!')">W</span>
       </div>
     </div>
-
-    <div class="compass-dirs">
-      <div class="dir-card dir-n" onclick="awardStar(1,'You learned North!')">
-        <span class="dir-letter">N</span>
-        <strong style="font-size:1.2rem;">⬆️ North</strong>
-        <p>When you face East (rising Sun), your left hand points North.</p>
-      </div>
-      <div class="dir-card dir-s" onclick="awardStar(1,'You learned South!')">
-        <span class="dir-letter">S</span>
-        <strong style="font-size:1.2rem;">⬇️ South</strong>
-        <p>When you face East (rising Sun), your right hand points South.</p>
-      </div>
-      <div class="dir-card dir-e" onclick="awardStar(1,'You learned East!')">
-        <span class="dir-letter">E</span>
-        <strong style="font-size:1.2rem;">➡️ East</strong>
-        <p>The Sun rises in the East every morning. Face the rising Sun!</p>
-      </div>
-      <div class="dir-card dir-w" onclick="awardStar(1,'You learned West!')">
-        <span class="dir-letter">W</span>
-        <strong style="font-size:1.2rem;">⬅️ West</strong>
-        <p>The Sun sets in the West every evening. Your back faces West.</p>
-      </div>
+    <div class="dir-cards" style="width:100%;">
+      <div class="dir-card dir-n" onclick="showDirInfo('North','⬆️ North — When you face the rising Sun (East), your LEFT hand points North. The compass always points North!')"><span class="dir-letter">N</span><strong>⬆️ North</strong><p style="font-size:.8rem;margin-top:3px">Left hand when facing East</p></div>
+      <div class="dir-card dir-s" onclick="showDirInfo('South','⬇️ South — When you face East, your RIGHT hand points South!')"><span class="dir-letter">S</span><strong>⬇️ South</strong><p style="font-size:.8rem;margin-top:3px">Right hand when facing East</p></div>
+      <div class="dir-card dir-e" onclick="showDirInfo('East','➡️ East — The Sun rises in the East every single morning!')"><span class="dir-letter">E</span><strong>➡️ East</strong><p style="font-size:.8rem;margin-top:3px">Sun rises here every day</p></div>
+      <div class="dir-card dir-w" onclick="showDirInfo('West','⬅️ West — The Sun sets in the West every evening. Your back faces West when you face East!')"><span class="dir-letter">W</span><strong>⬅️ West</strong><p style="font-size:.8rem;margin-top:3px">Sun sets here every day</p></div>
     </div>
-    <div class="fact-box" style="margin-top:16px;">🧲 A <strong>compass</strong> always points to the North. Travellers use it to find directions!</div>
-  </div>
-
-  <div class="card">
-    <h2>🙋 Position Words</h2>
-    <p style="margin-bottom:14px;">We also use these words to say where something is:</p>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;">
-      <span class="info-pill">👈 Left</span>
-      <span class="info-pill">👉 Right</span>
-      <span class="info-pill">⬆️ Up / Above</span>
-      <span class="info-pill">⬇️ Down / Below</span>
-      <span class="info-pill">🤏 Near</span>
-      <span class="info-pill">📍 Far</span>
-      <span class="info-pill">🚶 Front</span>
-      <span class="info-pill">🔙 Behind</span>
-    </div>
-    <div class="fact-box" style="margin-top:14px;">💡 Right and left depend on which way you are facing. North, South, East and West always stay the same!</div>
-  </div>
-
-  <div class="card">
-    <h2>🗺️ Giving Directions</h2>
-    <p style="margin-bottom:14px;">Help Sonu get home from the park! Read the steps:</p>
-    <div id="direction-steps">
-      <div class="step-card" style="background:rgba(255,255,255,0.85);border-radius:14px;padding:12px 16px;margin-bottom:8px;border-left:5px solid #4FC3F7;font-weight:700;cursor:pointer;" onclick="highlightStep(this,1)">
-        1️⃣ Go <strong>straight</strong> on the main street.
-      </div>
-      <div class="step-card" style="background:rgba(255,255,255,0.85);border-radius:14px;padding:12px 16px;margin-bottom:8px;border-left:5px solid #FF7EB3;font-weight:700;cursor:pointer;" onclick="highlightStep(this,2)">
-        2️⃣ Turn <strong>right</strong> at the milk booth.
-      </div>
-      <div class="step-card" style="background:rgba(255,255,255,0.85);border-radius:14px;padding:12px 16px;margin-bottom:8px;border-left:5px solid #66BB6A;font-weight:700;cursor:pointer;" onclick="highlightStep(this,3)">
-        3️⃣ Turn <strong>left</strong> when you reach the mall.
-      </div>
-      <div class="step-card" style="background:rgba(255,255,255,0.85);border-radius:14px;padding:12px 16px;margin-bottom:8px;border-left:5px solid #FFD600;font-weight:700;cursor:pointer;" onclick="highlightStep(this,4)">
-        4️⃣ Go <strong>past</strong> the school and you'll reach home! 🏠
-      </div>
-    </div>
+    <div class="fact-box" style="width:100%;">🧲 A <strong>compass</strong> always points to the <strong>North</strong> — travellers use it to find their way!</div>
   </div>
 </div>
+<div class="card">
+  <h2>🙋 Position Words — Move the Girl!</h2>
+  <div class="pos-scene" id="pos-scene">
+    <div class="pos-object" id="pos-tree" style="right:16px;top:12px">🌳</div>
+    <div class="pos-object" id="pos-girl" style="left:42%;top:38%;transform:translateX(-50%)">👧</div>
+    <div class="pos-object" id="pos-boy" style="left:16px;bottom:20px">👦</div>
+  </div>
+  <div class="pos-word-btns">
+    <button class="pos-btn" onclick="moveGirl('left')">👈 Left</button>
+    <button class="pos-btn" onclick="moveGirl('right')">👉 Right</button>
+    <button class="pos-btn" onclick="moveGirl('up')">⬆️ Up</button>
+    <button class="pos-btn" onclick="moveGirl('down')">⬇️ Down</button>
+    <button class="pos-btn" onclick="moveGirl('near')">🤏 Near tree</button>
+    <button class="pos-btn" onclick="moveGirl('far')">📍 Far</button>
+    <button class="pos-btn" onclick="moveGirl('front')">🚶 Front of boy</button>
+    <button class="pos-btn" onclick="moveGirl('behind')">🔙 Behind boy</button>
+    <button class="pos-btn" onclick="moveGirl('above')">⬆ Above all</button>
+    <button class="pos-btn" onclick="moveGirl('below')">⬇ Below</button>
+    <button class="pos-btn" onclick="moveGirl('reset')" style="background:#f3e8ff;">🔄 Reset</button>
+  </div>
+  <div id="pos-label" style="text-align:center;font-family:'Baloo 2',cursive;font-size:1.05rem;font-weight:800;color:#5c35a0;margin-top:7px;min-height:26px;"></div>
+</div>
+<div class="card">
+  <h2>🗺️ Maze — Help Sonu Get Home!</h2>
+  <p style="margin-bottom:7px;">Use arrow buttons to guide 🧒 Sonu to the 🏠 home!</p>
+  <div class="maze-wrap"><canvas class="maze-canvas" id="maze-canvas" width="400" height="300"></canvas></div>
+  <div class="maze-controls">
+    <button class="mbtn" onclick="mazeMovePlayer(0,-1)">⬆️</button>
+    <button class="mbtn" onclick="mazeMovePlayer(-1,0)">⬅️</button>
+    <button class="mbtn" onclick="mazeMovePlayer(1,0)">➡️</button>
+    <button class="mbtn" onclick="mazeMovePlayer(0,1)">⬇️</button>
+    <button class="mbtn" onclick="resetMaze()" style="background:linear-gradient(135deg,#FF7EB3,#FF4081);">🔄 Reset</button>
+  </div>
+  <div id="maze-result" style="text-align:center;font-family:'Baloo 2',cursive;font-size:1.15rem;font-weight:800;color:#5c35a0;margin-top:7px;min-height:26px;"></div>
+</div>
+</div>
 
-<!-- ========== QUIZ PANEL ========== -->
+<!-- QUIZ -->
 <div id="quiz-panel" class="panel">
-  <div class="card">
-    <h2>🎯 Knowledge Quiz!</h2>
-    <p style="margin-bottom:16px;">Answer all questions to earn stars and unlock badges! 🌟</p>
-    <div class="quiz-progress" id="quiz-progress"></div>
-    <div class="quiz-card">
-      <div class="quiz-question" id="quiz-q"></div>
-      <div class="quiz-options" id="quiz-opts"></div>
-      <div class="quiz-feedback" id="quiz-feedback"></div>
-      <button class="next-btn" id="next-btn" onclick="nextQuestion()" style="display:none;">Next Question ➡️</button>
-    </div>
-    <div style="text-align:center;margin-top:16px;">
-      <button class="next-btn" onclick="restartQuiz()" style="background:linear-gradient(135deg,#66BB6A,#26A69A);">🔄 Restart Quiz</button>
-    </div>
+<div class="card">
+  <h2>🎯 Knowledge Quiz!</h2>
+  <p style="margin-bottom:12px;">Answer correctly to earn ⭐ stars and unlock badges!</p>
+  <div class="quiz-progress" id="quiz-progress"></div>
+  <div style="background:var(--card);border-radius:18px;padding:20px;box-shadow:var(--shadow);border:2px solid rgba(255,255,255,.85);">
+    <div class="quiz-q" id="quiz-q"></div>
+    <div class="quiz-opts" id="quiz-opts"></div>
+    <div class="quiz-fb" id="quiz-feedback"></div>
+    <button class="next-btn" id="next-btn" onclick="nextQuestion()" style="display:none;">Next ➡️</button>
+  </div>
+  <div style="text-align:center;margin-top:12px;">
+    <button class="next-btn" onclick="initQuiz()" style="background:linear-gradient(135deg,#66BB6A,#26A69A);">🔄 Restart Quiz</button>
   </div>
 </div>
+</div>
 
-<!-- ========== REWARDS PANEL ========== -->
+<!-- REWARDS -->
 <div id="rewards-panel" class="panel">
-  <div class="card">
-    <h2>🏆 Your Badges!</h2>
-    <p style="margin-bottom:20px;">Earn stars by learning and completing the quiz. Unlock all badges!</p>
-    <div class="star-bar" style="max-width:250px;margin:0 auto 24px;">
-      <span class="beat">⭐</span>
-      <span>Total Stars:</span>
-      <span class="star-count" id="star-display-2">0</span>
-    </div>
-    <div class="badges-grid" id="badges-grid"></div>
+<div class="card">
+  <h2>🏆 Your Badges!</h2>
+  <p style="margin-bottom:14px;">Earn stars by playing and completing the quiz. Click any badge to see its details!</p>
+  <div class="starbar" style="display:inline-flex;margin:0 auto 18px;">
+    <span class="beat">⭐</span><span>Total Stars:</span>
+    <span class="star-num" id="star-display-2">0</span>
   </div>
+  <div class="badges-grid" id="badges-grid"></div>
+</div>
 </div>
 
-<!-- Modal -->
 <div class="modal-overlay" id="modal">
   <div class="modal-box">
-    <div style="font-size:4rem;" id="modal-icon">🎉</div>
+    <div style="font-size:3.5rem;" id="modal-icon">🎉</div>
     <h2 id="modal-title">Awesome!</h2>
-    <p id="modal-msg">You earned a star!</p>
-    <button class="modal-close" onclick="closeModal()">Yay! ⭐</button>
+    <p id="modal-msg" style="font-size:1rem;color:#555;"></p>
+    <button class="modal-close" onclick="closeModal()">Yay! ✨</button>
   </div>
 </div>
+<div class="toast" id="toast"></div>
 
 <script>
-// ===== STATE =====
-let stars = parseInt(localStorage.getItem('stars') || '0');
-let unlockedBadges = JSON.parse(localStorage.getItem('badges') || '[]');
-let quizIndex = 0;
-let quizScore = 0;
-let quizAnswered = false;
-let todTimesLearned = [];
+var stars=parseInt(localStorage.getItem("stars")||"0");
+var unlockedBadges=JSON.parse(localStorage.getItem("badges")||"[]");
+var monthsVisited=new Set(JSON.parse(localStorage.getItem("mv")||"[]"));
+var daysVisited=new Set(JSON.parse(localStorage.getItem("dv")||"[]"));
+var clockH=12,clockM=0,secOn=false,secInt=null;
+var quizIndex=0,quizScore=0,quizAnswered=false,shuffledQ=[];
+var setTimeTgt={h:3,m:0,ampm:"a.m."};
+var dirExplored=new Set();
+var clockClicks=0;
+var cqIdx=0;
+var dayOrderState=Array(7).fill(null);
+var mazeGrid=[],playerX=0,playerY=0,mazeWon=false;
+var MAZE_COLS=8,MAZE_ROWS=6,CELL=50;
 
-// ===== BADGES =====
-const BADGES = [
-  { id:'morning', icon:'🌅', name:'Morning Star', desc:'Learned about Morning', req:1 },
-  { id:'clock1', icon:'🕐', name:'Clock Watcher', desc:'Used the clock 5 times', req:5 },
-  { id:'quiz5', icon:'🎯', name:'Quiz Starter', desc:'Answered 5 questions', req:5 },
-  { id:'quiz_all', icon:'🏅', name:'Quiz Champion', desc:'Completed full quiz!', req:20 },
-  { id:'directions', icon:'🧭', name:'Explorer', desc:'Learned all directions', req:4 },
-  { id:'calendar', icon:'📅', name:'Calendar Kid', desc:'Explored all months', req:12 },
-  { id:'star10', icon:'🌟', name:'Star Collector', desc:'Earned 10 stars!', req:10 },
-  { id:'star25', icon:'💫', name:'Super Learner', desc:'Earned 25 stars!', req:25 },
-  { id:'star50', icon:'🚀', name:'Space Explorer', desc:'Earned 50 stars!', req:50 },
+function saveState(){localStorage.setItem("stars",stars);localStorage.setItem("badges",JSON.stringify(unlockedBadges));localStorage.setItem("mv",JSON.stringify([...monthsVisited]));localStorage.setItem("dv",JSON.stringify([...daysVisited]));}
+
+// BADGES
+var BADGES=[
+  {id:"first_star",icon:"🌟",name:"First Star!",desc:"Earned your very first star"},
+  {id:"clock5",icon:"🕐",name:"Clock Watcher",desc:"Explored the clock many times"},
+  {id:"months_all",icon:"📅",name:"Month Master",desc:"Visited all 12 months"},
+  {id:"quiz_half",icon:"🎯",name:"Quiz Starter",desc:"Got 5 quiz questions right"},
+  {id:"quiz_all",icon:"🏅",name:"Quiz Champion",desc:"Completed the full quiz!"},
+  {id:"perfect",icon:"💎",name:"Perfect Score",desc:"100% correct on the quiz!"},
+  {id:"star10",icon:"⭐",name:"Star Collector",desc:"Earned 10 stars"},
+  {id:"star25",icon:"💫",name:"Super Learner",desc:"Earned 25 stars"},
+  {id:"star50",icon:"🚀",name:"Space Explorer",desc:"Earned 50 stars"},
+  {id:"maze_win",icon:"🗺️",name:"Pathfinder",desc:"Solved the directions maze!"},
+  {id:"days_order",icon:"📆",name:"Week Wizard",desc:"Got the days of the week right"},
+  {id:"all_dir",icon:"🧭",name:"Direction Hero",desc:"Explored all 4 main directions"},
 ];
 
-function saveState() {
-  localStorage.setItem('stars', stars);
-  localStorage.setItem('badges', JSON.stringify(unlockedBadges));
+function awardStar(n){
+  stars+=n;
+  var el=document.getElementById("star-display");
+  el.textContent=stars;el.classList.add("pop");
+  setTimeout(function(){el.classList.remove("pop");},350);
+  document.getElementById("star-display-2").textContent=stars;
+  checkBadges();saveState();
+  if(n>0)spawnConfetti(14);
 }
-
-// ===== STARS =====
-function awardStar(n, msg='', showModal=true) {
-  stars += n;
-  document.getElementById('star-display').textContent = stars;
-  document.getElementById('star-display-2').textContent = stars;
-  checkBadges();
-  saveState();
-  spawnConfetti();
-  if (showModal && msg) showModalMsg('⭐', 'You earned a star!', msg);
-}
-
-function spawnConfetti(count=20) {
-  const colors = ['#FF7EB3','#FFD600','#4FC3F7','#66BB6A','#9C6FDE','#FF8C42'];
-  for (let i=0;i<count;i++) {
-    const el = document.createElement('div');
-    el.className = 'confetti-piece';
-    el.style.left = Math.random()*100 + 'vw';
-    el.style.top = '-20px';
-    el.style.background = colors[Math.floor(Math.random()*colors.length)];
-    el.style.animationDuration = (1+Math.random()*1.5)+'s';
-    el.style.animationDelay = Math.random()*0.5+'s';
-    el.style.borderRadius = Math.random()>0.5?'50%':'2px';
-    document.body.appendChild(el);
-    setTimeout(()=>el.remove(), 2500);
-  }
-}
-
-// ===== BADGES =====
-function checkBadges() {
-  let newBadge = null;
-  if (stars >= 1 && !unlockedBadges.includes('morning')) { unlockedBadges.push('morning'); newBadge='morning'; }
-  if (stars >= 5 && !unlockedBadges.includes('clock1')) { unlockedBadges.push('clock1'); newBadge='clock1'; }
-  if (stars >= 5 && !unlockedBadges.includes('quiz5')) { unlockedBadges.push('quiz5'); newBadge='quiz5'; }
-  if (stars >= 10 && !unlockedBadges.includes('star10')) { unlockedBadges.push('star10'); newBadge='star10'; }
-  if (stars >= 20 && !unlockedBadges.includes('quiz_all')) { unlockedBadges.push('quiz_all'); newBadge='quiz_all'; }
-  if (stars >= 25 && !unlockedBadges.includes('star25')) { unlockedBadges.push('star25'); newBadge='star25'; }
-  if (stars >= 50 && !unlockedBadges.includes('star50')) { unlockedBadges.push('star50'); newBadge='star50'; }
+function checkBadges(){
+  var nb=null;
+  function give(id){if(!unlockedBadges.includes(id)){unlockedBadges.push(id);nb=id;}}
+  if(stars>=1)give("first_star");
+  if(clockClicks>=5)give("clock5");
+  if(monthsVisited.size>=12)give("months_all");
+  if(quizScore>=5)give("quiz_half");
+  if(stars>=10)give("star10");
+  if(stars>=25)give("star25");
+  if(stars>=50)give("star50");
+  if(dirExplored.size>=4)give("all_dir");
+  if(nb){var b=BADGES.find(function(x){return x.id===nb;});if(b){showToast(b.icon+" Badge Unlocked: "+b.name+"!");renderBadges();}}
+  document.getElementById("badge-count").textContent=unlockedBadges.length;
   renderBadges();
-  if (newBadge) {
-    const b = BADGES.find(x=>x.id===newBadge);
-    if (b) setTimeout(()=>showModalMsg(b.icon,'Badge Unlocked!',b.name+' — '+b.desc), 800);
-  }
 }
-
-function renderBadges() {
-  const grid = document.getElementById('badges-grid');
-  grid.innerHTML = '';
-  BADGES.forEach(b => {
-    const unlocked = unlockedBadges.includes(b.id);
-    const div = document.createElement('div');
-    div.className = 'badge' + (unlocked?'':' locked') + (unlocked?' unlocked':'');
-    div.innerHTML = `
-      <div class="badge-icon">${b.icon}</div>
-      <div class="badge-name">${b.name}</div>
-      <div class="badge-desc">${b.desc}</div>
-      ${!unlocked?'<div class="lock-overlay">🔒</div>':''}
-    `;
-    grid.appendChild(div);
+function renderBadges(){
+  var g=document.getElementById("badges-grid");if(!g)return;g.innerHTML="";
+  BADGES.forEach(function(b){
+    var u=unlockedBadges.includes(b.id);
+    var d=document.createElement("div");d.className="badge"+(u?"":" locked");
+    d.innerHTML="<span class='bi'>"+b.icon+"</span><div class='bn'>"+b.name+"</div><div class='bd'>"+b.desc+"</div>"+(u?"":"<div class='lk'>🔒</div>");
+    d.onclick=function(){if(u)showModalMsg(b.icon,b.name,b.desc);else showToast("🔒 Keep playing to unlock!");};
+    g.appendChild(d);
   });
 }
 
-// ===== PANEL NAV =====
-function showPanel(id) {
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById(id+'-panel').classList.add('active');
-  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
-  event.target.classList.add('active');
-  if (id==='quiz') initQuiz();
-  if (id==='rewards') { renderBadges(); document.getElementById('star-display-2').textContent=stars; }
-  if (id==='calendar') renderCalendar();
-  if (id==='clock') renderClockNumbers();
+// TOAST/MODAL/CONFETTI
+var toastTimer;
+function showToast(msg){var t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.classList.remove("show");},2800);}
+function showModalMsg(icon,title,msg){document.getElementById("modal-icon").textContent=icon;document.getElementById("modal-title").textContent=title;document.getElementById("modal-msg").textContent=msg;document.getElementById("modal").classList.add("open");}
+function closeModal(){document.getElementById("modal").classList.remove("open");}
+function spawnConfetti(n){n=n||16;var colors=["#FF7EB3","#FFD600","#4FC3F7","#66BB6A","#9C6FDE","#FF8C42","#FF5252"];for(var i=0;i<n;i++){var el=document.createElement("div");el.className="conf";el.style.left=Math.random()*100+"vw";el.style.background=colors[Math.floor(Math.random()*colors.length)];el.style.animationDuration=(1+Math.random()*1.2)+"s";el.style.animationDelay=Math.random()*0.4+"s";el.style.borderRadius=Math.random()>.5?"50%":"2px";var s=(8+Math.random()*8)+"px";el.style.width=el.style.height=s;document.body.appendChild(el);setTimeout(function(){el.remove();},2200);}}
+function showStarCelebration(){spawnConfetti(30);showToast("⭐ You have "+stars+" stars! Keep it up!");}
+
+// PANEL NAV
+function showPanel(id,btn){
+  document.querySelectorAll(".panel").forEach(function(p){p.classList.remove("active");});
+  document.getElementById(id+"-panel").classList.add("active");
+  document.querySelectorAll("nav button").forEach(function(b){b.classList.remove("active");});
+  if(btn)btn.classList.add("active");
+  if(id==="clock"){renderClockNumbers();renderCQNumbers();renderClockQuiz();newSetTimeTgt();}
+  if(id==="calendar"){renderCalendar();}
+  if(id==="rewards"){renderBadges();document.getElementById("star-display-2").textContent=stars;}
+  if(id==="directions"){initMaze();}
+  if(id==="quiz"){initQuiz();}
 }
 
-// ===== MODAL =====
-function showModalMsg(icon, title, msg) {
-  document.getElementById('modal-icon').textContent = icon;
-  document.getElementById('modal-title').textContent = title;
-  document.getElementById('modal-msg').textContent = msg;
-  document.getElementById('modal').classList.add('open');
-}
-function closeModal() {
-  document.getElementById('modal').classList.remove('open');
-}
+// MASCOT
+var mq=["Hoot! Drag the sun across the sky! ☀️","You're doing great! 🦉","Try the quiz next!","Spin the compass!","Tap the month cards!","Click the time cards to learn more!"];var mqIdx=0;
+document.getElementById("mascot").onclick=function(){showToast("🦉 "+mq[mqIdx%mq.length]);mqIdx++;};
 
-// ===== SUN SCENE =====
-const sunPositions = {
-  morning: { left:'8%', top:'65%', emoji:'🌅' },
-  noon:    { left:'50%', top:'10%', emoji:'☀️' },
-  afternoon: { left:'65%', top:'35%', emoji:'🌤️' },
-  evening: { left:'88%', top:'65%', emoji:'🌇' },
-  night:   { left:'50%', top:'15%', emoji:'🌙' },
-};
-const sunBgs = {
-  morning: 'linear-gradient(180deg,#FFE082 0%,#87CEEB 50%,#5DBB63 70%,#5DBB63 100%)',
-  noon: 'linear-gradient(180deg,#87CEEB 0%,#87CEEB 70%,#5DBB63 70%,#5DBB63 100%)',
-  afternoon: 'linear-gradient(180deg,#B3E5FC 0%,#87CEEB 70%,#5DBB63 70%,#5DBB63 100%)',
-  evening: 'linear-gradient(180deg,#FF8A65 0%,#CE93D8 50%,#7B1FA2 70%,#1a1a4e 100%)',
-  night: 'linear-gradient(180deg,#1a1a4e 0%,#283593 50%,#3949AB 70%,#5DBB63 70%)',
-};
-function moveSun(tod, btn) {
-  const p = sunPositions[tod];
-  const sun = document.getElementById('sun-anim');
-  sun.style.left = p.left;
-  sun.style.top = p.top;
-  sun.textContent = p.emoji;
-  document.getElementById('sun-scene').style.background = sunBgs[tod];
-  document.querySelectorAll('.sun-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-}
-
-// ===== CLOCK =====
-let clockH = 8, clockM = 0;
-function renderClockNumbers() {
-  ['clock-numbers','cq-numbers'].forEach(id => {
-    const g = document.getElementById(id);
-    if (!g) return;
-    g.innerHTML = '';
-    for (let i=1;i<=12;i++) {
-      const angle = (i/12)*Math.PI*2 - Math.PI/2;
-      const x = 120 + Math.cos(angle)*82;
-      const y = 120 + Math.sin(angle)*82;
-      const t = document.createElementNS('http://www.w3.org/2000/svg','text');
-      t.setAttribute('x', x);
-      t.setAttribute('y', y);
-      t.setAttribute('text-anchor','middle');
-      t.setAttribute('dominant-baseline','middle');
-      t.setAttribute('font-family','Baloo 2');
-      t.setAttribute('font-weight','700');
-      t.setAttribute('font-size','16');
-      t.setAttribute('fill','#5c35a0');
-      t.textContent = i;
-      g.appendChild(t);
-    }
-  });
-  updateClockHands();
-  renderClockQuiz();
-}
-function updateClockHands() {
-  const hAngle = ((clockH%12) + clockM/60) / 12 * 360 - 90;
-  const mAngle = clockM/60*360 - 90;
-  setHand('hour-hand', hAngle, 52);
-  setHand('minute-hand', mAngle, 72);
-  const h12 = clockH%12===0?12:clockH%12;
-  const mStr = clockM.toString().padStart(2,'0');
-  document.getElementById('clock-time-text').textContent = h12+':'+mStr;
-  document.getElementById('clock-ampm-label').textContent = clockH<12?'a.m.':'p.m.';
-}
-function setHand(id, angle, length) {
-  const el = document.getElementById(id);
-  const rad = (angle)*Math.PI/180;
-  const x2 = 120 + Math.cos(rad)*length;
-  const y2 = 120 + Math.sin(rad)*length;
-  el.setAttribute('x2', x2);
-  el.setAttribute('y2', y2);
-}
-function changeHour(d) {
-  clockH = (clockH+d+24)%24;
-  updateClockHands();
-  stars++;
-  document.getElementById('star-display').textContent=stars;
-  checkBadges(); saveState();
-}
-function changeMin(d) {
-  clockM = (clockM+d+60)%60;
-  updateClockHands();
-}
-function setNow() {
-  const now = new Date();
-  clockH = now.getHours();
-  clockM = now.getMinutes();
-  updateClockHands();
-  showModalMsg('🕐','Live Time!','The clock now shows the real time!');
-}
-
-// ===== CLOCK QUIZ =====
-const clockTimes = [
-  {h:3,m:0},{h:6,m:0},{h:9,m:0},{h:12,m:0},{h:1,m:30},
-  {h:5,m:0},{h:8,m:15},{h:11,m:0},{h:2,m:0},{h:7,m:0}
+// SKY DRAGGABLE SUN
+var skyStates=[
+  {pct:0.05,emoji:"🌅",label:"🌅 Morning",bg:"linear-gradient(180deg,#FFE082 0%,#87CEEB 40%,#87CEEB 75%,#5DBB63 75%,#4CAF50 100%)",info:"☀️ The Sun rises in the <strong>East</strong>. This is morning — our day begins! Birds sing and everything wakes up. 🐦"},
+  {pct:0.30,emoji:"🌤️",label:"🌤️ Mid-Morning",bg:"linear-gradient(180deg,#87CEEB 0%,#B3E5FC 75%,#5DBB63 75%,#4CAF50 100%)",info:"🌤️ Mid-morning! The Sun has risen higher. A great time to go to school! ✏️"},
+  {pct:0.50,emoji:"☀️",label:"☀️ Noon",bg:"linear-gradient(180deg,#64B5F6 0%,#87CEEB 75%,#5DBB63 75%,#4CAF50 100%)",info:"<strong>Noon!</strong> The Sun is right over our heads. It is 12:00 in the middle of the day — very bright and hot! 🌡️"},
+  {pct:0.68,emoji:"🌤️",label:"🌤️ Afternoon",bg:"linear-gradient(180deg,#B3E5FC 0%,#87CEEB 75%,#5DBB63 75%,#4CAF50 100%)",info:"🌤️ <strong>Afternoon</strong> — between noon and evening. The Sun starts moving towards the West. 🌤️"},
+  {pct:0.85,emoji:"🌇",label:"🌇 Evening",bg:"linear-gradient(180deg,#FF8A65 0%,#CE93D8 50%,#7B1FA2 75%,#4CAF50 85%,#388E3C 100%)",info:"🌇 The Sun sets in the <strong>West</strong> during evening. The sky turns beautiful orange and pink!"},
+  {pct:0.98,emoji:"🌙",label:"🌙 Night",bg:"linear-gradient(180deg,#1a1a4e 0%,#283593 60%,#3949AB 80%,#2E7D32 85%,#1B5E20 100%)",info:"🌙 <strong>Night</strong> — the Sun has set. Stars come out. 12:00 at night is called <strong>midnight</strong>. Time to sleep! 😴"},
 ];
-let cqIndex = 0;
-function renderClockQuiz() {
-  const t = clockTimes[cqIndex%clockTimes.length];
-  const hAngle = (t.h%12)/12*360-90;
-  const mAngle = t.m/60*360-90;
-  setCQHand('cq-hour', hAngle, 52);
-  setCQHand('cq-minute', mAngle, 72);
+var lastSkyState=-1;
+var isDraggingSun=false;
+var sunEl=document.getElementById("drag-sun");
+var skyEl=document.getElementById("sky-scene");
+function getSkyState(pct){var best=0;for(var i=0;i<skyStates.length;i++){if(pct>=skyStates[i].pct)best=i;}return best;}
+function updateSky(pct){var i=getSkyState(pct);if(i!==lastSkyState){lastSkyState=i;var s=skyStates[i];skyEl.style.background=s.bg;document.getElementById("sky-label").textContent=s.label;sunEl.textContent=s.emoji;var box=document.getElementById("tod-info");box.style.display="block";box.innerHTML="💡 "+s.info;}}
+function handleSunMove(clientX,clientY){var rect=skyEl.getBoundingClientRect();var pct=Math.max(0,Math.min(.98,(clientX-rect.left)/rect.width));var yPct=Math.max(.05,Math.min(.8,(clientY-rect.top)/rect.height));sunEl.style.left=(pct*100-3)+"%";sunEl.style.top=(yPct*100)+"%";updateSky(pct);}
+sunEl.addEventListener("mousedown",function(e){isDraggingSun=true;e.preventDefault();});
+sunEl.addEventListener("touchstart",function(e){isDraggingSun=true;e.preventDefault();},{passive:false});
+document.addEventListener("mousemove",function(e){if(isDraggingSun)handleSunMove(e.clientX,e.clientY);});
+document.addEventListener("touchmove",function(e){if(isDraggingSun){e.preventDefault();handleSunMove(e.touches[0].clientX,e.touches[0].clientY);}},{passive:false});
+document.addEventListener("mouseup",function(){isDraggingSun=false;});
+document.addEventListener("touchend",function(){isDraggingSun=false;});
+// Clouds
+(function(){var cl=document.getElementById("clouds-layer");for(var i=0;i<4;i++){var c=document.createElement("div");c.className="cloud";c.textContent="☁️";c.style.top=(5+Math.random()*30)+"%";c.style.left="-80px";c.style.animationDuration=(18+Math.random()*20)+"s";c.style.animationDelay=-(Math.random()*20)+"s";c.style.fontSize=(1.1+Math.random())+"rem";c.style.opacity=0.4+Math.random()*.3;c.style.position="absolute";cl.appendChild(c);}})();
 
-  const correct = `${t.h===12||t.h===0?12:t.h%12}:${t.m.toString().padStart(2,'0')}`;
-  const opts = [correct];
-  while(opts.length<4){
-    const fh = Math.floor(Math.random()*12)+1;
-    const fm = [0,15,30][Math.floor(Math.random()*3)];
-    const o = `${fh}:${fm.toString().padStart(2,'0')}`;
-    if(!opts.includes(o)) opts.push(o);
-  }
-  opts.sort(()=>Math.random()-0.5);
-
-  const wrap = document.getElementById('cq-options');
-  wrap.innerHTML = '';
-  document.getElementById('cq-feedback').textContent = '';
-  opts.forEach(o => {
-    const b = document.createElement('button');
-    b.className='quiz-opt';
-    b.textContent=o;
-    b.onclick=()=>checkCQ(o, correct, b, t);
-    wrap.appendChild(b);
-  });
-  // render numbers
-  const g = document.getElementById('cq-numbers');
-  if(g){ g.innerHTML=''; for(let i=1;i<=12;i++){const a=(i/12)*Math.PI*2-Math.PI/2;const x=120+Math.cos(a)*82;const y=120+Math.sin(a)*82;const t2=document.createElementNS('http://www.w3.org/2000/svg','text');t2.setAttribute('x',x);t2.setAttribute('y',y);t2.setAttribute('text-anchor','middle');t2.setAttribute('dominant-baseline','middle');t2.setAttribute('font-family','Baloo 2');t2.setAttribute('font-weight','700');t2.setAttribute('font-size','16');t2.setAttribute('fill','#5c35a0');t2.textContent=i;g.appendChild(t2);}}
-}
-function setCQHand(id,angle,len){const el=document.getElementById(id);if(!el)return;const rad=angle*Math.PI/180;el.setAttribute('x2',120+Math.cos(rad)*len);el.setAttribute('y2',120+Math.sin(rad)*len);}
-function checkCQ(chosen, correct, btn, t){
-  const wrap=document.getElementById('cq-options');
-  Array.from(wrap.querySelectorAll('.quiz-opt')).forEach(b=>{b.disabled=true;if(b.textContent===correct)b.classList.add('correct');});
-  const fb=document.getElementById('cq-feedback');
-  if(chosen===correct){ btn.classList.add('correct');fb.textContent='🎉 Correct! Great job!';fb.className='quiz-feedback feedback-correct';awardStar(2,'Clock Reading +2 stars!',false);spawnConfetti(15); }
-  else { btn.classList.add('wrong');fb.textContent='❌ Not quite! The correct time is '+correct;fb.className='quiz-feedback feedback-wrong'; }
-  setTimeout(()=>{cqIndex++;renderClockQuiz();},2000);
+// TOD CARDS
+var todData={
+  morning:{title:"🌅 Morning",info:"The Sun rises in the <strong>East</strong>. This is when our day begins! Birds start singing and everything gets bright."},
+  noon:{title:"☀️ Noon",info:"The Sun is right over our head at <strong>noon</strong> — 12:00 in the middle of the day. Neither a.m. nor p.m. — it is exactly noon!"},
+  afternoon:{title:"🌤️ Afternoon",info:"<strong>Afternoon</strong> is the time between noon and evening. The Sun starts moving towards the West."},
+  evening:{title:"🌇 Evening",info:"The Sun sets in the <strong>West</strong> in the evening. The sky turns beautiful orange and pink!"},
+  night:{title:"🌙 Night",info:"After sunset, it is night. Stars appear! 12:00 at night is called <strong>midnight</strong>. Time to rest! 😴"},
+};
+function clickTod(el,tod){
+  var r=document.createElement("div");r.className="ripple";var s=Math.max(el.offsetWidth,el.offsetHeight)*2;r.style.width=r.style.height=s+"px";r.style.left=r.style.top="50%";r.style.marginLeft=r.style.marginTop=(-s/2)+"px";el.appendChild(r);setTimeout(function(){r.remove();},700);
+  var box=document.getElementById("tod-info");box.style.display="block";box.innerHTML="💡 <strong>"+todData[tod].title+"</strong> — "+todData[tod].info;
 }
 
-// ===== CALENDAR =====
-function renderCalendar() {
-  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  const now = new Date();
-  const today = now.getDate();
-  const todayLabel = days[now.getDay()]+', '+months[now.getMonth()]+' '+today+', '+now.getFullYear();
-  document.getElementById('today-label').textContent = todayLabel;
-
-  // Feb 2026: starts on Sunday (day 0)
-  const firstDay = 0; // Sunday
-  const daysInMonth = 28;
-  const grid = document.getElementById('cal-grid');
-  grid.innerHTML = '';
-  days.forEach(d=>{
-    const h=document.createElement('div');
-    h.className='cal-header';
-    h.textContent=d;
-    grid.appendChild(h);
+// UNIT CHAIN
+var units=[
+  {label:"1 second",info:"⏱️ A second is tiny! Count 1... that's one second. 60 of these make a minute."},
+  {label:"60 sec = 1 min",info:"🕐 60 seconds make 1 minute. Count to 60 — that's one minute!"},
+  {label:"60 min = 1 hr",info:"🕐 60 minutes make 1 hour. A school lesson is about 1 hour long!"},
+  {label:"24 hrs = 1 day",info:"🌞 24 hours make 1 full day — from midnight all the way to the next midnight!"},
+  {label:"7 days = 1 week",info:"📅 7 days make 1 week: Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday!"},
+  {label:"~4 wks = 1 month",info:"🗓️ About 4 weeks (plus 2-3 extra days) make 1 month. Months have 28, 30, or 31 days."},
+  {label:"12 months = 1 yr",info:"📆 12 months make 1 year! One year = 365 days (or 366 in a leap year!)."},
+];
+function buildUnitChain(){
+  var chain=document.getElementById("unit-chain");chain.innerHTML="";
+  units.forEach(function(u,i){
+    var b=document.createElement("div");b.className="unit-block";b.textContent=u.label;
+    b.onclick=function(){document.getElementById("unit-info").innerHTML="<div style='animation:popIn .35s cubic-bezier(.36,1.56,.64,1) both'>"+u.info+"</div>";document.querySelectorAll(".unit-block").forEach(function(x){x.classList.remove("active-unit");});b.classList.add("active-unit");};
+    chain.appendChild(b);
+    if(i<units.length-1){var a=document.createElement("div");a.className="unit-arrow";a.textContent="→";chain.appendChild(a);}
   });
-  for(let i=0;i<firstDay;i++){
-    const e=document.createElement('div');
-    e.className='cal-day empty';
-    grid.appendChild(e);
-  }
-  for(let d=1;d<=daysInMonth;d++){
-    const cell=document.createElement('div');
-    cell.className='cal-day'+(d===18?' today':'');
-    cell.textContent=d;
-    cell.onclick=()=>{spawnConfetti(8);showModalMsg('📅','Day '+d,'That\'s '+days[(firstDay+d-1)%7]+', February '+d+', 2026!');};
+}
+
+// CLOCK
+function renderClockNumbers(){
+  ["clock-numbers","cq-numbers"].forEach(function(id){
+    var g=document.getElementById(id);if(!g)return;g.innerHTML="";
+    for(var i=0;i<60;i++){var a=(i/60)*Math.PI*2-Math.PI/2;var r1=i%5===0?93:98,r2=103;var line=document.createElementNS("http://www.w3.org/2000/svg","line");line.setAttribute("x1",120+Math.cos(a)*r1);line.setAttribute("y1",120+Math.sin(a)*r1);line.setAttribute("x2",120+Math.cos(a)*r2);line.setAttribute("y2",120+Math.sin(a)*r2);line.setAttribute("stroke",i%5===0?"#9C6FDE":"#ddd");line.setAttribute("stroke-width",i%5===0?"2":"1");g.appendChild(line);}
+    for(var i=1;i<=12;i++){var a=(i/12)*Math.PI*2-Math.PI/2;var x=120+Math.cos(a)*80,y=120+Math.sin(a)*80;var t=document.createElementNS("http://www.w3.org/2000/svg","text");t.setAttribute("x",x);t.setAttribute("y",y);t.setAttribute("text-anchor","middle");t.setAttribute("dominant-baseline","middle");t.setAttribute("font-family","Baloo 2");t.setAttribute("font-weight","700");t.setAttribute("font-size","15");t.setAttribute("fill","#5c35a0");t.textContent=i;g.appendChild(t);}
+  });
+  updateClockHands();
+}
+function setHand(id,deg,len){var el=document.getElementById(id);if(!el)return;var r=(deg-90)*Math.PI/180;el.setAttribute("x2",120+Math.cos(r)*len);el.setAttribute("y2",120+Math.sin(r)*len);}
+function updateClockHands(){var hDeg=((clockH%12)+clockM/60)/12*360;setHand("hour-hand",hDeg,52);setHand("minute-hand",clockM/60*360,72);var h=clockH%12===0?12:clockH%12;document.getElementById("clock-time-text").textContent=h+":"+(clockM.toString().padStart(2,"0"));document.getElementById("clock-ampm-label").textContent=clockH<12?"a.m.":"p.m.";}
+function changeHour(d){clockH=(clockH+d+24)%24;updateClockHands();clockClicks++;checkBadges();saveState();}
+function changeMin(d){clockM=(clockM+d+60)%60;updateClockHands();}
+function setNow(){var n=new Date();clockH=n.getHours();clockM=n.getMinutes();updateClockHands();showToast("🕐 Now showing the real current time!");}
+function toggleSec(){secOn=!secOn;var sh=document.getElementById("second-hand");if(secOn){sh.style.display="";clearInterval(secInt);secInt=setInterval(function(){var s=new Date().getSeconds();setHand("second-hand",s/60*360,68);},1000);showToast("🔴 Second hand is moving!");}else{sh.style.display="none";clearInterval(secInt);}}
+// Clock drag
+var isDragClock=false;
+document.getElementById("clock-wrap").addEventListener("mousedown",function(e){isDragClock=true;e.preventDefault();handleClockDrag(e);});
+document.getElementById("clock-wrap").addEventListener("touchstart",function(e){isDragClock=true;e.preventDefault();handleClockDrag(e);},{passive:false});
+document.addEventListener("mousemove",function(e){if(isDragClock)handleClockDrag(e);});
+document.addEventListener("touchmove",function(e){if(isDragClock){e.preventDefault();handleClockDrag(e);}},{passive:false});
+document.addEventListener("mouseup",function(){isDragClock=false;});
+document.addEventListener("touchend",function(){isDragClock=false;});
+function handleClockDrag(e){var rect=document.getElementById("interactive-clock").getBoundingClientRect();var cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;var pos=e.touches?e.touches[0]:e;var angle=Math.atan2(pos.clientY-cy,pos.clientX-cx);var deg=((angle+Math.PI/2)*180/Math.PI+360)%360;clockM=Math.round(deg/6)%60;updateClockHands();clockClicks++;checkBadges();}
+
+// SET TIME
+function newSetTimeTgt(){var h=Math.floor(Math.random()*12)+1;var mArr=[0,15,30,45];var m=mArr[Math.floor(Math.random()*4)];var ampm=Math.random()>.5?"a.m.":"p.m.";setTimeTgt={h:h,m:m,ampm:ampm};document.getElementById("target-time").textContent=h+":"+(m.toString().padStart(2,"0"))+" "+ampm;document.getElementById("set-time-result").textContent="";}
+function checkSetTime(){var h=clockH%12===0?12:clockH%12;var ca=clockH<12?"a.m.":"p.m.";var hOk=h===setTimeTgt.h;var mOk=Math.abs(clockM-setTimeTgt.m)<=2;var aOk=ca===setTimeTgt.ampm;var res=document.getElementById("set-time-result");if(hOk&&mOk&&aOk){res.textContent="🎉 Correct! +3 ⭐";res.style.color="#2e7d32";awardStar(3);spawnConfetti(25);setTimeout(newSetTimeTgt,2000);}else{res.textContent="❌ Not quite! Check the hour, minutes, and a.m./p.m.!";res.style.color="#c62828";}}
+
+// CLOCK QUIZ
+var cqTimes=[{h:3,m:0},{h:6,m:0},{h:9,m:0},{h:1,m:30},{h:5,m:0},{h:8,m:15},{h:11,m:0},{h:2,m:0},{h:7,m:0},{h:4,m:45},{h:10,m:30},{h:12,m:0}];
+function renderCQNumbers(){var g=document.getElementById("cq-numbers");if(!g)return;g.innerHTML="";for(var i=1;i<=12;i++){var a=(i/12)*Math.PI*2-Math.PI/2;var t=document.createElementNS("http://www.w3.org/2000/svg","text");t.setAttribute("x",120+Math.cos(a)*80);t.setAttribute("y",120+Math.sin(a)*80);t.setAttribute("text-anchor","middle");t.setAttribute("dominant-baseline","middle");t.setAttribute("font-family","Baloo 2");t.setAttribute("font-weight","700");t.setAttribute("font-size","15");t.setAttribute("fill","#5c35a0");t.textContent=i;g.appendChild(t);}}
+function renderClockQuiz(){var t=cqTimes[cqIdx%cqTimes.length];setHand("cq-hour",((t.h%12)+t.m/60)/12*360,52);setHand("cq-minute",t.m/60*360,72);var correct=(t.h===12||t.h===0?12:t.h%12)+":"+(t.m.toString().padStart(2,"0"));var opts=[correct];while(opts.length<4){var fh=Math.floor(Math.random()*12)+1;var fm=[0,15,30,45][Math.floor(Math.random()*4)];var o=fh+":"+(fm.toString().padStart(2,"0"));if(!opts.includes(o))opts.push(o);}opts.sort(function(){return Math.random()-.5;});var wrap=document.getElementById("cq-options");wrap.innerHTML="";document.getElementById("cq-feedback").textContent="";opts.forEach(function(o){var b=document.createElement("button");b.className="qopt";b.textContent=o;b.onclick=function(){wrap.querySelectorAll(".qopt").forEach(function(x){x.disabled=true;if(x.textContent===correct)x.classList.add("correct");});if(o===correct){b.classList.add("correct");document.getElementById("cq-feedback").innerHTML="<span class='fb-ok'>🎉 Correct! +2 ⭐</span>";awardStar(2);spawnConfetti(15);}else{b.classList.add("wrong");document.getElementById("cq-feedback").innerHTML="<span class='fb-bad'>❌ Answer: "+correct+"</span>";}setTimeout(function(){cqIdx++;renderClockQuiz();},2000);};wrap.appendChild(b);});}
+
+// CALENDAR
+function renderCalendar(){
+  var dnames=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  var fullD=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  var firstDay=0,dim=28;
+  var grid=document.getElementById("cal-grid");grid.innerHTML="";
+  dnames.forEach(function(d){var h=document.createElement("div");h.className="cal-h";h.textContent=d;grid.appendChild(h);});
+  for(var i=0;i<firstDay;i++){var e=document.createElement("div");e.className="cal-day empty";grid.appendChild(e);}
+  for(var d=1;d<=dim;d++){
+    var cell=document.createElement("div");var dow=(firstDay+d-1)%7;
+    cell.className="cal-day"+(d===18?" today":"")+(daysVisited.has(d)?" visited":"");cell.textContent=d;
+    (function(dd,cell,dow){cell.onclick=function(){daysVisited.add(dd);cell.className="cal-day visited"+(dd===18?" today":"");showToast("📅 "+fullD[dow]+", February "+dd+", 2026");saveState();};})(d,cell,dow);
     grid.appendChild(cell);
   }
-
-  // Days of week
-  const dRow=document.getElementById('days-row');
-  dRow.innerHTML='';
-  const fullDays=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  fullDays.forEach((d,i)=>{
-    const chip=document.createElement('div');
-    chip.className='day-chip';
-    chip.style.animationDelay=(i*0.07)+'s';
-    chip.textContent=d;
-    dRow.appendChild(chip);
-  });
-
-  // Months grid
-  const monthData=[
-    {name:'January',days:31},{name:'February',days:'28/29'},{name:'March',days:31},
-    {name:'April',days:30},{name:'May',days:31},{name:'June',days:30},
-    {name:'July',days:31},{name:'August',days:31},{name:'September',days:30},
-    {name:'October',days:31},{name:'November',days:30},{name:'December',days:31}
-  ];
-  const mGrid=document.getElementById('months-grid');
-  mGrid.innerHTML='';
-  monthData.forEach((m,i)=>{
-    const chip=document.createElement('div');
-    chip.className='month-chip';
-    chip.innerHTML=`<strong>${m.name}</strong><div class="days">${m.days} days</div>`;
-    chip.onclick=()=>{ awardStar(1,'Learned about '+m.name+'!'); };
-    mGrid.appendChild(chip);
-  });
+  document.getElementById("today-label").textContent="Wednesday, February 18, 2026";
+  buildDayOrder();buildMonths();buildPoem();
 }
-
-// ===== QUIZ =====
-const QUESTIONS = [
-  { q:'What time of day does the Sun rise?', opts:['Morning','Evening','Midnight','Noon'], ans:'Morning', icon:'🌅' },
-  { q:'How many hours are there in one day?', opts:['12','48','24','7'], ans:'24', icon:'⏰' },
-  { q:'What do we call 12 o\'clock at night?', opts:['Noon','Midnight','Evening','Dawn'], ans:'Midnight', icon:'🌙' },
-  { q:'The time between midnight and noon is written with...', opts:['p.m.','a.m.','noon','midnight'], ans:'a.m.', icon:'☀️' },
-  { q:'How many days are in a week?', opts:['5','6','7','8'], ans:'7', icon:'📅' },
-  { q:'How many months are in a year?', opts:['10','11','12','13'], ans:'12', icon:'🗓️' },
-  { q:'The Sun sets in which direction?', opts:['North','East','South','West'], ans:'West', icon:'🌇' },
-  { q:'When you face East, which direction is behind you?', opts:['North','South','East','West'], ans:'West', icon:'🧭' },
-  { q:'How many days does February usually have?', opts:['30','31','28','29'], ans:'28', icon:'📆' },
-  { q:'What is a year with 366 days called?', opts:['Big year','Leap year','Long year','Extra year'], ans:'Leap year', icon:'🐸' },
-  { q:'How many seconds are in a minute?', opts:['100','50','30','60'], ans:'60', icon:'⏱️' },
-  { q:'Which comes after Wednesday?', opts:['Tuesday','Monday','Thursday','Friday'], ans:'Thursday', icon:'📅' },
-  { q:'When you face East, your right hand points to...', opts:['North','West','East','South'], ans:'South', icon:'🧭' },
-  { q:'A compass always points to which direction?', opts:['South','East','North','West'], ans:'North', icon:'🧲' },
-  { q:'How many minutes are in an hour?', opts:['100','60','30','24'], ans:'60', icon:'🕐' },
-  { q:'Which month has 30 days?', opts:['January','March','April','July'], ans:'April', icon:'🌸' },
-  { q:'What tool tells us the exact time?', opts:['Calendar','Compass','Clock','Map'], ans:'Clock', icon:'🕐' },
-  { q:'The Sun rises in which direction?', opts:['North','South','West','East'], ans:'East', icon:'🌅' },
-  { q:'How many days are in a normal year?', opts:['364','365','366','360'], ans:'365', icon:'📆' },
-  { q:'Which is the last month of the year?', opts:['November','October','January','December'], ans:'December', icon:'🎄' },
-];
-let shuffledQ = [];
-function initQuiz() {
-  shuffledQ = [...QUESTIONS].sort(()=>Math.random()-0.5);
-  quizIndex = 0; quizScore = 0;
-  renderQuizProgress();
-  showQuestion();
-}
-function renderQuizProgress() {
-  const prog = document.getElementById('quiz-progress');
-  prog.innerHTML='';
-  shuffledQ.forEach((_,i)=>{
-    const d=document.createElement('div');
-    d.className='q-dot'+(i<quizIndex?' done':i===quizIndex?' current':'');
-    prog.appendChild(d);
-  });
-}
-function showQuestion() {
-  if(quizIndex>=shuffledQ.length){ showQuizEnd(); return; }
-  const q=shuffledQ[quizIndex];
-  document.getElementById('quiz-q').textContent=q.icon+' '+q.q;
-  const opts=document.getElementById('quiz-opts');
-  opts.innerHTML='';
-  document.getElementById('quiz-feedback').textContent='';
-  document.getElementById('next-btn').style.display='none';
-  quizAnswered=false;
-  const shuffled=[...q.opts].sort(()=>Math.random()-0.5);
-  shuffled.forEach(o=>{
-    const b=document.createElement('button');
-    b.className='quiz-opt';
-    b.textContent=o;
-    b.onclick=()=>answerQ(o,q.ans,b);
-    opts.appendChild(b);
-  });
-  renderQuizProgress();
-}
-function answerQ(chosen, correct, btn) {
-  if(quizAnswered) return;
-  quizAnswered=true;
-  const opts=document.querySelectorAll('.quiz-opt');
-  opts.forEach(b=>{
-    b.disabled=true;
-    if(b.textContent===correct) b.classList.add('correct');
-  });
-  const fb=document.getElementById('quiz-feedback');
-  if(chosen===correct){
-    btn.classList.add('correct');
-    fb.textContent='🎉 Correct! You earned 2 stars!';
-    fb.className='quiz-feedback feedback-correct';
-    quizScore++;
-    awardStar(2,'Quiz +2 ⭐',false);
-    spawnConfetti(15);
-  } else {
-    btn.classList.add('wrong');
-    fb.textContent='❌ Not quite! The answer is: '+correct;
-    fb.className='quiz-feedback feedback-wrong';
-    awardStar(0,'',false);
+// DAYS DRAG
+var DAYS_ORDER=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+function buildDayOrder(){
+  var src=document.getElementById("day-source"),tgt=document.getElementById("day-targets");if(!src||!tgt)return;
+  var shuffled=DAYS_ORDER.slice().sort(function(){return Math.random()-.5;});dayOrderState=Array(7).fill(null);src.innerHTML="";tgt.innerHTML="";
+  shuffled.forEach(function(day){var el=document.createElement("div");el.className="draggable-day";el.textContent=day;el.draggable=true;el.addEventListener("dragstart",function(e){e.dataTransfer.setData("text",day);el.classList.add("dragging");});el.addEventListener("dragend",function(){el.classList.remove("dragging");});src.appendChild(el);});
+  for(var i=0;i<7;i++){
+    (function(idx){var tg=document.createElement("div");tg.className="drop-tgt";tg.textContent=(idx+1)+".";tg.addEventListener("dragover",function(e){e.preventDefault();tg.classList.add("over");});tg.addEventListener("dragleave",function(){tg.classList.remove("over");});tg.addEventListener("drop",function(e){e.preventDefault();tg.classList.remove("over");var day=e.dataTransfer.getData("text");tg.textContent=day;dayOrderState[idx]=day;Array.from(src.querySelectorAll(".draggable-day")).forEach(function(x){if(x.textContent===day)x.remove();});});tgt.appendChild(tg);})(i);
   }
-  document.getElementById('next-btn').style.display='block';
+  document.getElementById("day-order-result").textContent="";
 }
-function nextQuestion(){
-  quizIndex++;
-  if(quizIndex>=shuffledQ.length){ showQuizEnd(); return; }
-  showQuestion();
-}
-function showQuizEnd(){
-  document.getElementById('quiz-q').textContent='🎊 Quiz Complete!';
-  document.getElementById('quiz-opts').innerHTML='';
-  const score=quizScore;
-  const total=shuffledQ.length;
-  const pct=Math.round(score/total*100);
-  let emoji=pct>=80?'🏆':pct>=60?'🌟':'😊';
-  document.getElementById('quiz-feedback').textContent=`${emoji} You got ${score}/${total} correct! (${pct}%)`;
-  document.getElementById('quiz-feedback').className='quiz-feedback feedback-correct';
-  document.getElementById('next-btn').style.display='none';
-  spawnConfetti(40);
-  checkBadges(); saveState();
-  if(score===total) showModalMsg('🏆','PERFECT SCORE!','Amazing! You got every question right! You\'re a TIME & DIRECTIONS expert!');
-  else if(pct>=60) showModalMsg(emoji,'Great Job!','You scored '+score+' out of '+total+'! Keep practicing!');
-}
-function restartQuiz(){
-  initQuiz();
-}
+function checkDayOrder(){var correct=0;document.querySelectorAll("#day-targets .drop-tgt").forEach(function(tg,i){if(dayOrderState[i]===DAYS_ORDER[i]){tg.classList.add("correct");correct++;}else if(dayOrderState[i]){tg.classList.add("wrong");}});var res=document.getElementById("day-order-result");if(correct===7){res.textContent="🎉 Perfect! All 7 days correct!";res.style.color="#2e7d32";awardStar(5);if(!unlockedBadges.includes("days_order")){unlockedBadges.push("days_order");showToast("📆 Badge: Week Wizard!");checkBadges();}}else{res.textContent="You got "+correct+"/7 right! Try again!";res.style.color="#c62828";}}
 
-// ===== DIRECTIONS =====
-function highlightStep(el, n) {
-  document.querySelectorAll('.step-card').forEach(s=>s.style.background='rgba(255,255,255,0.85)');
-  el.style.background='#f3e8ff';
-  spawnConfetti(6);
-}
+// MONTHS
+var MONTH_DATA=[
+  {name:"January",days:31,bg:"linear-gradient(135deg,#B3E5FC,#0288D1)",icon:"❄️"},
+  {name:"February",days:"28/29",bg:"linear-gradient(135deg,#F8BBD0,#E91E63)",icon:"💕"},
+  {name:"March",days:31,bg:"linear-gradient(135deg,#C8E6C9,#388E3C)",icon:"🌱"},
+  {name:"April",days:30,bg:"linear-gradient(135deg,#DCEDC8,#7CB342)",icon:"🌸"},
+  {name:"May",days:31,bg:"linear-gradient(135deg,#FFE082,#F9A825)",icon:"🌻"},
+  {name:"June",days:30,bg:"linear-gradient(135deg,#FFCDD2,#E53935)",icon:"🌞"},
+  {name:"July",days:31,bg:"linear-gradient(135deg,#FF8A65,#D84315)",icon:"🏖️"},
+  {name:"August",days:31,bg:"linear-gradient(135deg,#A5D6A7,#2E7D32)",icon:"🎒"},
+  {name:"September",days:30,bg:"linear-gradient(135deg,#FFCC80,#EF6C00)",icon:"🍂"},
+  {name:"October",days:31,bg:"linear-gradient(135deg,#FF8A65,#BF360C)",icon:"🎃"},
+  {name:"November",days:30,bg:"linear-gradient(135deg,#CE93D8,#6A1B9A)",icon:"🪔"},
+  {name:"December",days:31,bg:"linear-gradient(135deg,#B3E5FC,#0D47A1)",icon:"🎄"},
+];
+function buildMonths(){var mg=document.getElementById("months-grid");if(!mg)return;mg.innerHTML="";MONTH_DATA.forEach(function(m,i){var chip=document.createElement("div");chip.className="month-chip"+(monthsVisited.has(i)?" picked":"");chip.style.background=m.bg;chip.innerHTML="<div>"+m.icon+" <strong>"+m.name+"</strong></div><div class='m-days'>"+m.days+" days</div>";chip.onclick=function(){monthsVisited.add(i);chip.classList.add("picked");document.getElementById("month-info-box").innerHTML="<div style='animation:popIn .35s cubic-bezier(.36,1.56,.64,1) both'>"+m.icon+" <strong>"+m.name+"</strong> has <strong>"+m.days+" days</strong>!</div>";saveState();checkBadges();};mg.appendChild(chip);});}
 
-// ===== INIT =====
-function init() {
-  document.getElementById('star-display').textContent = stars;
-  document.getElementById('star-display-2').textContent = stars;
-  renderClockNumbers();
-  renderCalendar();
-  renderBadges();
-  initQuiz();
+// POEM
+var POEM_LINES=["Thirty days have September,","April, June and November,","All the rest have thirty-one,","Except February alone,","Which has only twenty-eight days,","And twenty-nine in each leap year."];
+function buildPoem(){var pl=document.getElementById("poem-lines");if(!pl)return;pl.innerHTML="";POEM_LINES.forEach(function(line,i){var el=document.createElement("div");el.className="poem-line";el.textContent=line;el.onclick=function(){document.querySelectorAll(".poem-line").forEach(function(x){x.classList.remove("lit");});el.classList.add("lit");showToast("🎵 "+line);};pl.appendChild(el);});}
+
+// COMPASS
+var compassAngle=0,isDragCompass=false,compStartA=0,compStartRot=0;
+var compOuter=document.getElementById("compass-outer");
+var compInner=document.getElementById("compass-inner");
+function startCompassDrag(e){isDragCompass=true;var pos=e.touches?e.touches[0]:e;var rect=compOuter.getBoundingClientRect();compStartA=Math.atan2(pos.clientY-(rect.top+rect.height/2),pos.clientX-(rect.left+rect.width/2));compStartRot=compassAngle;e.preventDefault();}
+compOuter.addEventListener("mousedown",startCompassDrag);
+compOuter.addEventListener("touchstart",startCompassDrag,{passive:false});
+document.addEventListener("mousemove",function(e){if(!isDragCompass)return;var rect=compOuter.getBoundingClientRect();var a=Math.atan2(e.clientY-(rect.top+rect.height/2),e.clientX-(rect.left+rect.width/2));compassAngle=compStartRot+(a-compStartA)*180/Math.PI;compOuter.style.transform="rotate("+compassAngle+"deg)";compInner.style.transform="rotate("+(-compassAngle)+"deg)";});
+document.addEventListener("touchmove",function(e){if(!isDragCompass)return;e.preventDefault();var touch=e.touches[0];var rect=compOuter.getBoundingClientRect();var a=Math.atan2(touch.clientY-(rect.top+rect.height/2),touch.clientX-(rect.left+rect.width/2));compassAngle=compStartRot+(a-compStartA)*180/Math.PI;compOuter.style.transform="rotate("+compassAngle+"deg)";compInner.style.transform="rotate("+(-compassAngle)+"deg)";},{passive:false});
+document.addEventListener("mouseup",function(){isDragCompass=false;});
+document.addEventListener("touchend",function(){isDragCompass=false;});
+function showDirInfo(dir,desc){dirExplored.add(dir);checkBadges();showModalMsg({North:"⬆️",South:"⬇️",East:"➡️",West:"⬅️"}[dir]||"🧭",dir,desc);}
+
+// POSITION WORDS
+var positions={left:{left:"8%",top:"45%"},right:{left:"70%",top:"45%"},up:{left:"40%",top:"8%"},down:{left:"40%",top:"65%"},near:{left:"60%",top:"18%"},far:{left:"8%",top:"50%"},front:{left:"28%",top:"55%"},behind:{left:"12%",top:"55%"},above:{left:"40%",top:"3%"},below:{left:"40%",top:"68%"},reset:{left:"42%",top:"38%"}};
+var posLabels={left:"👧 is to the LEFT 👈",right:"👧 is to the RIGHT 👉",up:"👧 is UP! ⬆️",down:"👧 is DOWN ⬇️",near:"👧 is NEAR the tree 🌳",far:"👧 is FAR from the tree 📍",front:"👧 is in FRONT of the boy 🚶",behind:"👧 is BEHIND the boy 🔙",above:"👧 is ABOVE ⬆",below:"👧 is BELOW ⬇",reset:"Back to start! 🔄"};
+function moveGirl(dir){var girl=document.getElementById("pos-girl");var p=positions[dir]||positions.reset;girl.style.left=p.left;girl.style.top=p.top;document.getElementById("pos-label").textContent=posLabels[dir]||"";spawnConfetti(4);}
+
+// MAZE
+function initMaze(){
+  var canvas=document.getElementById("maze-canvas");if(!canvas)return;
+  canvas.width=MAZE_COLS*CELL;canvas.height=MAZE_ROWS*CELL;
+  mazeGrid=[];
+  for(var y=0;y<MAZE_ROWS;y++){mazeGrid.push([]);for(var x=0;x<MAZE_COLS;x++){mazeGrid[y].push({r:true,b:true});}}
+  var openW=[[0,0,"r"],[1,0,"b"],[1,0,"r"],[2,0,"r"],[3,0,"r"],[4,0,"r"],[5,0,"r"],[6,0,"b"],[0,1,"r"],[0,1,"b"],[1,1,"r"],[2,1,"r"],[2,1,"b"],[3,1,"b"],[4,1,"r"],[5,1,"b"],[6,1,"r"],[0,2,"b"],[1,2,"r"],[1,2,"b"],[2,2,"r"],[3,2,"r"],[4,2,"b"],[5,2,"r"],[6,2,"b"],[0,3,"r"],[1,3,"r"],[2,3,"b"],[3,3,"r"],[4,3,"r"],[5,3,"r"],[6,3,"b"],[0,4,"r"],[0,4,"b"],[1,4,"b"],[2,4,"r"],[3,4,"r"],[4,4,"r"],[5,4,"b"],[6,4,"r"],[0,5,"r"],[1,5,"r"],[2,5,"r"],[3,5,"r"],[4,5,"r"],[5,5,"r"],[6,5,"r"]];
+  openW.forEach(function(w){if(mazeGrid[w[1]]&&mazeGrid[w[1]][w[0]])mazeGrid[w[1]][w[0]][w[2]]=false;});
+  playerX=0;playerY=0;mazeWon=false;document.getElementById("maze-result").textContent="";drawMaze();
+  document.onkeydown=function(e){if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)){e.preventDefault();var map={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]};var d=map[e.key];mazeMovePlayer(d[0],d[1]);}};
 }
-init();
+function canMove(x,y,dx,dy){if(dx===1)return x<MAZE_COLS-1&&!mazeGrid[y][x].r;if(dy===1)return y<MAZE_ROWS-1&&!mazeGrid[y][x].b;if(dx===-1)return x>0&&!mazeGrid[y][x-1].r;if(dy===-1)return y>0&&!mazeGrid[y-1][x].b;return false;}
+function mazeMovePlayer(dx,dy){if(mazeWon)return;if(canMove(playerX,playerY,dx,dy)){playerX+=dx;playerY+=dy;spawnConfetti(3);drawMaze();if(playerX===MAZE_COLS-1&&playerY===MAZE_ROWS-1){mazeWon=true;document.getElementById("maze-result").textContent="🎉 You found the way home! Amazing!";awardStar(5);spawnConfetti(30);if(!unlockedBadges.includes("maze_win")){unlockedBadges.push("maze_win");showToast("🗺️ Badge: Pathfinder!");checkBadges();}}}else{var canvas=document.getElementById("maze-canvas");canvas.style.transform="translateX(4px)";setTimeout(function(){canvas.style.transform="translateX(-4px)";setTimeout(function(){canvas.style.transform="";},100);},100);}}
+function resetMaze(){initMaze();}
+function drawMaze(){var canvas=document.getElementById("maze-canvas");if(!canvas)return;var ctx=canvas.getContext("2d");ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle="#f3e8ff";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle="#C8E6C9";ctx.fillRect((MAZE_COLS-1)*CELL,(MAZE_ROWS-1)*CELL,CELL,CELL);ctx.font="26px serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("🏠",(MAZE_COLS-1)*CELL+CELL/2,(MAZE_ROWS-1)*CELL+CELL/2);ctx.fillText("🧒",playerX*CELL+CELL/2,playerY*CELL+CELL/2);ctx.strokeStyle="#5c35a0";ctx.lineWidth=3;ctx.lineCap="round";ctx.strokeRect(0,0,canvas.width,canvas.height);for(var y=0;y<MAZE_ROWS;y++){for(var x=0;x<MAZE_COLS;x++){var cx=x*CELL,cy=y*CELL;if(mazeGrid[y][x].r&&x<MAZE_COLS-1){ctx.beginPath();ctx.moveTo(cx+CELL,cy);ctx.lineTo(cx+CELL,cy+CELL);ctx.stroke();}if(mazeGrid[y][x].b&&y<MAZE_ROWS-1){ctx.beginPath();ctx.moveTo(cx,cy+CELL);ctx.lineTo(cx+CELL,cy+CELL);ctx.stroke();}}}ctx.fillStyle="#9C6FDE";ctx.font="bold 11px Nunito";ctx.textAlign="left";ctx.fillText("START",4,14);}
+
+// QUIZ
+var QUESTIONS=[
+  {q:"What time of day does the Sun rise?",opts:["Morning","Evening","Midnight","Noon"],ans:"Morning",icon:"🌅"},
+  {q:"How many hours are there in one day?",opts:["12","48","24","7"],ans:"24",icon:"⏰"},
+  {q:"12 o'clock at night is called...?",opts:["Noon","Midnight","Evening","Dusk"],ans:"Midnight",icon:"🌙"},
+  {q:"Time between midnight and noon uses...?",opts:["p.m.","a.m.","noon","PM"],ans:"a.m.",icon:"☀️"},
+  {q:"How many days are in a week?",opts:["5","6","7","8"],ans:"7",icon:"📅"},
+  {q:"How many months in a year?",opts:["10","11","12","13"],ans:"12",icon:"🗓️"},
+  {q:"The Sun sets in which direction?",opts:["North","East","South","West"],ans:"West",icon:"🌇"},
+  {q:"When facing East, what is behind you?",opts:["North","South","East","West"],ans:"West",icon:"🧭"},
+  {q:"February normally has how many days?",opts:["30","31","28","29"],ans:"28",icon:"📆"},
+  {q:"A year with 366 days is a...?",opts:["Big year","Leap year","Long year","Bonus year"],ans:"Leap year",icon:"🐸"},
+  {q:"How many seconds are in a minute?",opts:["100","50","30","60"],ans:"60",icon:"⏱️"},
+  {q:"Which day comes after Wednesday?",opts:["Tuesday","Monday","Thursday","Friday"],ans:"Thursday",icon:"📅"},
+  {q:"Facing East, right hand points to...?",opts:["North","West","East","South"],ans:"South",icon:"🧭"},
+  {q:"A compass always points towards...?",opts:["South","East","North","West"],ans:"North",icon:"🧲"},
+  {q:"How many minutes in one hour?",opts:["100","60","30","24"],ans:"60",icon:"🕐"},
+  {q:"Which month has 30 days?",opts:["January","March","April","July"],ans:"April",icon:"🌸"},
+  {q:"What tells us the exact time?",opts:["Calendar","Compass","Clock","Map"],ans:"Clock",icon:"🕐"},
+  {q:"The Sun rises in which direction?",opts:["North","South","West","East"],ans:"East",icon:"🌅"},
+  {q:"How many days in a normal year?",opts:["364","365","366","360"],ans:"365",icon:"📆"},
+  {q:"Which is the last month of the year?",opts:["November","October","January","December"],ans:"December",icon:"🎄"},
+  {q:"The short hand on a clock shows...?",opts:["Seconds","Minutes","Hours","Days"],ans:"Hours",icon:"🕐"},
+  {q:"Which day is between Monday and Wednesday?",opts:["Sunday","Tuesday","Thursday","Friday"],ans:"Tuesday",icon:"📅"},
+];
+function initQuiz(){shuffledQ=QUESTIONS.slice().sort(function(){return Math.random()-.5;});quizIndex=0;quizScore=0;quizAnswered=false;renderQuizProg();showQuestion();}
+function renderQuizProg(){var p=document.getElementById("quiz-progress");p.innerHTML="";shuffledQ.forEach(function(_,i){var d=document.createElement("div");d.className="q-dot"+(i<quizIndex?" done":i===quizIndex?" curr":"");p.appendChild(d);});}
+function showQuestion(){if(quizIndex>=shuffledQ.length){showQuizEnd();return;}var q=shuffledQ[quizIndex];document.getElementById("quiz-q").textContent=q.icon+" "+q.q;var opts=document.getElementById("quiz-opts");opts.innerHTML="";document.getElementById("quiz-feedback").textContent="";document.getElementById("next-btn").style.display="none";quizAnswered=false;q.opts.slice().sort(function(){return Math.random()-.5;}).forEach(function(o){var b=document.createElement("button");b.className="qopt";b.textContent=o;b.onclick=function(){answerQ(o,q.ans,b);};opts.appendChild(b);});renderQuizProg();}
+function answerQ(chosen,correct,btn){if(quizAnswered)return;quizAnswered=true;document.querySelectorAll(".qopt").forEach(function(b){b.disabled=true;if(b.textContent===correct)b.classList.add("correct");});var fb=document.getElementById("quiz-feedback");if(chosen===correct){btn.classList.add("correct");fb.innerHTML="<span class='fb-ok'>🎉 Correct! +2 ⭐</span>";quizScore++;awardStar(2);spawnConfetti(16);}else{btn.classList.add("wrong");fb.innerHTML="<span class='fb-bad'>❌ The answer is: "+correct+"</span>";}document.getElementById("next-btn").style.display="block";}
+function nextQuestion(){quizIndex++;if(quizIndex>=shuffledQ.length){showQuizEnd();return;}showQuestion();}
+function showQuizEnd(){document.getElementById("quiz-q").textContent="🎊 Quiz Complete!";document.getElementById("quiz-opts").innerHTML="";var pct=Math.round(quizScore/shuffledQ.length*100);var emoji=pct===100?"💎":pct>=80?"🏆":pct>=60?"🌟":"😊";document.getElementById("quiz-feedback").innerHTML="<span class='fb-ok'>"+emoji+" You got "+quizScore+"/"+shuffledQ.length+" correct! ("+pct+"%)</span>";document.getElementById("next-btn").style.display="none";spawnConfetti(35);if(!unlockedBadges.includes("quiz_all")){unlockedBadges.push("quiz_all");showToast("🏅 Badge: Quiz Champion!");}if(pct===100&&!unlockedBadges.includes("perfect")){unlockedBadges.push("perfect");showToast("💎 Badge: Perfect Score!");}checkBadges();saveState();if(pct>=80)setTimeout(function(){showModalMsg(emoji,"Quiz Complete!","You scored "+quizScore+"/"+shuffledQ.length+"! You are a superstar! 🌟");},800);}
+
+// INIT
+(function(){
+  document.getElementById("star-display").textContent=stars;
+  document.getElementById("star-display-2").textContent=stars;
+  document.getElementById("badge-count").textContent=unlockedBadges.length;
+  buildUnitChain();renderClockNumbers();renderCQNumbers();renderCalendar();renderBadges();initQuiz();initMaze();
+  setTimeout(function(){showToast("🦉 Hello! Drag the sun across the sky to begin! ☀️");},1200);
+})();
 </script>
 </body>
 </html>
