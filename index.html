@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⏰ Time & Directions Adventure!</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #4FC3F7;
+    --sun: #FFD600;
+    --grass: #66BB6A;
+    --night: #1a1a4e;
+    --pink: #FF7EB3;
+    --purple: #9C6FDE;
+    --orange: #FF8C42;
+    --teal: #26C6DA;
+    --white: #FFFDF7;
+    --card-bg: rgba(255,255,255,0.92);
+    --shadow: 0 8px 32px rgba(80,60,140,0.13);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(160deg, #e0f7fa 0%, #e8f5e9 50%, #fff9c4 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* FLOATING STARS */
+  .star {
+    position: fixed;
+    pointer-events: none;
+    z-index: 0;
+    font-size: 1.3rem;
+    animation: floatStar linear infinite;
+    opacity: 0.5;
+  }
+  @keyframes floatStar {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.6; }
+    100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    padding: 32px 20px 16px;
+    position: relative;
+    z-index: 2;
+  }
+  header h1 {
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-weight: 800;
+    background: linear-gradient(90deg, #FF7043, #FF7EB3, #9C6FDE, #4FC3F7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.1));
+    animation: titlePop 0.7s cubic-bezier(.36,1.56,.64,1) both;
+  }
+  @keyframes titlePop {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  header p {
+    font-size: 1.15rem;
+    color: #6d4c9f;
+    font-weight: 700;
+    margin-top: 4px;
+  }
+
+  /* STAR BAR */
+  .star-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 8px auto 16px;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #7b3f00;
+    background: linear-gradient(90deg, #fff9c4, #ffe082, #fff9c4);
+    border-radius: 50px;
+    padding: 8px 24px;
+    max-width: 280px;
+    box-shadow: 0 4px 12px rgba(255,180,0,0.3);
+    border: 2px solid #FFD600;
+  }
+  .star-count { font-size: 1.3rem; }
+
+  /* NAV */
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    padding: 0 16px 20px;
+    position: relative;
+    z-index: 2;
+  }
+  nav button {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 22px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(.36,1.56,.64,1);
+    box-shadow: 0 4px 0 rgba(0,0,0,0.15), var(--shadow);
+    position: relative;
+    top: 0;
+  }
+  nav button:hover { transform: translateY(-3px) scale(1.06); box-shadow: 0 7px 0 rgba(0,0,0,0.15), var(--shadow); }
+  nav button:active { top: 4px; box-shadow: 0 0 0 rgba(0,0,0,0.15); }
+  nav button.active { transform: scale(1.08); box-shadow: 0 0 0 4px white, 0 0 0 7px var(--purple); }
+  .btn-learn { background: linear-gradient(135deg, #FF7EB3, #FF4081); color: white; }
+  .btn-clock { background: linear-gradient(135deg, #FFD600, #FF8C42); color: white; }
+  .btn-calendar { background: linear-gradient(135deg, #66BB6A, #26A69A); color: white; }
+  .btn-directions { background: linear-gradient(135deg, #4FC3F7, #7E57C2); color: white; }
+  .btn-quiz { background: linear-gradient(135deg, #9C6FDE, #E040FB); color: white; }
+  .btn-rewards { background: linear-gradient(135deg, #FF8C42, #FF5722); color: white; }
+
+  /* PANELS */
+  .panel {
+    display: none;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 16px 40px;
+    position: relative;
+    z-index: 2;
+    animation: panelIn 0.4s cubic-bezier(.36,1.56,.64,1) both;
+  }
+  .panel.active { display: block; }
+  @keyframes panelIn {
+    from { transform: translateY(30px) scale(0.97); opacity: 0; }
+    to { transform: none; opacity: 1; }
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--card-bg);
+    border-radius: 24px;
+    padding: 28px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    border: 2px solid rgba(255,255,255,0.8);
+    backdrop-filter: blur(8px);
+  }
+  .card h2 {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #5c35a0;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card p, .card li {
+    font-size: 1.05rem;
+    color: #444;
+    line-height: 1.7;
+  }
+
+  /* TIME OF DAY visual */
+  .tod-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px;
+    margin-top: 16px;
+  }
+  .tod-card {
+    border-radius: 20px;
+    padding: 18px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(.36,1.56,.64,1);
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+  .tod-card:hover { transform: scale(1.07) rotate(-1deg); }
+  .tod-morning { background: linear-gradient(160deg, #fff9c4, #FFE082); color: #7b3f00; }
+  .tod-noon { background: linear-gradient(160deg, #B3E5FC, #4FC3F7); color: #01579b; }
+  .tod-afternoon { background: linear-gradient(160deg, #FFCCBC, #FF8A65); color: #bf360c; }
+  .tod-evening { background: linear-gradient(160deg, #CE93D8, #7B1FA2); color: white; }
+  .tod-night { background: linear-gradient(160deg, #1a1a4e, #283593); color: #90CAF9; }
+  .tod-card .icon { font-size: 2.4rem; margin-bottom: 6px; display: block; }
+
+  /* CLOCK */
+  #clock-panel .clock-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .clock-svg-wrap {
+    position: relative;
+    width: 240px;
+    height: 240px;
+  }
+  #interactive-clock {
+    cursor: pointer;
+    filter: drop-shadow(0 8px 24px rgba(100,60,180,0.25));
+  }
+  .clock-time-display {
+    font-family: 'Baloo 2', cursive;
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: #5c35a0;
+    letter-spacing: 2px;
+  }
+  .clock-label {
+    font-size: 1rem;
+    color: #888;
+    font-weight: 700;
+  }
+  .clock-controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .clock-btn {
+    background: linear-gradient(135deg, #9C6FDE, #E040FB);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 8px 20px;
+    font-family: 'Baloo 2', cursive;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.15s;
+    box-shadow: 0 4px 12px rgba(156,111,222,0.3);
+  }
+  .clock-btn:hover { transform: scale(1.08); }
+
+  /* AMPM INFO */
+  .ampm-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 14px;
+  }
+  .ampm-card {
+    border-radius: 18px;
+    padding: 18px;
+    text-align: center;
+    font-weight: 700;
+  }
+  .am-card { background: linear-gradient(135deg, #fff9c4, #FFE082); color: #7b3f00; }
+  .pm-card { background: linear-gradient(135deg, #E1BEE7, #AB47BC); color: white; }
+  .ampm-card .big { font-size: 2rem; font-family: 'Baloo 2', cursive; font-weight: 800; }
+
+  /* CALENDAR */
+  .month-display {
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .cal-header {
+    font-weight: 800;
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 8px 4px;
+    border-radius: 10px;
+    color: white;
+    background: linear-gradient(135deg, #9C6FDE, #E040FB);
+  }
+  .cal-day {
+    background: rgba(255,255,255,0.8);
+    border-radius: 10px;
+    padding: 8px 4px;
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 2px solid transparent;
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cal-day:hover { transform: scale(1.1); border-color: #9C6FDE; background: #f3e8ff; }
+  .cal-day.today { background: linear-gradient(135deg, #FFD600, #FF8C42); color: white; border-color: #FF8C42; }
+  .cal-day.empty { background: transparent; cursor: default; }
+  .cal-day.empty:hover { transform: none; border-color: transparent; }
+  .months-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
+  }
+  .month-chip {
+    background: linear-gradient(135deg, #4FC3F7, #7E57C2);
+    color: white;
+    border-radius: 14px;
+    padding: 10px 8px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: transform 0.15s;
+    box-shadow: 0 3px 10px rgba(126,87,194,0.2);
+  }
+  .month-chip:hover { transform: scale(1.08) rotate(-1deg); }
+  .month-chip .days { font-size: 0.75rem; opacity: 0.85; margin-top: 2px; }
+
+  /* DAYS INFO */
+  .days-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .day-chip {
+    background: linear-gradient(135deg, #FF7EB3, #FF4081);
+    color: white;
+    border-radius: 50px;
+    padding: 7px 16px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    animation: popIn 0.4s cubic-bezier(.36,1.56,.64,1) both;
+  }
+
+  /* DIRECTIONS */
+  .compass-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 0;
+  }
+  .compass {
+    position: relative;
+    width: 220px;
+    height: 220px;
+  }
+  .compass-ring {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, #FFE082, #FF7043, #CE93D8, #90CAF9, #FFE082);
+    padding: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    animation: compassSpin 20s linear infinite;
+  }
+  @keyframes compassSpin { to { transform: rotate(360deg); } }
+  .compass-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    animation: compassSpin 20s linear infinite reverse;
+  }
+  .compass-arrow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.5rem;
+    animation: compassSpin 20s linear infinite;
+  }
+  .compass-dirs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+  }
+  .dir-card {
+    border-radius: 18px;
+    padding: 16px;
+    text-align: center;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(.36,1.56,.64,1);
+    position: relative;
+    overflow: hidden;
+  }
+  .dir-card:hover { transform: scale(1.05) rotate(-1deg); }
+  .dir-n { background: linear-gradient(135deg, #B3E5FC, #0288D1); color: white; }
+  .dir-s { background: linear-gradient(135deg, #FFCCBC, #E64A19); color: white; }
+  .dir-e { background: linear-gradient(135deg, #C8E6C9, #388E3C); color: white; }
+  .dir-w { background: linear-gradient(135deg, #E1BEE7, #7B1FA2); color: white; }
+  .dir-card .dir-letter { font-family: 'Baloo 2', cursive; font-size: 2.5rem; font-weight: 800; opacity: 0.3; position: absolute; top: 5px; right: 10px; }
+  .dir-card p { font-size: 0.88rem; margin-top: 4px; opacity: 0.9; }
+
+  /* QUIZ */
+  .quiz-progress {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .q-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #e0e0e0;
+    transition: all 0.3s;
+  }
+  .q-dot.done { background: linear-gradient(135deg, #66BB6A, #26A69A); }
+  .q-dot.wrong { background: linear-gradient(135deg, #FF5252, #FF1744); }
+  .q-dot.current { background: linear-gradient(135deg, #FFD600, #FF8C42); transform: scale(1.3); }
+
+  .quiz-card {
+    background: var(--card-bg);
+    border-radius: 24px;
+    padding: 28px;
+    box-shadow: var(--shadow);
+    border: 2px solid rgba(255,255,255,0.8);
+    min-height: 200px;
+  }
+  .quiz-question {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #4a2080;
+    margin-bottom: 20px;
+    line-height: 1.4;
+  }
+  .quiz-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .quiz-opt {
+    background: rgba(255,255,255,0.9);
+    border: 2.5px solid #e0d0f8;
+    border-radius: 16px;
+    padding: 14px 16px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #444;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(.36,1.56,.64,1);
+    text-align: left;
+    font-family: 'Nunito', sans-serif;
+  }
+  .quiz-opt:hover { transform: scale(1.04); border-color: #9C6FDE; background: #f3e8ff; }
+  .quiz-opt.correct { background: linear-gradient(135deg, #C8E6C9, #66BB6A); border-color: #388E3C; color: #1b5e20; }
+  .quiz-opt.wrong { background: linear-gradient(135deg, #FFCDD2, #FF5252); border-color: #b71c1c; color: #b71c1c; }
+  .quiz-opt:disabled { cursor: default; transform: none; }
+
+  .quiz-feedback {
+    text-align: center;
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-top: 16px;
+    min-height: 50px;
+    animation: popIn 0.4s cubic-bezier(.36,1.56,.64,1) both;
+  }
+  @keyframes popIn {
+    from { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+    to { transform: none; opacity: 1; }
+  }
+  .feedback-correct { color: #2e7d32; }
+  .feedback-wrong { color: #c62828; }
+
+  .next-btn {
+    display: block;
+    margin: 16px auto 0;
+    background: linear-gradient(135deg, #9C6FDE, #E040FB);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 36px;
+    font-family: 'Baloo 2', cursive;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.15);
+  }
+  .next-btn:hover { transform: scale(1.05); }
+
+  /* REWARDS */
+  .badges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 16px;
+  }
+  .badge {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 18px 12px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s cubic-bezier(.36,1.56,.64,1);
+    border: 2px solid rgba(255,255,255,0.8);
+    position: relative;
+    overflow: hidden;
+  }
+  .badge:hover { transform: scale(1.05) rotate(-1deg); }
+  .badge.locked { filter: grayscale(0.8); opacity: 0.5; }
+  .badge .badge-icon { font-size: 2.8rem; margin-bottom: 6px; }
+  .badge .badge-name { font-weight: 800; font-size: 0.88rem; color: #5c35a0; }
+  .badge .badge-desc { font-size: 0.75rem; color: #888; margin-top: 3px; }
+  .badge .lock-overlay { position: absolute; top: 8px; right: 10px; font-size: 1.1rem; }
+  .badge.unlocked { animation: badgeUnlock 0.6s cubic-bezier(.36,1.56,.64,1) both; }
+  @keyframes badgeUnlock {
+    0% { transform: scale(0.3) rotate(-20deg); }
+    70% { transform: scale(1.15) rotate(5deg); }
+    100% { transform: scale(1); }
+  }
+
+  /* CONFETTI */
+  .confetti-piece {
+    position: fixed;
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 999;
+    animation: confettiFall 1.5s ease-in forwards;
+  }
+  @keyframes confettiFall {
+    0% { opacity: 1; transform: translateY(-20px) rotate(0deg); }
+    100% { opacity: 0; transform: translateY(90vh) rotate(720deg); }
+  }
+
+  /* TOOLTIP / MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: white;
+    border-radius: 28px;
+    padding: 36px 32px;
+    max-width: 400px;
+    width: 92%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    animation: panelIn 0.4s cubic-bezier(.36,1.56,.64,1);
+  }
+  .modal-box h2 { font-family: 'Baloo 2', cursive; font-size: 2rem; font-weight: 800; color: #5c35a0; margin-bottom: 10px; }
+  .modal-box p { font-size: 1.1rem; color: #555; margin-bottom: 20px; }
+  .modal-close {
+    background: linear-gradient(135deg, #9C6FDE, #E040FB);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 32px;
+    font-family: 'Baloo 2', cursive;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+
+  /* CLOCK QUIZ SPECIFIC */
+  .clock-quiz-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 0;
+  }
+
+  /* INFO PILLS */
+  .info-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(90deg, #f3e8ff, #e8f5e9);
+    border-radius: 50px;
+    padding: 6px 16px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #5c35a0;
+    margin: 4px;
+  }
+
+  /* SCROLL NOTE */
+  .fact-box {
+    background: linear-gradient(135deg, #fff9c4, #FFE082);
+    border-radius: 16px;
+    padding: 14px 18px;
+    margin-top: 12px;
+    font-weight: 700;
+    color: #7b3f00;
+    font-size: 0.95rem;
+    border-left: 5px solid #FFD600;
+  }
+
+  .section-title {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #9C6FDE;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* BEAT animation */
+  .beat { animation: beat 1s ease infinite; }
+  @keyframes beat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
+
+  /* Responsive */
+  @media (max-width: 500px) {
+    .quiz-options { grid-template-columns: 1fr; }
+    .ampm-cards { grid-template-columns: 1fr; }
+    .clock-svg-wrap { width: 200px; height: 200px; }
+  }
+
+  .learn-list { list-style: none; padding: 0; }
+  .learn-list li {
+    background: rgba(255,255,255,0.8);
+    border-radius: 14px;
+    padding: 10px 16px;
+    margin-bottom: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    border-left: 4px solid #9C6FDE;
+  }
+  .learn-list li::before { content: attr(data-icon); font-size: 1.2rem; flex-shrink: 0; }
+
+  .dir-body-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .dir-body-img {
+    font-size: 5rem;
+    position: relative;
+  }
+  .dir-label {
+    position: absolute;
+    font-family: 'Baloo 2', cursive;
+    font-size: 1rem;
+    font-weight: 800;
+    background: white;
+    border-radius: 8px;
+    padding: 3px 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    white-space: nowrap;
+  }
+
+  .sun-scene {
+    border-radius: 20px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #87CEEB 0%, #87CEEB 70%, #5DBB63 70%, #5DBB63 100%);
+    height: 140px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+  .sun-anim {
+    position: absolute;
+    font-size: 2.8rem;
+    transition: all 0.8s cubic-bezier(.36,1.56,.64,1);
+  }
+  .sun-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .sun-btn {
+    background: white;
+    border: 2.5px solid #FFD600;
+    border-radius: 50px;
+    padding: 7px 16px;
+    font-family: 'Baloo 2', cursive;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    color: #7b3f00;
+    transition: all 0.15s;
+  }
+  .sun-btn:hover, .sun-btn.active { background: #FFD600; }
+
+  .leap-year-box {
+    background: linear-gradient(135deg, #e8f5e9, #C8E6C9);
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin-top: 12px;
+    border-left: 5px solid #66BB6A;
+  }
+  .poem-box {
+    background: linear-gradient(135deg, #f3e8ff, #E1BEE7);
+    border-radius: 16px;
+    padding: 18px 20px;
+    margin-top: 12px;
+    border-left: 5px solid #9C6FDE;
+    font-style: italic;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #4a2080;
+    line-height: 1.8;
+  }
+  .poem-box .poem-title { font-style: normal; font-size: 0.85rem; color: #9C6FDE; margin-bottom: 8px; font-weight: 800; }
+</style>
+</head>
+<body>
+
+<!-- Floating decorations -->
+<div class="star" style="left:5%;animation-duration:12s;animation-delay:0s">⭐</div>
+<div class="star" style="left:15%;animation-duration:9s;animation-delay:2s">🌟</div>
+<div class="star" style="left:30%;animation-duration:14s;animation-delay:4s">✨</div>
+<div class="star" style="left:50%;animation-duration:10s;animation-delay:1s">⭐</div>
+<div class="star" style="left:70%;animation-duration:11s;animation-delay:3s">🌟</div>
+<div class="star" style="left:85%;animation-duration:8s;animation-delay:5s">✨</div>
+<div class="star" style="left:95%;animation-duration:13s;animation-delay:2s">⭐</div>
+
+<header>
+  <h1>⏰ Time & Directions Adventure! 🧭</h1>
+  <p>Welcome, Explorer! Learn, Play & Earn Stars! 🌟</p>
+  <div class="star-bar">
+    <span class="beat">⭐</span>
+    <span>Stars Earned:</span>
+    <span class="star-count" id="star-display">0</span>
+  </div>
+</header>
+
+<nav>
+  <button class="btn-learn active" onclick="showPanel('learn')">📖 Learn Time</button>
+  <button class="btn-clock" onclick="showPanel('clock')">🕐 Clock Fun</button>
+  <button class="btn-calendar" onclick="showPanel('calendar')">📅 Calendar</button>
+  <button class="btn-directions" onclick="showPanel('directions')">🧭 Directions</button>
+  <button class="btn-quiz" onclick="showPanel('quiz')">🎯 Quiz!</button>
+  <button class="btn-rewards" onclick="showPanel('rewards')">🏆 Rewards</button>
+</nav>
+
+<!-- ========== LEARN TIME PANEL ========== -->
+<div id="learn-panel" class="panel active">
+
+  <div class="card">
+    <h2>☀️ Times of the Day</h2>
+    <p>A day has <strong>24 hours</strong>. The Sun helps us know the time! Click each card to learn more.</p>
+
+    <div class="sun-scene" id="sun-scene">
+      <div class="sun-anim" id="sun-anim" style="left:10%;top:70%;transform:translateY(-50%)">🌅</div>
+    </div>
+
+    <div class="sun-controls">
+      <button class="sun-btn active" onclick="moveSun('morning', this)">🌅 Morning</button>
+      <button class="sun-btn" onclick="moveSun('noon', this)">☀️ Noon</button>
+      <button class="sun-btn" onclick="moveSun('afternoon', this)">🌤️ Afternoon</button>
+      <button class="sun-btn" onclick="moveSun('evening', this)">🌇 Evening</button>
+      <button class="sun-btn" onclick="moveSun('night', this)">🌙 Night</button>
+    </div>
+
+    <div class="tod-grid" style="margin-top:18px;">
+      <div class="tod-card tod-morning" onclick="awardStar(1,'You learned about Morning!')">
+        <span class="icon">🌅</span>
+        <strong>Morning</strong>
+        <div style="font-size:0.8rem;margin-top:4px;">Sun rises in the East. Our day begins!</div>
+      </div>
+      <div class="tod-card tod-noon" onclick="awardStar(1,'You learned about Noon!')">
+        <span class="icon">☀️</span>
+        <strong>Noon</strong>
+        <div style="font-size:0.8rem;margin-top:4px;">Sun is right over our head. 12:00 in the day!</div>
+      </div>
+      <div class="tod-card tod-afternoon" onclick="awardStar(1,'You learned about Afternoon!')">
+        <span class="icon">🌤️</span>
+        <strong>Afternoon</strong>
+        <div style="font-size:0.8rem;margin-top:4px;">The time between noon and evening.</div>
+      </div>
+      <div class="tod-card tod-evening" onclick="awardStar(1,'You learned about Evening!')">
+        <span class="icon">🌇</span>
+        <strong>Evening</strong>
+        <div style="font-size:0.8rem;margin-top:4px;">Sun sets in the West. The sky turns orange!</div>
+      </div>
+      <div class="tod-card tod-night" onclick="awardStar(1,'You learned about Night!')">
+        <span class="icon">🌙</span>
+        <strong>Night</strong>
+        <div style="font-size:0.8rem;margin-top:4px;">Stars come out. Time to sleep! 12:00 at night = midnight.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>⏱️ Time Units</h2>
+    <ul class="learn-list">
+      <li data-icon="⏱️">60 seconds = 1 minute</li>
+      <li data-icon="🕐">60 minutes = 1 hour</li>
+      <li data-icon="🌞">24 hours = 1 day</li>
+      <li data-icon="📅">7 days = 1 week</li>
+      <li data-icon="🗓️">4 weeks (+ 2-3 days) = 1 month</li>
+      <li data-icon="📆">12 months = 1 year</li>
+      <li data-icon="🗓️">1 year = 365 days (or 366 in a leap year!)</li>
+    </ul>
+    <div class="fact-box">💡 A day is divided into morning, noon, afternoon, evening and night!</div>
+  </div>
+
+  <div class="card">
+    <h2>🕐 A.M. & P.M.</h2>
+    <p>We use <strong>a.m.</strong> and <strong>p.m.</strong> to tell if it's before or after noon.</p>
+    <div class="ampm-cards">
+      <div class="ampm-card am-card">
+        <div class="big">a.m.</div>
+        <div>Midnight → Noon</div>
+        <div style="font-size:0.8rem;margin-top:6px;">🌙 12:00 midnight to ☀️ 12:00 noon</div>
+      </div>
+      <div class="ampm-card pm-card">
+        <div class="big">p.m.</div>
+        <div>Noon → Midnight</div>
+        <div style="font-size:0.8rem;margin-top:6px;">☀️ 12:00 noon to 🌙 12:00 midnight</div>
+      </div>
+    </div>
+    <div class="fact-box" style="margin-top:14px;">💡 Noon (12:00 in the day) and Midnight (12:00 at night) are special times!</div>
+  </div>
+
+</div>
+
+<!-- ========== CLOCK PANEL ========== -->
+<div id="clock-panel" class="panel">
+  <div class="card">
+    <h2>🕐 Interactive Clock</h2>
+    <p>Click the buttons to change the time. Watch the hands move!</p>
+    <div class="clock-container">
+      <div class="clock-svg-wrap">
+        <svg id="interactive-clock" width="240" height="240" viewBox="0 0 240 240">
+          <!-- Clock face -->
+          <circle cx="120" cy="120" r="115" fill="white" stroke="#E0D0F8" stroke-width="6"/>
+          <circle cx="120" cy="120" r="108" fill="url(#clockGrad)"/>
+          <defs>
+            <radialGradient id="clockGrad" cx="40%" cy="35%">
+              <stop offset="0%" stop-color="#f3e8ff"/>
+              <stop offset="100%" stop-color="#e8d8ff"/>
+            </radialGradient>
+          </defs>
+          <!-- Hour markers -->
+          <g id="hour-markers"></g>
+          <!-- Numbers -->
+          <g id="clock-numbers"></g>
+          <!-- Hour hand -->
+          <line id="hour-hand" x1="120" y1="120" x2="120" y2="68" stroke="#5c35a0" stroke-width="7" stroke-linecap="round"/>
+          <!-- Minute hand -->
+          <line id="minute-hand" x1="120" y1="120" x2="120" y2="48" stroke="#FF7EB3" stroke-width="4.5" stroke-linecap="round"/>
+          <!-- Center -->
+          <circle cx="120" cy="120" r="7" fill="#5c35a0"/>
+        </svg>
+      </div>
+      <div class="clock-time-display" id="clock-time-text">8:00</div>
+      <div class="clock-label" id="clock-ampm-label">a.m.</div>
+      <div class="clock-controls">
+        <button class="clock-btn" onclick="changeHour(-1)">◀ Hour</button>
+        <button class="clock-btn" onclick="changeHour(1)">Hour ▶</button>
+        <button class="clock-btn" onclick="changeMin(-5)">◀ 5 Min</button>
+        <button class="clock-btn" onclick="changeMin(5)">5 Min ▶</button>
+        <button class="clock-btn" onclick="setNow()">🕐 Live Time</button>
+      </div>
+    </div>
+    <div class="fact-box" style="margin-top:16px;">
+      💡 The <strong>shorter hand</strong> = hours &nbsp;|&nbsp; The <strong>longer hand</strong> = minutes
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🎯 Clock Reading Challenge</h2>
+    <p>What time does this clock show? Pick the right answer!</p>
+    <div class="clock-quiz-wrap" id="clock-quiz-wrap">
+      <svg id="cq-clock" width="180" height="180" viewBox="0 0 240 240">
+        <circle cx="120" cy="120" r="115" fill="white" stroke="#E0D0F8" stroke-width="6"/>
+        <circle cx="120" cy="120" r="108" fill="#f3e8ff"/>
+        <g id="cq-numbers"></g>
+        <line id="cq-hour" x1="120" y1="120" x2="120" y2="68" stroke="#5c35a0" stroke-width="7" stroke-linecap="round"/>
+        <line id="cq-minute" x1="120" y1="120" x2="120" y2="48" stroke="#FF7EB3" stroke-width="4.5" stroke-linecap="round"/>
+        <circle cx="120" cy="120" r="7" fill="#5c35a0"/>
+      </svg>
+      <div class="quiz-options" id="cq-options" style="width:100%;max-width:360px;"></div>
+      <div class="quiz-feedback" id="cq-feedback"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== CALENDAR PANEL ========== -->
+<div id="calendar-panel" class="panel">
+  <div class="card">
+    <h2>📅 February 2026</h2>
+    <p style="margin-bottom:12px;">This is the current month! Today is highlighted. <strong>February has 28 days this year</strong> (2026 is not a leap year).</p>
+    <div class="cal-grid" id="cal-grid"></div>
+    <div class="fact-box">💡 Today is <strong id="today-label"></strong>! Tap any date on the calendar!</div>
+  </div>
+
+  <div class="card">
+    <h2>📖 Days of the Week</h2>
+    <div class="section-title">✏️ The 7 Days</div>
+    <div class="days-row" id="days-row"></div>
+    <div class="fact-box" style="margin-top:12px;">💡 There are <strong>7 days</strong> in a week. Sunday comes before Monday!</div>
+  </div>
+
+  <div class="card">
+    <h2>🗓️ All 12 Months</h2>
+    <p style="margin-bottom:14px;">Click a month to see how many days it has!</p>
+    <div class="months-grid" id="months-grid"></div>
+
+    <div class="leap-year-box" style="margin-top:16px;">
+      <div class="section-title">🐸 What is a Leap Year?</div>
+      <p>Every <strong>4 years</strong>, February gets an extra day — <strong>29 days</strong> instead of 28! That year is called a <strong>Leap Year</strong> and has <strong>366 days</strong>.</p>
+    </div>
+
+    <div class="poem-box" style="margin-top:14px;">
+      <div class="poem-title">🎵 Days in a Month Poem</div>
+      Thirty days have September,<br>
+      April, June and November,<br>
+      All the rest have thirty-one,<br>
+      Except February alone,<br>
+      Which has only twenty-eight days,<br>
+      And twenty-nine in each leap year.
+    </div>
+  </div>
+</div>
+
+<!-- ========== DIRECTIONS PANEL ========== -->
+<div id="directions-panel" class="panel">
+  <div class="card">
+    <h2>🧭 What are Directions?</h2>
+    <p>Directions help us find our way! When we travel, we need to know which way to go so we don't get lost.</p>
+    <ul class="learn-list" style="margin-top:14px;">
+      <li data-icon="📍">A <strong>direction</strong> is the path we take when moving from one place to another.</li>
+      <li data-icon="🌞">The Sun rises in the <strong>East</strong> and sets in the <strong>West</strong>.</li>
+      <li data-icon="🤲">Words like <strong>left, right, near, far, up, down, front, behind</strong> help us describe where things are.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🌍 The Four Main Directions</h2>
+    <p style="margin-bottom:16px;">There are four main directions. They never change! Click each to learn:</p>
+    <div class="compass-container">
+      <div style="position:relative;width:200px;height:200px;">
+        <svg viewBox="0 0 200 200" width="200" height="200">
+          <circle cx="100" cy="100" r="95" fill="#f3e8ff" stroke="#9C6FDE" stroke-width="4"/>
+          <!-- compass lines -->
+          <line x1="100" y1="10" x2="100" y2="190" stroke="#ccc" stroke-width="2"/>
+          <line x1="10" y1="100" x2="190" y2="100" stroke="#ccc" stroke-width="2"/>
+          <!-- N arrow -->
+          <polygon points="100,15 93,55 100,45 107,55" fill="#0288D1"/>
+          <!-- S arrow -->
+          <polygon points="100,185 93,145 100,155 107,145" fill="#E64A19"/>
+          <!-- E arrow -->
+          <polygon points="185,100 145,93 155,100 145,107" fill="#388E3C"/>
+          <!-- W arrow -->
+          <polygon points="15,100 55,93 45,100 55,107" fill="#7B1FA2"/>
+          <text x="100" y="32" text-anchor="middle" font-family="Baloo 2" font-weight="800" font-size="22" fill="#0288D1">N</text>
+          <text x="100" y="178" text-anchor="middle" font-family="Baloo 2" font-weight="800" font-size="22" fill="#E64A19">S</text>
+          <text x="170" y="106" text-anchor="middle" font-family="Baloo 2" font-weight="800" font-size="22" fill="#388E3C">E</text>
+          <text x="30" y="106" text-anchor="middle" font-family="Baloo 2" font-weight="800" font-size="22" fill="#7B1FA2">W</text>
+          <circle cx="100" cy="100" r="10" fill="#5c35a0"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="compass-dirs">
+      <div class="dir-card dir-n" onclick="awardStar(1,'You learned North!')">
+        <span class="dir-letter">N</span>
+        <strong style="font-size:1.2rem;">⬆️ North</strong>
+        <p>When you face East (rising Sun), your left hand points North.</p>
+      </div>
+      <div class="dir-card dir-s" onclick="awardStar(1,'You learned South!')">
+        <span class="dir-letter">S</span>
+        <strong style="font-size:1.2rem;">⬇️ South</strong>
+        <p>When you face East (rising Sun), your right hand points South.</p>
+      </div>
+      <div class="dir-card dir-e" onclick="awardStar(1,'You learned East!')">
+        <span class="dir-letter">E</span>
+        <strong style="font-size:1.2rem;">➡️ East</strong>
+        <p>The Sun rises in the East every morning. Face the rising Sun!</p>
+      </div>
+      <div class="dir-card dir-w" onclick="awardStar(1,'You learned West!')">
+        <span class="dir-letter">W</span>
+        <strong style="font-size:1.2rem;">⬅️ West</strong>
+        <p>The Sun sets in the West every evening. Your back faces West.</p>
+      </div>
+    </div>
+    <div class="fact-box" style="margin-top:16px;">🧲 A <strong>compass</strong> always points to the North. Travellers use it to find directions!</div>
+  </div>
+
+  <div class="card">
+    <h2>🙋 Position Words</h2>
+    <p style="margin-bottom:14px;">We also use these words to say where something is:</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+      <span class="info-pill">👈 Left</span>
+      <span class="info-pill">👉 Right</span>
+      <span class="info-pill">⬆️ Up / Above</span>
+      <span class="info-pill">⬇️ Down / Below</span>
+      <span class="info-pill">🤏 Near</span>
+      <span class="info-pill">📍 Far</span>
+      <span class="info-pill">🚶 Front</span>
+      <span class="info-pill">🔙 Behind</span>
+    </div>
+    <div class="fact-box" style="margin-top:14px;">💡 Right and left depend on which way you are facing. North, South, East and West always stay the same!</div>
+  </div>
+
+  <div class="card">
+    <h2>🗺️ Giving Directions</h2>
+    <p style="margin-bottom:14px;">Help Sonu get home from the park! Read the steps:</p>
+    <div id="direction-steps">
+      <div class="step-card" style="background:rgba(255,255,255,0.85);border-radius:14px;padding:12px 16px;margin-bottom:8px;border-left:5px solid #4FC3F7;font-weight:700;cursor:pointer;" onclick="highlightStep(this,1)">
+        1️⃣ Go <strong>straight</strong> on the main street.
+      </div>
+      <div class="step-card" style="background:rgba(255,255,255,0.85);border-radius:14px;padding:12px 16px;margin-bottom:8px;border-left:5px solid #FF7EB3;font-weight:700;cursor:pointer;" onclick="highlightStep(this,2)">
+        2️⃣ Turn <strong>right</strong> at the milk booth.
+      </div>
+      <div class="step-card" style="background:rgba(255,255,255,0.85);border-radius:14px;padding:12px 16px;margin-bottom:8px;border-left:5px solid #66BB6A;font-weight:700;cursor:pointer;" onclick="highlightStep(this,3)">
+        3️⃣ Turn <strong>left</strong> when you reach the mall.
+      </div>
+      <div class="step-card" style="background:rgba(255,255,255,0.85);border-radius:14px;padding:12px 16px;margin-bottom:8px;border-left:5px solid #FFD600;font-weight:700;cursor:pointer;" onclick="highlightStep(this,4)">
+        4️⃣ Go <strong>past</strong> the school and you'll reach home! 🏠
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== QUIZ PANEL ========== -->
+<div id="quiz-panel" class="panel">
+  <div class="card">
+    <h2>🎯 Knowledge Quiz!</h2>
+    <p style="margin-bottom:16px;">Answer all questions to earn stars and unlock badges! 🌟</p>
+    <div class="quiz-progress" id="quiz-progress"></div>
+    <div class="quiz-card">
+      <div class="quiz-question" id="quiz-q"></div>
+      <div class="quiz-options" id="quiz-opts"></div>
+      <div class="quiz-feedback" id="quiz-feedback"></div>
+      <button class="next-btn" id="next-btn" onclick="nextQuestion()" style="display:none;">Next Question ➡️</button>
+    </div>
+    <div style="text-align:center;margin-top:16px;">
+      <button class="next-btn" onclick="restartQuiz()" style="background:linear-gradient(135deg,#66BB6A,#26A69A);">🔄 Restart Quiz</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== REWARDS PANEL ========== -->
+<div id="rewards-panel" class="panel">
+  <div class="card">
+    <h2>🏆 Your Badges!</h2>
+    <p style="margin-bottom:20px;">Earn stars by learning and completing the quiz. Unlock all badges!</p>
+    <div class="star-bar" style="max-width:250px;margin:0 auto 24px;">
+      <span class="beat">⭐</span>
+      <span>Total Stars:</span>
+      <span class="star-count" id="star-display-2">0</span>
+    </div>
+    <div class="badges-grid" id="badges-grid"></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <div style="font-size:4rem;" id="modal-icon">🎉</div>
+    <h2 id="modal-title">Awesome!</h2>
+    <p id="modal-msg">You earned a star!</p>
+    <button class="modal-close" onclick="closeModal()">Yay! ⭐</button>
+  </div>
+</div>
+
+<script>
+// ===== STATE =====
+let stars = parseInt(localStorage.getItem('stars') || '0');
+let unlockedBadges = JSON.parse(localStorage.getItem('badges') || '[]');
+let quizIndex = 0;
+let quizScore = 0;
+let quizAnswered = false;
+let todTimesLearned = [];
+
+// ===== BADGES =====
+const BADGES = [
+  { id:'morning', icon:'🌅', name:'Morning Star', desc:'Learned about Morning', req:1 },
+  { id:'clock1', icon:'🕐', name:'Clock Watcher', desc:'Used the clock 5 times', req:5 },
+  { id:'quiz5', icon:'🎯', name:'Quiz Starter', desc:'Answered 5 questions', req:5 },
+  { id:'quiz_all', icon:'🏅', name:'Quiz Champion', desc:'Completed full quiz!', req:20 },
+  { id:'directions', icon:'🧭', name:'Explorer', desc:'Learned all directions', req:4 },
+  { id:'calendar', icon:'📅', name:'Calendar Kid', desc:'Explored all months', req:12 },
+  { id:'star10', icon:'🌟', name:'Star Collector', desc:'Earned 10 stars!', req:10 },
+  { id:'star25', icon:'💫', name:'Super Learner', desc:'Earned 25 stars!', req:25 },
+  { id:'star50', icon:'🚀', name:'Space Explorer', desc:'Earned 50 stars!', req:50 },
+];
+
+function saveState() {
+  localStorage.setItem('stars', stars);
+  localStorage.setItem('badges', JSON.stringify(unlockedBadges));
+}
+
+// ===== STARS =====
+function awardStar(n, msg='', showModal=true) {
+  stars += n;
+  document.getElementById('star-display').textContent = stars;
+  document.getElementById('star-display-2').textContent = stars;
+  checkBadges();
+  saveState();
+  spawnConfetti();
+  if (showModal && msg) showModalMsg('⭐', 'You earned a star!', msg);
+}
+
+function spawnConfetti(count=20) {
+  const colors = ['#FF7EB3','#FFD600','#4FC3F7','#66BB6A','#9C6FDE','#FF8C42'];
+  for (let i=0;i<count;i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left = Math.random()*100 + 'vw';
+    el.style.top = '-20px';
+    el.style.background = colors[Math.floor(Math.random()*colors.length)];
+    el.style.animationDuration = (1+Math.random()*1.5)+'s';
+    el.style.animationDelay = Math.random()*0.5+'s';
+    el.style.borderRadius = Math.random()>0.5?'50%':'2px';
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 2500);
+  }
+}
+
+// ===== BADGES =====
+function checkBadges() {
+  let newBadge = null;
+  if (stars >= 1 && !unlockedBadges.includes('morning')) { unlockedBadges.push('morning'); newBadge='morning'; }
+  if (stars >= 5 && !unlockedBadges.includes('clock1')) { unlockedBadges.push('clock1'); newBadge='clock1'; }
+  if (stars >= 5 && !unlockedBadges.includes('quiz5')) { unlockedBadges.push('quiz5'); newBadge='quiz5'; }
+  if (stars >= 10 && !unlockedBadges.includes('star10')) { unlockedBadges.push('star10'); newBadge='star10'; }
+  if (stars >= 20 && !unlockedBadges.includes('quiz_all')) { unlockedBadges.push('quiz_all'); newBadge='quiz_all'; }
+  if (stars >= 25 && !unlockedBadges.includes('star25')) { unlockedBadges.push('star25'); newBadge='star25'; }
+  if (stars >= 50 && !unlockedBadges.includes('star50')) { unlockedBadges.push('star50'); newBadge='star50'; }
+  renderBadges();
+  if (newBadge) {
+    const b = BADGES.find(x=>x.id===newBadge);
+    if (b) setTimeout(()=>showModalMsg(b.icon,'Badge Unlocked!',b.name+' — '+b.desc), 800);
+  }
+}
+
+function renderBadges() {
+  const grid = document.getElementById('badges-grid');
+  grid.innerHTML = '';
+  BADGES.forEach(b => {
+    const unlocked = unlockedBadges.includes(b.id);
+    const div = document.createElement('div');
+    div.className = 'badge' + (unlocked?'':' locked') + (unlocked?' unlocked':'');
+    div.innerHTML = `
+      <div class="badge-icon">${b.icon}</div>
+      <div class="badge-name">${b.name}</div>
+      <div class="badge-desc">${b.desc}</div>
+      ${!unlocked?'<div class="lock-overlay">🔒</div>':''}
+    `;
+    grid.appendChild(div);
+  });
+}
+
+// ===== PANEL NAV =====
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id+'-panel').classList.add('active');
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  if (id==='quiz') initQuiz();
+  if (id==='rewards') { renderBadges(); document.getElementById('star-display-2').textContent=stars; }
+  if (id==='calendar') renderCalendar();
+  if (id==='clock') renderClockNumbers();
+}
+
+// ===== MODAL =====
+function showModalMsg(icon, title, msg) {
+  document.getElementById('modal-icon').textContent = icon;
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-msg').textContent = msg;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+// ===== SUN SCENE =====
+const sunPositions = {
+  morning: { left:'8%', top:'65%', emoji:'🌅' },
+  noon:    { left:'50%', top:'10%', emoji:'☀️' },
+  afternoon: { left:'65%', top:'35%', emoji:'🌤️' },
+  evening: { left:'88%', top:'65%', emoji:'🌇' },
+  night:   { left:'50%', top:'15%', emoji:'🌙' },
+};
+const sunBgs = {
+  morning: 'linear-gradient(180deg,#FFE082 0%,#87CEEB 50%,#5DBB63 70%,#5DBB63 100%)',
+  noon: 'linear-gradient(180deg,#87CEEB 0%,#87CEEB 70%,#5DBB63 70%,#5DBB63 100%)',
+  afternoon: 'linear-gradient(180deg,#B3E5FC 0%,#87CEEB 70%,#5DBB63 70%,#5DBB63 100%)',
+  evening: 'linear-gradient(180deg,#FF8A65 0%,#CE93D8 50%,#7B1FA2 70%,#1a1a4e 100%)',
+  night: 'linear-gradient(180deg,#1a1a4e 0%,#283593 50%,#3949AB 70%,#5DBB63 70%)',
+};
+function moveSun(tod, btn) {
+  const p = sunPositions[tod];
+  const sun = document.getElementById('sun-anim');
+  sun.style.left = p.left;
+  sun.style.top = p.top;
+  sun.textContent = p.emoji;
+  document.getElementById('sun-scene').style.background = sunBgs[tod];
+  document.querySelectorAll('.sun-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ===== CLOCK =====
+let clockH = 8, clockM = 0;
+function renderClockNumbers() {
+  ['clock-numbers','cq-numbers'].forEach(id => {
+    const g = document.getElementById(id);
+    if (!g) return;
+    g.innerHTML = '';
+    for (let i=1;i<=12;i++) {
+      const angle = (i/12)*Math.PI*2 - Math.PI/2;
+      const x = 120 + Math.cos(angle)*82;
+      const y = 120 + Math.sin(angle)*82;
+      const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('x', x);
+      t.setAttribute('y', y);
+      t.setAttribute('text-anchor','middle');
+      t.setAttribute('dominant-baseline','middle');
+      t.setAttribute('font-family','Baloo 2');
+      t.setAttribute('font-weight','700');
+      t.setAttribute('font-size','16');
+      t.setAttribute('fill','#5c35a0');
+      t.textContent = i;
+      g.appendChild(t);
+    }
+  });
+  updateClockHands();
+  renderClockQuiz();
+}
+function updateClockHands() {
+  const hAngle = ((clockH%12) + clockM/60) / 12 * 360 - 90;
+  const mAngle = clockM/60*360 - 90;
+  setHand('hour-hand', hAngle, 52);
+  setHand('minute-hand', mAngle, 72);
+  const h12 = clockH%12===0?12:clockH%12;
+  const mStr = clockM.toString().padStart(2,'0');
+  document.getElementById('clock-time-text').textContent = h12+':'+mStr;
+  document.getElementById('clock-ampm-label').textContent = clockH<12?'a.m.':'p.m.';
+}
+function setHand(id, angle, length) {
+  const el = document.getElementById(id);
+  const rad = (angle)*Math.PI/180;
+  const x2 = 120 + Math.cos(rad)*length;
+  const y2 = 120 + Math.sin(rad)*length;
+  el.setAttribute('x2', x2);
+  el.setAttribute('y2', y2);
+}
+function changeHour(d) {
+  clockH = (clockH+d+24)%24;
+  updateClockHands();
+  stars++;
+  document.getElementById('star-display').textContent=stars;
+  checkBadges(); saveState();
+}
+function changeMin(d) {
+  clockM = (clockM+d+60)%60;
+  updateClockHands();
+}
+function setNow() {
+  const now = new Date();
+  clockH = now.getHours();
+  clockM = now.getMinutes();
+  updateClockHands();
+  showModalMsg('🕐','Live Time!','The clock now shows the real time!');
+}
+
+// ===== CLOCK QUIZ =====
+const clockTimes = [
+  {h:3,m:0},{h:6,m:0},{h:9,m:0},{h:12,m:0},{h:1,m:30},
+  {h:5,m:0},{h:8,m:15},{h:11,m:0},{h:2,m:0},{h:7,m:0}
+];
+let cqIndex = 0;
+function renderClockQuiz() {
+  const t = clockTimes[cqIndex%clockTimes.length];
+  const hAngle = (t.h%12)/12*360-90;
+  const mAngle = t.m/60*360-90;
+  setCQHand('cq-hour', hAngle, 52);
+  setCQHand('cq-minute', mAngle, 72);
+
+  const correct = `${t.h===12||t.h===0?12:t.h%12}:${t.m.toString().padStart(2,'0')}`;
+  const opts = [correct];
+  while(opts.length<4){
+    const fh = Math.floor(Math.random()*12)+1;
+    const fm = [0,15,30][Math.floor(Math.random()*3)];
+    const o = `${fh}:${fm.toString().padStart(2,'0')}`;
+    if(!opts.includes(o)) opts.push(o);
+  }
+  opts.sort(()=>Math.random()-0.5);
+
+  const wrap = document.getElementById('cq-options');
+  wrap.innerHTML = '';
+  document.getElementById('cq-feedback').textContent = '';
+  opts.forEach(o => {
+    const b = document.createElement('button');
+    b.className='quiz-opt';
+    b.textContent=o;
+    b.onclick=()=>checkCQ(o, correct, b, t);
+    wrap.appendChild(b);
+  });
+  // render numbers
+  const g = document.getElementById('cq-numbers');
+  if(g){ g.innerHTML=''; for(let i=1;i<=12;i++){const a=(i/12)*Math.PI*2-Math.PI/2;const x=120+Math.cos(a)*82;const y=120+Math.sin(a)*82;const t2=document.createElementNS('http://www.w3.org/2000/svg','text');t2.setAttribute('x',x);t2.setAttribute('y',y);t2.setAttribute('text-anchor','middle');t2.setAttribute('dominant-baseline','middle');t2.setAttribute('font-family','Baloo 2');t2.setAttribute('font-weight','700');t2.setAttribute('font-size','16');t2.setAttribute('fill','#5c35a0');t2.textContent=i;g.appendChild(t2);}}
+}
+function setCQHand(id,angle,len){const el=document.getElementById(id);if(!el)return;const rad=angle*Math.PI/180;el.setAttribute('x2',120+Math.cos(rad)*len);el.setAttribute('y2',120+Math.sin(rad)*len);}
+function checkCQ(chosen, correct, btn, t){
+  const wrap=document.getElementById('cq-options');
+  Array.from(wrap.querySelectorAll('.quiz-opt')).forEach(b=>{b.disabled=true;if(b.textContent===correct)b.classList.add('correct');});
+  const fb=document.getElementById('cq-feedback');
+  if(chosen===correct){ btn.classList.add('correct');fb.textContent='🎉 Correct! Great job!';fb.className='quiz-feedback feedback-correct';awardStar(2,'Clock Reading +2 stars!',false);spawnConfetti(15); }
+  else { btn.classList.add('wrong');fb.textContent='❌ Not quite! The correct time is '+correct;fb.className='quiz-feedback feedback-wrong'; }
+  setTimeout(()=>{cqIndex++;renderClockQuiz();},2000);
+}
+
+// ===== CALENDAR =====
+function renderCalendar() {
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const now = new Date();
+  const today = now.getDate();
+  const todayLabel = days[now.getDay()]+', '+months[now.getMonth()]+' '+today+', '+now.getFullYear();
+  document.getElementById('today-label').textContent = todayLabel;
+
+  // Feb 2026: starts on Sunday (day 0)
+  const firstDay = 0; // Sunday
+  const daysInMonth = 28;
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+  days.forEach(d=>{
+    const h=document.createElement('div');
+    h.className='cal-header';
+    h.textContent=d;
+    grid.appendChild(h);
+  });
+  for(let i=0;i<firstDay;i++){
+    const e=document.createElement('div');
+    e.className='cal-day empty';
+    grid.appendChild(e);
+  }
+  for(let d=1;d<=daysInMonth;d++){
+    const cell=document.createElement('div');
+    cell.className='cal-day'+(d===18?' today':'');
+    cell.textContent=d;
+    cell.onclick=()=>{spawnConfetti(8);showModalMsg('📅','Day '+d,'That\'s '+days[(firstDay+d-1)%7]+', February '+d+', 2026!');};
+    grid.appendChild(cell);
+  }
+
+  // Days of week
+  const dRow=document.getElementById('days-row');
+  dRow.innerHTML='';
+  const fullDays=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  fullDays.forEach((d,i)=>{
+    const chip=document.createElement('div');
+    chip.className='day-chip';
+    chip.style.animationDelay=(i*0.07)+'s';
+    chip.textContent=d;
+    dRow.appendChild(chip);
+  });
+
+  // Months grid
+  const monthData=[
+    {name:'January',days:31},{name:'February',days:'28/29'},{name:'March',days:31},
+    {name:'April',days:30},{name:'May',days:31},{name:'June',days:30},
+    {name:'July',days:31},{name:'August',days:31},{name:'September',days:30},
+    {name:'October',days:31},{name:'November',days:30},{name:'December',days:31}
+  ];
+  const mGrid=document.getElementById('months-grid');
+  mGrid.innerHTML='';
+  monthData.forEach((m,i)=>{
+    const chip=document.createElement('div');
+    chip.className='month-chip';
+    chip.innerHTML=`<strong>${m.name}</strong><div class="days">${m.days} days</div>`;
+    chip.onclick=()=>{ awardStar(1,'Learned about '+m.name+'!'); };
+    mGrid.appendChild(chip);
+  });
+}
+
+// ===== QUIZ =====
+const QUESTIONS = [
+  { q:'What time of day does the Sun rise?', opts:['Morning','Evening','Midnight','Noon'], ans:'Morning', icon:'🌅' },
+  { q:'How many hours are there in one day?', opts:['12','48','24','7'], ans:'24', icon:'⏰' },
+  { q:'What do we call 12 o\'clock at night?', opts:['Noon','Midnight','Evening','Dawn'], ans:'Midnight', icon:'🌙' },
+  { q:'The time between midnight and noon is written with...', opts:['p.m.','a.m.','noon','midnight'], ans:'a.m.', icon:'☀️' },
+  { q:'How many days are in a week?', opts:['5','6','7','8'], ans:'7', icon:'📅' },
+  { q:'How many months are in a year?', opts:['10','11','12','13'], ans:'12', icon:'🗓️' },
+  { q:'The Sun sets in which direction?', opts:['North','East','South','West'], ans:'West', icon:'🌇' },
+  { q:'When you face East, which direction is behind you?', opts:['North','South','East','West'], ans:'West', icon:'🧭' },
+  { q:'How many days does February usually have?', opts:['30','31','28','29'], ans:'28', icon:'📆' },
+  { q:'What is a year with 366 days called?', opts:['Big year','Leap year','Long year','Extra year'], ans:'Leap year', icon:'🐸' },
+  { q:'How many seconds are in a minute?', opts:['100','50','30','60'], ans:'60', icon:'⏱️' },
+  { q:'Which comes after Wednesday?', opts:['Tuesday','Monday','Thursday','Friday'], ans:'Thursday', icon:'📅' },
+  { q:'When you face East, your right hand points to...', opts:['North','West','East','South'], ans:'South', icon:'🧭' },
+  { q:'A compass always points to which direction?', opts:['South','East','North','West'], ans:'North', icon:'🧲' },
+  { q:'How many minutes are in an hour?', opts:['100','60','30','24'], ans:'60', icon:'🕐' },
+  { q:'Which month has 30 days?', opts:['January','March','April','July'], ans:'April', icon:'🌸' },
+  { q:'What tool tells us the exact time?', opts:['Calendar','Compass','Clock','Map'], ans:'Clock', icon:'🕐' },
+  { q:'The Sun rises in which direction?', opts:['North','South','West','East'], ans:'East', icon:'🌅' },
+  { q:'How many days are in a normal year?', opts:['364','365','366','360'], ans:'365', icon:'📆' },
+  { q:'Which is the last month of the year?', opts:['November','October','January','December'], ans:'December', icon:'🎄' },
+];
+let shuffledQ = [];
+function initQuiz() {
+  shuffledQ = [...QUESTIONS].sort(()=>Math.random()-0.5);
+  quizIndex = 0; quizScore = 0;
+  renderQuizProgress();
+  showQuestion();
+}
+function renderQuizProgress() {
+  const prog = document.getElementById('quiz-progress');
+  prog.innerHTML='';
+  shuffledQ.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='q-dot'+(i<quizIndex?' done':i===quizIndex?' current':'');
+    prog.appendChild(d);
+  });
+}
+function showQuestion() {
+  if(quizIndex>=shuffledQ.length){ showQuizEnd(); return; }
+  const q=shuffledQ[quizIndex];
+  document.getElementById('quiz-q').textContent=q.icon+' '+q.q;
+  const opts=document.getElementById('quiz-opts');
+  opts.innerHTML='';
+  document.getElementById('quiz-feedback').textContent='';
+  document.getElementById('next-btn').style.display='none';
+  quizAnswered=false;
+  const shuffled=[...q.opts].sort(()=>Math.random()-0.5);
+  shuffled.forEach(o=>{
+    const b=document.createElement('button');
+    b.className='quiz-opt';
+    b.textContent=o;
+    b.onclick=()=>answerQ(o,q.ans,b);
+    opts.appendChild(b);
+  });
+  renderQuizProgress();
+}
+function answerQ(chosen, correct, btn) {
+  if(quizAnswered) return;
+  quizAnswered=true;
+  const opts=document.querySelectorAll('.quiz-opt');
+  opts.forEach(b=>{
+    b.disabled=true;
+    if(b.textContent===correct) b.classList.add('correct');
+  });
+  const fb=document.getElementById('quiz-feedback');
+  if(chosen===correct){
+    btn.classList.add('correct');
+    fb.textContent='🎉 Correct! You earned 2 stars!';
+    fb.className='quiz-feedback feedback-correct';
+    quizScore++;
+    awardStar(2,'Quiz +2 ⭐',false);
+    spawnConfetti(15);
+  } else {
+    btn.classList.add('wrong');
+    fb.textContent='❌ Not quite! The answer is: '+correct;
+    fb.className='quiz-feedback feedback-wrong';
+    awardStar(0,'',false);
+  }
+  document.getElementById('next-btn').style.display='block';
+}
+function nextQuestion(){
+  quizIndex++;
+  if(quizIndex>=shuffledQ.length){ showQuizEnd(); return; }
+  showQuestion();
+}
+function showQuizEnd(){
+  document.getElementById('quiz-q').textContent='🎊 Quiz Complete!';
+  document.getElementById('quiz-opts').innerHTML='';
+  const score=quizScore;
+  const total=shuffledQ.length;
+  const pct=Math.round(score/total*100);
+  let emoji=pct>=80?'🏆':pct>=60?'🌟':'😊';
+  document.getElementById('quiz-feedback').textContent=`${emoji} You got ${score}/${total} correct! (${pct}%)`;
+  document.getElementById('quiz-feedback').className='quiz-feedback feedback-correct';
+  document.getElementById('next-btn').style.display='none';
+  spawnConfetti(40);
+  checkBadges(); saveState();
+  if(score===total) showModalMsg('🏆','PERFECT SCORE!','Amazing! You got every question right! You\'re a TIME & DIRECTIONS expert!');
+  else if(pct>=60) showModalMsg(emoji,'Great Job!','You scored '+score+' out of '+total+'! Keep practicing!');
+}
+function restartQuiz(){
+  initQuiz();
+}
+
+// ===== DIRECTIONS =====
+function highlightStep(el, n) {
+  document.querySelectorAll('.step-card').forEach(s=>s.style.background='rgba(255,255,255,0.85)');
+  el.style.background='#f3e8ff';
+  spawnConfetti(6);
+}
+
+// ===== INIT =====
+function init() {
+  document.getElementById('star-display').textContent = stars;
+  document.getElementById('star-display-2').textContent = stars;
+  renderClockNumbers();
+  renderCalendar();
+  renderBadges();
+  initQuiz();
+}
+init();
+</script>
+</body>
+</html>
