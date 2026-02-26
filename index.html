@@ -3,783 +3,1681 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>⏰ Time & Directions Adventure!</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>English Fairy - Learn & Play! 🌟</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--purple:#9C6FDE;--pink:#FF7EB3;--orange:#FF8C42;--green:#66BB6A;--sky:#4FC3F7;--sun:#FFD600;--card:#ffffffee;--shadow:0 8px 32px rgba(80,60,140,.15);--r:24px;}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:"Nunito",sans-serif;background:linear-gradient(160deg,#e0f7fa 0%,#e8f5e9 50%,#fff9c4 100%);min-height:100vh;overflow-x:hidden;}
-.particle{position:fixed;pointer-events:none;z-index:0;font-size:1.2rem;animation:floatUp linear infinite;opacity:.4;}
-@keyframes floatUp{0%{transform:translateY(105vh) rotate(0deg);opacity:0}10%{opacity:.5}90%{opacity:.5}100%{transform:translateY(-10vh) rotate(360deg);opacity:0}}
-header{text-align:center;padding:24px 20px 10px;position:relative;z-index:2;}
-header h1{font-family:"Baloo 2",cursive;font-size:clamp(1.8rem,5vw,3rem);font-weight:900;background:linear-gradient(90deg,#FF7043,#FF7EB3,#9C6FDE,#4FC3F7,#66BB6A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:titleBounce .8s cubic-bezier(.36,1.56,.64,1) both;}
-@keyframes titleBounce{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
-.mascot{font-size:2.8rem;animation:wave 2s ease-in-out infinite;display:inline-block;cursor:pointer;}
-@keyframes wave{0%,100%{transform:rotate(-10deg) scale(1)}50%{transform:rotate(15deg) scale(1.15)}}
-.starbar{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(90deg,#fff9c4,#ffe082,#fff9c4);border-radius:50px;padding:8px 22px;border:2.5px solid #FFD600;box-shadow:0 4px 14px rgba(255,180,0,.25);font-weight:800;color:#7b3f00;font-size:1rem;margin:6px auto 14px;cursor:pointer;transition:transform .15s;}
-.starbar:hover{transform:scale(1.05);}
-.star-num{font-size:1.4rem;font-weight:900;transition:transform .3s cubic-bezier(.36,1.56,.64,1);display:inline-block;}
-.star-num.pop{transform:scale(1.7);}
-nav{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;padding:0 12px 16px;position:relative;z-index:2;}
-nav button{font-family:"Baloo 2",cursive;font-size:.92rem;font-weight:700;border:none;border-radius:50px;padding:9px 18px;cursor:pointer;transition:all .2s cubic-bezier(.36,1.56,.64,1);box-shadow:0 4px 0 rgba(0,0,0,.18);position:relative;top:0;}
-nav button:hover{transform:translateY(-3px) scale(1.07);box-shadow:0 7px 0 rgba(0,0,0,.14);}
-nav button:active{top:3px;box-shadow:0 0px 0 rgba(0,0,0,.14);}
-nav button.active{box-shadow:0 0 0 3px white,0 0 0 6px var(--purple);transform:scale(1.08);}
-.nb1{background:linear-gradient(135deg,#FF7EB3,#FF4081);color:#fff}
-.nb2{background:linear-gradient(135deg,#FFD600,#FF8C42);color:#fff}
-.nb3{background:linear-gradient(135deg,#66BB6A,#26A69A);color:#fff}
-.nb4{background:linear-gradient(135deg,#4FC3F7,#7E57C2);color:#fff}
-.nb5{background:linear-gradient(135deg,#9C6FDE,#E040FB);color:#fff}
-.nb6{background:linear-gradient(135deg,#FF8C42,#FF5722);color:#fff}
-.panel{display:none;max-width:920px;margin:0 auto;padding:0 12px 50px;position:relative;z-index:2;animation:pIn .4s cubic-bezier(.36,1.56,.64,1) both;}
-.panel.active{display:block;}
-@keyframes pIn{from{transform:translateY(28px) scale(.97);opacity:0}to{transform:none;opacity:1}}
-.card{background:var(--card);border-radius:var(--r);padding:22px;margin-bottom:16px;box-shadow:var(--shadow);border:2px solid rgba(255,255,255,.85);}
-.card h2{font-family:"Baloo 2",cursive;font-size:1.45rem;font-weight:800;color:#5c35a0;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
-/* SKY */
-.sky-scene{border-radius:20px;overflow:hidden;position:relative;height:190px;background:linear-gradient(180deg,#FFE082 0%,#87CEEB 40%,#87CEEB 75%,#5DBB63 75%,#4CAF50 100%);cursor:crosshair;margin-bottom:14px;transition:background 1s;user-select:none;touch-action:none;}
-.cloud{position:absolute;animation:cloudDrift linear infinite;pointer-events:none;}
-@keyframes cloudDrift{0%{transform:translateX(-80px)}100%{transform:translateX(110vw)}}
-.drag-sun{position:absolute;font-size:3rem;cursor:grab;filter:drop-shadow(0 4px 12px rgba(255,180,0,.5));z-index:5;transition:filter .3s;touch-action:none;}
-.drag-sun:active{cursor:grabbing;}
-.sky-label{position:absolute;top:8px;left:50%;transform:translateX(-50%);font-family:"Baloo 2",cursive;font-weight:800;font-size:1.2rem;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.4);background:rgba(0,0,0,.18);border-radius:50px;padding:3px 14px;pointer-events:none;}
-.drag-hint{position:absolute;bottom:8px;right:10px;font-size:.72rem;background:rgba(255,255,255,.75);border-radius:10px;padding:3px 9px;font-weight:700;color:#5c35a0;pointer-events:none;}
-/* TOD */
-.tod-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:11px;margin-top:11px;}
-.tod-card{border-radius:18px;padding:14px 10px;text-align:center;cursor:pointer;transition:transform .2s cubic-bezier(.36,1.56,.64,1),box-shadow .2s;font-weight:700;font-size:.85rem;position:relative;overflow:hidden;}
-.tod-card:hover{transform:scale(1.09) rotate(-2deg);box-shadow:0 10px 28px rgba(0,0,0,.15);}
-.tod-card:active{transform:scale(.96);}
-.tod-card .ti{font-size:2rem;margin-bottom:5px;display:block;transition:transform .3s;}
-.tod-card:hover .ti{transform:scale(1.3) rotate(10deg);}
-.tod-morning{background:linear-gradient(160deg,#fff9c4,#FFE082);color:#7b3f00;}
-.tod-noon{background:linear-gradient(160deg,#B3E5FC,#4FC3F7);color:#01579b;}
-.tod-afternoon{background:linear-gradient(160deg,#FFCCBC,#FF8A65);color:#bf360c;}
-.tod-evening{background:linear-gradient(160deg,#CE93D8,#7B1FA2);color:#fff;}
-.tod-night{background:linear-gradient(160deg,#3949AB,#1a1a4e);color:#90CAF9;}
-.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.4);transform:scale(0);animation:rAnim .6s linear;pointer-events:none;}
-@keyframes rAnim{to{transform:scale(4);opacity:0}}
-/* UNITS */
-.unit-chain{display:flex;flex-wrap:wrap;gap:0;align-items:center;margin:14px 0;}
-.unit-block{background:linear-gradient(135deg,#f3e8ff,#e8d8ff);border:2.5px solid #9C6FDE;border-radius:14px;padding:9px 14px;font-weight:800;font-size:.85rem;color:#5c35a0;cursor:pointer;transition:all .2s cubic-bezier(.36,1.56,.64,1);}
-.unit-block:hover{transform:scale(1.12);background:linear-gradient(135deg,#9C6FDE,#E040FB);color:#fff;box-shadow:0 4px 16px rgba(156,111,222,.4);}
-.unit-block.active-unit{background:linear-gradient(135deg,#9C6FDE,#E040FB);color:#fff;}
-.unit-arrow{font-size:1.3rem;color:#9C6FDE;padding:0 5px;}
-/* AMPM FLIP */
-.ampm-wrap{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:13px;}
-.ampm-flip{perspective:600px;cursor:pointer;height:130px;}
-.ampm-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.36,1.56,.64,1);}
-.ampm-flip.flipped .ampm-inner{transform:rotateY(180deg);}
-.af,.ab{position:absolute;inset:0;border-radius:18px;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;}
-.ab{transform:rotateY(180deg);}
-.af.am{background:linear-gradient(135deg,#fff9c4,#FFE082);color:#7b3f00;}
-.ab.am2{background:linear-gradient(135deg,#FFD600,#FF8C42);color:#fff;}
-.af.pm{background:linear-gradient(135deg,#E1BEE7,#AB47BC);color:#fff;}
-.ab.pm2{background:linear-gradient(135deg,#7B1FA2,#4A148C);color:#fff;}
-.abig{font-family:"Baloo 2",cursive;font-size:2rem;font-weight:900;}
-/* CLOCK */
-.clock-svg-wrap{position:relative;width:230px;height:230px;cursor:grab;touch-action:none;}
-.clock-time-display{font-family:"Baloo 2",cursive;font-size:2.5rem;font-weight:800;color:#5c35a0;}
-.clock-controls{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;}
-.cbtn{background:linear-gradient(135deg,#9C6FDE,#E040FB);color:#fff;border:none;border-radius:50px;padding:8px 16px;font-family:"Baloo 2",cursive;font-weight:700;font-size:.9rem;cursor:pointer;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 12px rgba(156,111,222,.3);}
-.cbtn:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(156,111,222,.4);}
-.cbtn:active{transform:scale(.95);}
-.spin-hint{font-size:.82rem;color:#9C6FDE;font-weight:700;margin:3px 0 8px;animation:pulse 2s ease-in-out infinite;}
-@keyframes pulse{0%,100%{opacity:.7}50%{opacity:1}}
-/* SET TIME */
-.set-time-card{background:linear-gradient(135deg,#f3e8ff,#e8f5e9);border-radius:18px;padding:18px;margin-top:12px;text-align:center;}
-.target-t{font-family:"Baloo 2",cursive;font-size:1.9rem;font-weight:900;color:#5c35a0;margin:8px 0;}
-/* CALENDAR */
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px;}
-.cal-h{font-weight:800;font-size:.78rem;text-align:center;padding:6px 3px;border-radius:9px;color:#fff;background:linear-gradient(135deg,#9C6FDE,#E040FB);}
-.cal-day{background:rgba(255,255,255,.8);border-radius:9px;padding:6px 3px;text-align:center;font-size:.88rem;font-weight:700;color:#333;cursor:pointer;transition:all .2s cubic-bezier(.36,1.56,.64,1);border:2px solid transparent;min-height:38px;display:flex;align-items:center;justify-content:center;}
-.cal-day:hover:not(.empty){transform:scale(1.2) rotate(-2deg);border-color:#9C6FDE;background:#f3e8ff;z-index:2;position:relative;}
-.cal-day.today{background:linear-gradient(135deg,#FFD600,#FF8C42);color:#fff;border-color:#FF8C42;animation:todayPulse 2s ease-in-out infinite;}
-@keyframes todayPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,180,0,.5)}50%{box-shadow:0 0 0 6px rgba(255,180,0,0)}}
-.cal-day.empty{background:transparent;cursor:default;}
-.cal-day.visited{background:linear-gradient(135deg,#C8E6C9,#66BB6A);color:#1b5e20;border-color:#66BB6A;}
-/* DAYS DRAG */
-.drag-match{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;}
-.drag-src,.drag-tgt{display:flex;flex-direction:column;gap:7px;flex:1;min-width:130px;}
-.draggable-day{background:linear-gradient(135deg,#FF7EB3,#FF4081);color:#fff;border-radius:50px;padding:7px 16px;font-weight:800;font-size:.88rem;cursor:grab;transition:transform .15s,opacity .15s;user-select:none;text-align:center;}
-.draggable-day:active{cursor:grabbing;opacity:.6;transform:scale(1.08);}
-.drop-tgt{background:rgba(255,255,255,.6);border:2.5px dashed #9C6FDE;border-radius:50px;padding:7px 16px;font-weight:800;font-size:.88rem;color:#bbb;transition:all .2s;text-align:center;min-height:38px;}
-.drop-tgt.over{background:#f3e8ff;border-color:#E040FB;transform:scale(1.04);}
-.drop-tgt.correct{background:linear-gradient(135deg,#C8E6C9,#66BB6A);color:#1b5e20;border-color:#66BB6A;border-style:solid;}
-.drop-tgt.wrong{background:linear-gradient(135deg,#FFCDD2,#FF5252);color:#b71c1c;border-color:#b71c1c;border-style:solid;animation:shake .3s;}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-/* MONTHS */
-.months-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;}
-.month-chip{border-radius:13px;padding:9px 5px;text-align:center;font-weight:700;font-size:.8rem;cursor:pointer;transition:transform .2s cubic-bezier(.36,1.56,.64,1);box-shadow:0 3px 10px rgba(0,0,0,.1);color:#fff;position:relative;}
-.month-chip:hover{transform:scale(1.13) rotate(-2deg);}
-.month-chip:active{transform:scale(.96);}
-.month-chip.picked::after{content:"✓";position:absolute;top:3px;right:5px;font-size:.78rem;font-weight:900;}
-/* POEM */
-.poem-line{cursor:pointer;padding:3px 7px;border-radius:8px;transition:all .2s;font-style:italic;font-size:.96rem;font-weight:700;color:#4a2080;line-height:1.9;}
-.poem-line:hover{background:rgba(156,111,222,.15);transform:translateX(8px);font-style:normal;}
-.poem-line.lit{background:rgba(156,111,222,.3);font-weight:900;font-style:normal;}
-/* COMPASS */
-.compass-outer{width:210px;height:210px;border-radius:50%;background:conic-gradient(from 0deg,#FFE082 0deg,#FF7043 90deg,#CE93D8 180deg,#90CAF9 270deg,#FFE082 360deg);padding:13px;box-shadow:0 8px 32px rgba(0,0,0,.15);cursor:grab;user-select:none;touch-action:none;}
-.compass-outer:active{cursor:grabbing;}
-.compass-inner{width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff 0%,#f3e8ff 100%);display:flex;align-items:center;justify-content:center;position:relative;}
-.clabel{position:absolute;font-family:"Baloo 2",cursive;font-weight:900;font-size:1.25rem;cursor:pointer;transition:transform .2s cubic-bezier(.36,1.56,.64,1);}
-.clabel:hover{transform:scale(1.35);}
-.cn{top:7px;left:50%;transform:translateX(-50%);color:#0288D1;}
-.cs{bottom:7px;left:50%;transform:translateX(-50%);color:#E64A19;}
-.ce{right:7px;top:50%;transform:translateY(-50%);color:#388E3C;}
-.cw{left:7px;top:50%;transform:translateY(-50%);color:#7B1FA2;}
-.dir-cards{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
-.dir-card{border-radius:18px;padding:15px;cursor:pointer;transition:transform .2s cubic-bezier(.36,1.56,.64,1),box-shadow .2s;position:relative;overflow:hidden;}
-.dir-card:hover{transform:scale(1.05) rotate(-1deg);box-shadow:0 10px 28px rgba(0,0,0,.15);}
-.dir-card:active{transform:scale(.97);}
-.dir-n{background:linear-gradient(135deg,#B3E5FC,#0288D1);color:#fff;}
-.dir-s{background:linear-gradient(135deg,#FFCCBC,#E64A19);color:#fff;}
-.dir-e{background:linear-gradient(135deg,#C8E6C9,#388E3C);color:#fff;}
-.dir-w{background:linear-gradient(135deg,#E1BEE7,#7B1FA2);color:#fff;}
-.dir-letter{font-family:"Baloo 2",cursive;font-size:2.6rem;font-weight:900;opacity:.2;position:absolute;top:2px;right:8px;}
-/* POSITION WORDS */
-.pos-scene{background:linear-gradient(180deg,#87CEEB 0%,#87CEEB 65%,#5DBB63 65%,#4CAF50 100%);border-radius:18px;padding:16px;position:relative;min-height:170px;margin:12px 0;}
-.pos-object{position:absolute;font-size:1.9rem;transition:all .4s cubic-bezier(.36,1.56,.64,1);}
-.pos-word-btns{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px;}
-.pos-btn{background:rgba(255,255,255,.88);border:2.5px solid #9C6FDE;border-radius:50px;padding:5px 12px;font-weight:800;font-size:.82rem;color:#5c35a0;cursor:pointer;transition:all .2s cubic-bezier(.36,1.56,.64,1);}
-.pos-btn:hover{background:#9C6FDE;color:#fff;transform:scale(1.12);}
-.pos-btn:active{transform:scale(.94);}
-/* MAZE */
-.maze-wrap{border-radius:18px;overflow:hidden;position:relative;border:3px solid #9C6FDE;background:#f5f5f5;}
-.maze-canvas{display:block;width:100%;max-width:400px;margin:0 auto;}
-.maze-controls{display:flex;gap:9px;justify-content:center;margin-top:11px;flex-wrap:wrap;}
-.mbtn{background:linear-gradient(135deg,#4FC3F7,#7E57C2);color:#fff;border:none;border-radius:50px;padding:10px 18px;font-family:"Baloo 2",cursive;font-weight:700;font-size:1rem;cursor:pointer;transition:transform .15s;box-shadow:0 4px 12px rgba(126,87,194,.3);}
-.mbtn:hover{transform:scale(1.12);}
-.mbtn:active{transform:scale(.94);}
-/* QUIZ */
-.quiz-progress{display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap;}
-.q-dot{width:15px;height:15px;border-radius:50%;background:#e0e0e0;transition:all .3s;}
-.q-dot.done{background:linear-gradient(135deg,#66BB6A,#26A69A);}
-.q-dot.wrong2{background:linear-gradient(135deg,#FF5252,#FF1744);}
-.q-dot.curr{background:linear-gradient(135deg,#FFD600,#FF8C42);transform:scale(1.35);}
-.quiz-q{font-family:"Baloo 2",cursive;font-size:1.25rem;font-weight:700;color:#4a2080;margin-bottom:16px;line-height:1.4;}
-.quiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
-.qopt{background:rgba(255,255,255,.92);border:2.5px solid #e0d0f8;border-radius:15px;padding:12px 13px;font-size:.95rem;font-weight:700;color:#444;cursor:pointer;transition:all .2s cubic-bezier(.36,1.56,.64,1);text-align:left;font-family:"Nunito",sans-serif;position:relative;overflow:hidden;}
-.qopt:hover{transform:scale(1.05) rotate(-.5deg);border-color:#9C6FDE;background:#f3e8ff;}
-.qopt:active{transform:scale(.97);}
-.qopt.correct{background:linear-gradient(135deg,#C8E6C9,#66BB6A);border-color:#388E3C;color:#1b5e20;animation:cBounce .4s cubic-bezier(.36,1.56,.64,1);}
-@keyframes cBounce{0%{transform:scale(.9)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
-.qopt.wrong{background:linear-gradient(135deg,#FFCDD2,#FF5252);border-color:#b71c1c;color:#b71c1c;animation:shake .3s;}
-.quiz-fb{text-align:center;font-family:"Baloo 2",cursive;font-size:1.35rem;font-weight:800;min-height:45px;margin-top:12px;animation:popIn .4s cubic-bezier(.36,1.56,.64,1) both;}
-@keyframes popIn{from{transform:scale(.5) rotate(-10deg);opacity:0}to{transform:none;opacity:1}}
-.fb-ok{color:#2e7d32;}.fb-bad{color:#c62828;}
-.next-btn{display:block;margin:12px auto 0;background:linear-gradient(135deg,#9C6FDE,#E040FB);color:#fff;border:none;border-radius:50px;padding:10px 32px;font-family:"Baloo 2",cursive;font-weight:700;font-size:1rem;cursor:pointer;transition:transform .2s;box-shadow:0 4px 0 rgba(0,0,0,.15);}
-.next-btn:hover{transform:scale(1.07);}
-/* BADGES */
-.badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(115px,1fr));gap:12px;}
-.badge{background:var(--card);border-radius:17px;padding:14px 9px;text-align:center;box-shadow:var(--shadow);transition:transform .2s cubic-bezier(.36,1.56,.64,1);border:2px solid rgba(255,255,255,.85);cursor:pointer;position:relative;}
-.badge:hover{transform:scale(1.08) rotate(-1.5deg);}
-.badge.locked{filter:grayscale(.8);opacity:.5;}
-.badge .bi{font-size:2.4rem;margin-bottom:5px;transition:transform .3s;display:block;}
-.badge:hover .bi{transform:scale(1.25) rotate(10deg);}
-.badge .bn{font-weight:800;font-size:.8rem;color:#5c35a0;}
-.badge .bd{font-size:.68rem;color:#888;margin-top:2px;}
-.badge .lk{position:absolute;top:5px;right:7px;font-size:.95rem;}
-/* MISC */
-.fact-box{background:linear-gradient(135deg,#fff9c4,#FFE082);border-radius:13px;padding:11px 15px;margin-top:9px;font-weight:700;color:#7b3f00;font-size:.9rem;border-left:5px solid #FFD600;}
-.info-pill{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(90deg,#f3e8ff,#e8f5e9);border-radius:50px;padding:5px 13px;font-size:.85rem;font-weight:700;color:#5c35a0;margin:3px;cursor:pointer;transition:transform .15s;}
-.info-pill:hover{transform:scale(1.12);}
-.beat{animation:beat 1.4s ease infinite;display:inline-block;}
-@keyframes beat{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
-.poem-box{background:linear-gradient(135deg,#f3e8ff,#E1BEE7);border-radius:15px;padding:15px 17px;margin-top:12px;border-left:5px solid #9C6FDE;}
-.leap-box{background:linear-gradient(135deg,#e8f5e9,#C8E6C9);border-radius:15px;padding:15px;margin-top:12px;border-left:5px solid #66BB6A;}
-.section-title{font-family:"Baloo 2",cursive;font-size:1.05rem;font-weight:800;color:#9C6FDE;margin-bottom:7px;}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
-.modal-overlay.open{display:flex;}
-.modal-box{background:#fff;border-radius:26px;padding:30px 26px;max-width:370px;width:92%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.22);animation:pIn .4s cubic-bezier(.36,1.56,.64,1);}
-.modal-box h2{font-family:"Baloo 2",cursive;font-size:1.8rem;font-weight:800;color:#5c35a0;margin-bottom:8px;}
-.modal-close{background:linear-gradient(135deg,#9C6FDE,#E040FB);color:#fff;border:none;border-radius:50px;padding:10px 28px;font-family:"Baloo 2",cursive;font-weight:700;font-size:1rem;cursor:pointer;transition:transform .15s;margin-top:14px;display:inline-block;}
-.modal-close:hover{transform:scale(1.07);}
-.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);background:linear-gradient(135deg,#9C6FDE,#E040FB);color:#fff;font-family:"Baloo 2",cursive;font-weight:700;font-size:1rem;padding:10px 24px;border-radius:50px;box-shadow:0 8px 24px rgba(156,111,222,.4);z-index:9999;opacity:0;transition:all .35s cubic-bezier(.36,1.56,.64,1);white-space:nowrap;pointer-events:none;}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-.conf{position:fixed;width:10px;height:10px;border-radius:2px;pointer-events:none;z-index:999;animation:confFall 1.4s ease-in forwards;}
-@keyframes confFall{0%{opacity:1;transform:translateY(-20px) rotate(0deg)}100%{opacity:0;transform:translateY(88vh) rotate(720deg)}}
-.cq-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;padding:6px 0;}
-@media(max-width:500px){.quiz-opts{grid-template-columns:1fr}.ampm-wrap{grid-template-columns:1fr}.dir-cards{grid-template-columns:1fr}.clock-svg-wrap{width:200px;height:200px}}
+  :root {
+    --sky: #87CEEB;
+    --sun: #FFD700;
+    --grass: #7EC850;
+    --snow: #E8F4FD;
+    --red: #FF6B6B;
+    --green: #4CAF50;
+    --purple: #9B59B6;
+    --orange: #FF9500;
+    --pink: #FF69B4;
+    --teal: #00BCD4;
+    --star: #FFD700;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Floating stars background */
+  .bg-stars {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .star-bg {
+    position: absolute;
+    font-size: 20px;
+    animation: floatStar 6s ease-in-out infinite;
+    opacity: 0.3;
+  }
+  @keyframes floatStar {
+    0%,100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+  }
+
+  /* HOME SCREEN */
+  #home {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .home-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(40px, 8vw, 80px);
+    color: white;
+    text-shadow: 4px 4px 0 rgba(0,0,0,0.2), 0 0 40px rgba(255,255,200,0.5);
+    animation: bounce 2s ease-in-out infinite;
+    margin-bottom: 10px;
+  }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  .home-subtitle {
+    font-size: 22px;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 50px;
+    font-weight: 700;
+  }
+
+  .chapter-cards {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 40px;
+  }
+
+  .chapter-card {
+    background: white;
+    border-radius: 30px;
+    padding: 30px 40px;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    max-width: 300px;
+    border: 4px solid transparent;
+    position: relative;
+    overflow: hidden;
+  }
+  .chapter-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 6px;
+  }
+  .chapter-card.christmas::before { background: linear-gradient(90deg, #e74c3c, #2ecc71, #e74c3c); }
+  .chapter-card.seasons::before { background: linear-gradient(90deg, #f39c12, #27ae60, #3498db, #e74c3c); }
+  .chapter-card:hover { transform: translateY(-10px) scale(1.03); box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+
+  .card-emoji { font-size: 60px; margin-bottom: 15px; display: block; }
+  .card-title { font-family: 'Fredoka One', cursive; font-size: 28px; margin-bottom: 8px; }
+  .card-desc { font-size: 15px; color: #666; line-height: 1.4; }
+  .christmas .card-title { color: #e74c3c; }
+  .seasons .card-title { color: #27ae60; }
+
+  /* CHAPTER SCREENS */
+  .chapter-screen {
+    display: none;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+  .chapter-screen.active { display: block; }
+
+  .chapter-header {
+    padding: 20px 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    background: rgba(255,255,255,0.15);
+  }
+  .back-btn {
+    background: white;
+    border: none;
+    border-radius: 50%;
+    width: 48px; height: 48px;
+    font-size: 22px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+  }
+  .back-btn:hover { transform: scale(1.1); }
+  .chapter-nav {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    flex: 1;
+  }
+  .nav-btn {
+    background: rgba(255,255,255,0.25);
+    color: white;
+    border: 2px solid rgba(255,255,255,0.5);
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .nav-btn.active, .nav-btn:hover {
+    background: white;
+    color: #7B2D8B;
+    border-color: white;
+  }
+
+  .section-panel {
+    display: none;
+    padding: 20px 30px 40px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .section-panel.active { display: block; }
+
+  /* CARDS / PANELS */
+  .card {
+    background: white;
+    border-radius: 24px;
+    padding: 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    animation: slideUp 0.4s ease;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 28px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* POEM DISPLAY */
+  .poem-container {
+    background: linear-gradient(135deg, #fff9f0, #fff0f5);
+    border-radius: 20px;
+    padding: 30px;
+    border: 3px solid #ffd6e7;
+    position: relative;
+    overflow: hidden;
+  }
+  .poem-line {
+    font-size: 20px;
+    line-height: 2.2;
+    cursor: pointer;
+    padding: 5px 12px;
+    border-radius: 10px;
+    transition: background 0.2s;
+    position: relative;
+  }
+  .poem-line:hover { background: rgba(255,182,193,0.3); }
+  .poem-line .highlight { font-weight: 800; }
+  .poem-line .christmas-word { color: #e74c3c; font-weight: 800; }
+  .poem-line .green-word { color: #27ae60; font-weight: 800; }
+  .poem-line .blue-word { color: #3498db; font-weight: 800; }
+  .poem-attribution { text-align: right; font-style: italic; color: #999; margin-top: 15px; font-size: 16px; }
+
+  /* VOCABULARY CARDS */
+  .vocab-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+  }
+  .vocab-card {
+    background: linear-gradient(135deg, var(--color1), var(--color2));
+    border-radius: 20px;
+    padding: 20px 15px;
+    text-align: center;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.3s;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    position: relative;
+    overflow: hidden;
+  }
+  .vocab-card:hover { transform: scale(1.05) rotate(1deg); }
+  .vocab-card .v-emoji { font-size: 40px; margin-bottom: 8px; display: block; }
+  .vocab-card .v-word { font-family: 'Fredoka One', cursive; font-size: 20px; margin-bottom: 5px; }
+  .vocab-card .v-meaning { font-size: 13px; opacity: 0.9; }
+
+  /* QUIZ SECTION */
+  .quiz-container { }
+  .question-box {
+    background: linear-gradient(135deg, #667eea22, #764ba222);
+    border: 3px solid #764ba2;
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 20px;
+  }
+  .question-text {
+    font-size: 20px;
+    font-weight: 800;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+  .question-num {
+    font-size: 13px;
+    color: #764ba2;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .option-btn {
+    background: white;
+    border: 3px solid #e0e0e0;
+    border-radius: 16px;
+    padding: 14px 18px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+  }
+  .option-btn:hover { border-color: #764ba2; background: #f0e6ff; transform: translateY(-2px); }
+  .option-btn.correct { background: #d4efdf; border-color: #27ae60; color: #1a5c35; }
+  .option-btn.wrong { background: #fadbd8; border-color: #e74c3c; color: #7b241c; }
+  .option-btn:disabled { cursor: default; }
+
+  .feedback-msg {
+    font-size: 20px;
+    font-weight: 800;
+    text-align: center;
+    padding: 15px;
+    border-radius: 15px;
+    margin-top: 15px;
+    display: none;
+    animation: popIn 0.3s ease;
+  }
+  @keyframes popIn {
+    from { transform: scale(0.7); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .feedback-msg.correct { background: #d4efdf; color: #27ae60; display: block; }
+  .feedback-msg.wrong { background: #fadbd8; color: #e74c3c; display: block; }
+
+  .quiz-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  .next-btn, .restart-btn {
+    padding: 14px 30px;
+    border-radius: 50px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 18px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  }
+  .next-btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+  .next-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+  .restart-btn { background: linear-gradient(135deg, #f39c12, #e74c3c); color: white; }
+
+  .score-display {
+    font-family: 'Fredoka One', cursive;
+    font-size: 18px;
+    color: #764ba2;
+  }
+
+  /* FILL IN THE BLANKS */
+  .blank-exercise {
+    background: linear-gradient(135deg, #ffecd2, #fcb69f22);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 15px;
+    border: 2px solid #f39c1244;
+  }
+  .blank-sentence {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 2;
+    margin-bottom: 15px;
+    color: #2c3e50;
+  }
+  .blank-input {
+    border: 3px solid #f39c12;
+    border-radius: 12px;
+    padding: 8px 15px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    outline: none;
+    width: 160px;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+  .blank-input:focus { border-color: #764ba2; }
+  .blank-input.correct-ans { border-color: #27ae60; background: #d4efdf; }
+  .blank-input.wrong-ans { border-color: #e74c3c; background: #fadbd8; }
+
+  .word-bank {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 15px;
+  }
+  .word-chip {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 8px 18px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .word-chip:hover { transform: scale(1.05); }
+  .word-chip.used { opacity: 0.4; cursor: default; text-decoration: line-through; }
+
+  .check-btn {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 28px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 18px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.2s;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  }
+  .check-btn:hover { transform: translateY(-3px); }
+
+  /* T/F ACTIVITY */
+  .tf-item {
+    background: white;
+    border: 3px solid #e0e0e0;
+    border-radius: 16px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: wrap;
+    transition: all 0.2s;
+  }
+  .tf-text { font-size: 16px; font-weight: 600; color: #2c3e50; flex: 1; }
+  .tf-buttons { display: flex; gap: 10px; }
+  .tf-btn {
+    padding: 8px 20px;
+    border-radius: 50px;
+    border: 2px solid #ccc;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tf-btn.t-btn:hover, .tf-btn.t-btn.selected-t { background: #d4efdf; border-color: #27ae60; color: #27ae60; }
+  .tf-btn.f-btn:hover, .tf-btn.f-btn.selected-f { background: #fadbd8; border-color: #e74c3c; color: #e74c3c; }
+  .tf-item.revealed-true { border-color: #27ae60; background: #f0fff4; }
+  .tf-item.revealed-false { border-color: #e74c3c; background: #fff0f0; }
+
+  /* MATCH THE WORDS */
+  .match-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+  .match-col { display: flex; flex-direction: column; gap: 10px; }
+  .match-item {
+    padding: 14px 18px;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .match-left { background: #e8f4fd; border-color: #3498db; color: #1a5276; }
+  .match-right { background: #fef9e7; border-color: #f39c12; color: #7d6608; }
+  .match-item.selected { transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+  .match-item.matched { background: #d5f5e3; border-color: #27ae60; color: #1a5c35; cursor: default; }
+
+  /* STORY READER */
+  .story-page {
+    background: linear-gradient(135deg, #e8f5e9, #e3f2fd);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 15px;
+    border: 3px solid #a5d6a7;
+  }
+  .story-speaker {
+    display: inline-block;
+    background: #2196f3;
+    color: white;
+    padding: 4px 14px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .story-text {
+    font-size: 17px;
+    line-height: 1.8;
+    color: #2c3e50;
+  }
+  .season-tag {
+    display: inline-block;
+    padding: 6px 18px;
+    border-radius: 50px;
+    font-weight: 800;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  .spring-tag { background: #d4efdf; color: #1a5c35; }
+  .summer-tag { background: #fef9e7; color: #7d6608; }
+  .autumn-tag { background: #fdebd0; color: #7d3c98; }
+  .winter-tag { background: #e8f4fd; color: #1a5276; }
+
+  /* ADJECTIVES GAME */
+  .adj-sentence {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 2.2;
+    color: #2c3e50;
+    margin-bottom: 12px;
+  }
+  .adj-input {
+    border: 3px solid #3498db;
+    border-radius: 12px;
+    padding: 6px 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    width: 150px;
+    outline: none;
+  }
+  .adj-input.correct-ans { border-color: #27ae60; background: #d4efdf; }
+  .adj-input.wrong-ans { border-color: #e74c3c; background: #fadbd8; }
+
+  /* JOINING WORDS GAME */
+  .join-sentence {
+    font-size: 17px;
+    font-weight: 600;
+    background: #f8f9fa;
+    border-radius: 14px;
+    padding: 15px 18px;
+    margin-bottom: 12px;
+    border-left: 5px solid #3498db;
+  }
+  .join-select {
+    border: 3px solid #3498db;
+    border-radius: 10px;
+    padding: 5px 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    outline: none;
+    background: white;
+    cursor: pointer;
+  }
+  .join-select.correct-ans { border-color: #27ae60; background: #d4efdf; }
+  .join-select.wrong-ans { border-color: #e74c3c; background: #fadbd8; }
+
+  /* CONTRACTIONS */
+  .contraction-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .contraction-card {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border-radius: 16px;
+    padding: 18px 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  .contraction-card:hover { transform: scale(1.05); }
+  .contraction-full { font-size: 15px; opacity: 0.85; margin-bottom: 5px; }
+  .contraction-short { font-family: 'Fredoka One', cursive; font-size: 24px; }
+
+  /* PROGRESS BAR */
+  .progress-container {
+    background: rgba(255,255,255,0.3);
+    border-radius: 50px;
+    height: 12px;
+    margin: 10px 0 20px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #f39c12, #e74c3c);
+    border-radius: 50px;
+    transition: width 0.5s ease;
+  }
+
+  /* SCORE CELEBRATION */
+  .score-celebration {
+    text-align: center;
+    padding: 30px;
+    animation: slideUp 0.5s ease;
+  }
+  .score-big { font-family: 'Fredoka One', cursive; font-size: 80px; line-height: 1; }
+  .score-label { font-size: 22px; font-weight: 700; color: #666; margin-top: 10px; }
+  .trophy { font-size: 70px; animation: bounce 1s ease-in-out infinite; display: block; margin-bottom: 10px; }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .options-grid { grid-template-columns: 1fr; }
+    .match-container { grid-template-columns: 1fr; }
+    .section-panel { padding: 15px; }
+    .card { padding: 20px; }
+    .poem-line { font-size: 16px; }
+  }
+
+  /* CHRISTMAS THEME */
+  .christmas-bg { background: linear-gradient(135deg, #1a472a 0%, #c0392b 100%); }
+  .christmas-header { background: rgba(255,255,255,0.1); }
+
+  /* SEASONS THEME */
+  .seasons-bg { background: linear-gradient(135deg, #56ab2f 0%, #a8e063 30%, #f7971e 60%, #3498db 100%); }
+
+  /* WORD SEARCH */
+  .wordsearch-grid {
+    display: inline-grid;
+    gap: 3px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .ws-row { display: flex; gap: 3px; }
+  .ws-cell {
+    width: 36px; height: 36px;
+    background: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 16px;
+    cursor: pointer;
+    border: 2px solid #e0e0e0;
+    transition: all 0.1s;
+    user-select: none;
+    color: #2c3e50;
+  }
+  .ws-cell:hover { background: #e8f4fd; }
+  .ws-cell.selected { background: #ffd700; border-color: #f39c12; }
+  .ws-cell.found { background: #d4efdf; border-color: #27ae60; color: #1a5c35; }
+
+  .word-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+  }
+  .word-list-item {
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 15px;
+    border: 2px solid #764ba2;
+    color: #764ba2;
+  }
+  .word-list-item.found-word {
+    background: #d5f5e3;
+    border-color: #27ae60;
+    color: #27ae60;
+    text-decoration: line-through;
+  }
+
+  /* RHYME FINDER */
+  .rhyme-set {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 15px;
+    border: 3px solid #e8d5ff;
+  }
+  .rhyme-word {
+    font-family: 'Fredoka One', cursive;
+    font-size: 26px;
+    color: #764ba2;
+    margin-bottom: 12px;
+  }
+  .rhyme-options { display: flex; gap: 10px; flex-wrap: wrap; }
+  .rhyme-opt {
+    padding: 10px 22px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    border: 3px solid #e0e0e0;
+    background: white;
+    transition: all 0.2s;
+  }
+  .rhyme-opt:hover { border-color: #764ba2; background: #f0e6ff; }
+  .rhyme-opt.correct { background: #d4efdf; border-color: #27ae60; color: #27ae60; }
+  .rhyme-opt.wrong { background: #fadbd8; border-color: #e74c3c; color: #e74c3c; }
+
+  /* ACROSTIC POEM */
+  .acrostic-line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .acrostic-letter {
+    font-family: 'Fredoka One', cursive;
+    font-size: 32px;
+    color: #e74c3c;
+    width: 40px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .acrostic-input {
+    flex: 1;
+    border: none;
+    border-bottom: 3px dashed #e74c3c;
+    padding: 8px 5px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    outline: none;
+    background: transparent;
+    color: #2c3e50;
+  }
+
+  /* FUN TABS */
+  .fun-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .fun-tab {
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    border: 3px solid rgba(255,255,255,0.4);
+    color: rgba(255,255,255,0.8);
+    background: rgba(255,255,255,0.15);
+    transition: all 0.2s;
+  }
+  .fun-tab.active, .fun-tab:hover {
+    background: white;
+    color: #764ba2;
+    border-color: white;
+  }
+
+  /* SEASON FACTS CARDS */
+  .seasons-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  @media (max-width: 600px) { .seasons-cards { grid-template-columns: 1fr; } }
+  .season-fact-card {
+    border-radius: 20px;
+    padding: 20px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+  .season-fact-card:hover { transform: scale(1.03); }
+  .spring-card { background: linear-gradient(135deg, #56ab2f, #a8e063); }
+  .summer-card { background: linear-gradient(135deg, #f7971e, #ffd200); }
+  .autumn-card { background: linear-gradient(135deg, #d35400, #e67e22); }
+  .winter-card { background: linear-gradient(135deg, #2980b9, #6dd5fa); }
+  .season-fact-card .s-emoji { font-size: 50px; margin-bottom: 10px; display: block; }
+  .season-fact-card .s-name { font-family: 'Fredoka One', cursive; font-size: 26px; margin-bottom: 8px; }
+  .season-fact-card .s-desc { font-size: 14px; line-height: 1.6; opacity: 0.95; }
+
+  /* ANIMATION HELPERS */
+  .pop { animation: popIn 0.3s ease; }
+  .wobble { animation: wobble 0.5s ease; }
+  @keyframes wobble {
+    0%,100% { transform: rotate(0); }
+    25% { transform: rotate(-5deg); }
+    75% { transform: rotate(5deg); }
+  }
+
+  /* STAR REWARD */
+  .stars-row {
+    display: flex;
+    gap: 5px;
+    margin: 10px 0;
+    font-size: 24px;
+  }
+  .earned-star { color: #FFD700; }
+  .empty-star { color: #ccc; }
+
+  .hint-box {
+    background: #fff3cd;
+    border: 2px solid #ffc107;
+    border-radius: 12px;
+    padding: 12px 18px;
+    font-size: 15px;
+    color: #856404;
+    margin-top: 10px;
+    display: none;
+  }
+  .hint-btn {
+    background: #ffc107;
+    border: none;
+    border-radius: 50px;
+    padding: 8px 18px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+    margin-top: 10px;
+  }
+  .hint-btn:hover { background: #e0a800; }
 </style>
 </head>
 <body>
-<div class="particle" style="left:4%;animation-duration:13s;animation-delay:0s">⭐</div>
-<div class="particle" style="left:14%;animation-duration:9s;animation-delay:2s">🌟</div>
-<div class="particle" style="left:28%;animation-duration:15s;animation-delay:4s">✨</div>
-<div class="particle" style="left:42%;animation-duration:10s;animation-delay:1s">🌙</div>
-<div class="particle" style="left:58%;animation-duration:12s;animation-delay:3s">☀️</div>
-<div class="particle" style="left:72%;animation-duration:8s;animation-delay:5s">⭐</div>
-<div class="particle" style="left:88%;animation-duration:14s;animation-delay:2s">🌈</div>
-<header>
-  <div class="mascot" id="mascot">🦉</div>
-  <h1>⏰ Time &amp; Directions Adventure! 🧭</h1>
-  <p style="color:#6d4c9f;font-weight:700;font-size:1rem;">Welcome, Explorer! Learn, Play &amp; Earn Stars!</p>
-  <div class="starbar" onclick="showStarCelebration()">
-    <span class="beat">⭐</span><span>Stars:</span>
-    <span class="star-num" id="star-display">0</span>
-    &nbsp;🏆 Badges: <span id="badge-count">0</span>
-  </div>
-</header>
-<nav>
-  <button class="nb1 active" onclick="showPanel('learn',this)">📖 Learn Time</button>
-  <button class="nb2" onclick="showPanel('clock',this)">🕐 Clock Fun</button>
-  <button class="nb3" onclick="showPanel('calendar',this)">📅 Calendar</button>
-  <button class="nb4" onclick="showPanel('directions',this)">🧭 Directions</button>
-  <button class="nb5" onclick="showPanel('quiz',this)">🎯 Quiz!</button>
-  <button class="nb6" onclick="showPanel('rewards',this)">🏆 Rewards</button>
-</nav>
 
-<!-- LEARN -->
-<div id="learn-panel" class="panel active">
-<div class="card">
-  <h2>☀️ Drag the Sun Across the Sky!</h2>
-  <div class="sky-scene" id="sky-scene">
-    <div id="clouds-layer"></div>
-    <div class="sky-label" id="sky-label">🌅 Morning</div>
-    <div class="drag-sun" id="drag-sun" style="left:5%;top:55%;transform:translateY(-50%)">🌅</div>
-    <div class="drag-hint">☝️ Drag the sun!</div>
+<div class="bg-stars" id="bgStars"></div>
+
+<!-- HOME SCREEN -->
+<div id="home">
+  <div class="home-title">✨ English Fairy ✨</div>
+  <div class="home-subtitle">🌟 Learn, Play & Explore! 🌟</div>
+  <div class="chapter-cards">
+    <div class="chapter-card christmas" onclick="openChapter('christmas')">
+      <span class="card-emoji">🎄</span>
+      <div class="card-title">Christmas!</div>
+      <div class="card-desc">Read the Christmas poem, learn vocabulary, and have fun with activities!</div>
+    </div>
+    <div class="chapter-card seasons" onclick="openChapter('seasons')">
+      <span class="card-emoji">🌈</span>
+      <div class="card-title">The Four Seasons</div>
+      <div class="card-desc">Explore Spring, Summer, Autumn and Winter in an exciting adventure!</div>
+    </div>
   </div>
-  <div class="tod-grid">
-    <div class="tod-card tod-morning" onclick="clickTod(this,'morning')"><span class="ti">🌅</span><strong>Morning</strong><div style="font-size:.75rem;margin-top:3px">Sun rises in the East</div></div>
-    <div class="tod-card tod-noon" onclick="clickTod(this,'noon')"><span class="ti">☀️</span><strong>Noon</strong><div style="font-size:.75rem;margin-top:3px">Sun over our head</div></div>
-    <div class="tod-card tod-afternoon" onclick="clickTod(this,'afternoon')"><span class="ti">🌤️</span><strong>Afternoon</strong><div style="font-size:.75rem;margin-top:3px">Between noon &amp; evening</div></div>
-    <div class="tod-card tod-evening" onclick="clickTod(this,'evening')"><span class="ti">🌇</span><strong>Evening</strong><div style="font-size:.75rem;margin-top:3px">Sun sets in the West</div></div>
-    <div class="tod-card tod-night" onclick="clickTod(this,'night')"><span class="ti">🌙</span><strong>Night</strong><div style="font-size:.75rem;margin-top:3px">Stars come out!</div></div>
+</div>
+
+<!-- ===================== CHRISTMAS CHAPTER ===================== -->
+<div id="christmas-chapter" class="chapter-screen christmas-bg">
+  <div class="chapter-header christmas-header">
+    <button class="back-btn" onclick="goHome()">🏠</button>
+    <div class="chapter-nav">
+      <button class="nav-btn active" onclick="showSection('chr','poem',event)">📖 Poem</button>
+      <button class="nav-btn" onclick="showSection('chr','vocab',event)">🔤 Vocab</button>
+      <button class="nav-btn" onclick="showSection('chr','quiz',event)">❓ Quiz</button>
+      <button class="nav-btn" onclick="showSection('chr','tf',event)">✅ True/False</button>
+      <button class="nav-btn" onclick="showSection('chr','rhyme',event)">🎵 Rhymes</button>
+      <button class="nav-btn" onclick="showSection('chr','acrostic',event)">✍️ Poem</button>
+    </div>
   </div>
-  <div id="tod-info" class="fact-box" style="display:none;margin-top:12px;"></div>
-</div>
-<div class="card">
-  <h2>⏱️ Time Units — Tap Each!</h2>
-  <div class="unit-chain" id="unit-chain"></div>
-  <div id="unit-info" style="min-height:44px;margin-top:7px;font-weight:700;font-size:.97rem;color:#5c35a0;text-align:center;"></div>
-</div>
-<div class="card">
-  <h2>🔄 A.M. &amp; P.M. — Tap to Flip!</h2>
-  <p style="margin-bottom:11px;">Tap each card to flip and learn!</p>
-  <div class="ampm-wrap">
-    <div class="ampm-flip" onclick="this.classList.toggle('flipped')">
-      <div class="ampm-inner">
-        <div class="af am"><div class="abig">a.m.</div><div style="font-size:.85rem;margin-top:3px">Tap to flip!</div></div>
-        <div class="ab am2"><div class="abig">🌅→☀️</div><div style="font-size:.82rem;margin-top:5px;text-align:center;">Midnight to Noon<br>12:00am → 12:00pm</div></div>
+
+  <!-- POEM SECTION -->
+  <div id="chr-poem" class="section-panel active">
+    <div class="card">
+      <div class="section-title">📖 The Christmas Poem</div>
+      <p style="color:#666; margin-bottom:20px; font-size:15px;">👆 Click on any line to hear what it means!</p>
+      <div class="poem-container">
+        <div class="poem-line" onclick="explainLine(0)"><span class="highlight christmas-word">C</span> is for Christmas I wait for <span class="christmas-word">all year</span>.</div>
+        <div class="poem-line" onclick="explainLine(1)"><span class="highlight christmas-word">H</span> is for <span class="christmas-word">holly</span> that brings so much <span class="green-word">cheer</span>.</div>
+        <div class="poem-line" onclick="explainLine(2)"><span class="highlight christmas-word">R</span> is for <span class="blue-word">reindeer</span> that pulls <span class="christmas-word">Santa's sleigh</span>.</div>
+        <div class="poem-line" onclick="explainLine(3)"><span class="highlight christmas-word">I</span> is for <span class="blue-word">icicles</span> dripping <span class="green-word">all day</span>.</div>
+        <div class="poem-line" onclick="explainLine(4)"><span class="highlight christmas-word">S</span> is for <span class="christmas-word">Santa</span> who seldom is <span class="green-word">seen</span>.</div>
+        <div class="poem-line" onclick="explainLine(5)"><span class="highlight christmas-word">T</span> is for <span class="christmas-word">tree</span> that is lovely and <span class="green-word">green</span>.</div>
+        <div class="poem-line" onclick="explainLine(6)"><span class="highlight christmas-word">M</span> is for <span class="blue-word">mistletoe</span>, hugs, and a kiss.</div>
+        <div class="poem-line" onclick="explainLine(7)"><span class="highlight christmas-word">A</span> is for <span class="christmas-word">angel</span> who looks just like this.</div>
+        <div class="poem-line" onclick="explainLine(8)"><span class="highlight christmas-word">S</span> is for <span class="christmas-word">stockings</span> all loaded with toys</div>
+        <div class="poem-line" onclick="explainLine(9)">From all of the <span class="blue-word">elves</span> to the girls and the boys.</div>
+        <div class="poem-attribution">—Anonymous</div>
+      </div>
+      <div id="poem-explanation" style="margin-top:20px; display:none;">
+        <div id="poem-exp-text" style="font-size:18px; font-weight:600; color:#2c3e50; line-height:1.7; background:#fff9f0; border-radius:16px; padding:20px; border:2px solid #ffd6e7;"></div>
       </div>
     </div>
-    <div class="ampm-flip" onclick="this.classList.toggle('flipped')">
-      <div class="ampm-inner">
-        <div class="af pm"><div class="abig">p.m.</div><div style="font-size:.85rem;margin-top:3px">Tap to flip!</div></div>
-        <div class="ab pm2"><div class="abig">🌇→🌙</div><div style="font-size:.82rem;margin-top:5px;text-align:center;">Noon to Midnight<br>12:00pm → 12:00am</div></div>
-      </div>
+
+    <!-- What is an Acrostic Poem? -->
+    <div class="card">
+      <div class="section-title">💡 What is an Acrostic Poem?</div>
+      <p style="font-size:17px; line-height:1.8; color:#444;">
+        In an <strong>acrostic poem</strong>, each line starts with a letter that spells out a word!<br>
+        Look at the poem above — the first letter of each line spells <strong style="color:#e74c3c; font-size:20px;">CHRISTMAS</strong>! 🎄
+      </p>
     </div>
   </div>
-  <div class="fact-box" style="margin-top:13px;">💡 <strong>Noon</strong> = 12:00 midday &nbsp;|&nbsp; <strong>Midnight</strong> = 12:00 at night</div>
-</div>
-</div>
 
-<!-- CLOCK -->
-<div id="clock-panel" class="panel">
-<div class="card">
-  <h2>🕐 Interactive Clock</h2>
-  <p class="spin-hint">☝️ Drag around the clock face OR use the buttons!</p>
-  <div style="display:flex;flex-direction:column;align-items:center;gap:13px;">
-    <div class="clock-svg-wrap" id="clock-wrap">
-      <svg id="interactive-clock" width="230" height="230" viewBox="0 0 240 240">
-        <defs><radialGradient id="cg" cx="38%" cy="33%"><stop offset="0%" stop-color="#f3e8ff"/><stop offset="100%" stop-color="#ddd0f8"/></radialGradient></defs>
-        <circle cx="120" cy="120" r="116" fill="white" stroke="#E0D0F8" stroke-width="5"/>
-        <circle cx="120" cy="120" r="109" fill="url(#cg)"/>
-        <g id="tick-marks"></g>
-        <g id="clock-numbers"></g>
-        <line id="hour-hand" x1="120" y1="120" x2="120" y2="70" stroke="#5c35a0" stroke-width="7" stroke-linecap="round"/>
-        <line id="minute-hand" x1="120" y1="120" x2="120" y2="46" stroke="#FF7EB3" stroke-width="4.5" stroke-linecap="round"/>
-        <line id="second-hand" x1="120" y1="120" x2="120" y2="38" stroke="#FF5252" stroke-width="2.5" stroke-linecap="round" style="display:none"/>
-        <circle cx="120" cy="120" r="7" fill="#5c35a0"/><circle cx="120" cy="120" r="3" fill="white"/>
-      </svg>
-    </div>
-    <div class="clock-time-display" id="clock-time-text">12:00</div>
-    <div style="font-size:.95rem;font-weight:700;color:#9C6FDE;" id="clock-ampm-label">p.m.</div>
-    <div class="clock-controls">
-      <button class="cbtn" onclick="changeHour(-1)">◀ Hour</button>
-      <button class="cbtn" onclick="changeHour(1)">Hour ▶</button>
-      <button class="cbtn" onclick="changeMin(-5)">◀ 5 min</button>
-      <button class="cbtn" onclick="changeMin(5)">5 min ▶</button>
-      <button class="cbtn" onclick="setNow()">⏱ Live!</button>
-      <button class="cbtn" onclick="toggleSec()">🔴 Seconds</button>
-    </div>
-  </div>
-  <div class="fact-box" style="margin-top:14px;">💡 <strong>Short hand</strong> = hours &nbsp;|&nbsp; <strong>Long hand</strong> = minutes &nbsp;|&nbsp; <strong>Red</strong> = seconds</div>
-</div>
-<div class="card">
-  <h2>🎯 Set the Time Challenge!</h2>
-  <p>Use the clock above to show the target time, then check!</p>
-  <div class="set-time-card">
-    <div style="font-size:.95rem;font-weight:700;color:#5c35a0;">Set the clock to:</div>
-    <div class="target-t" id="target-time">--:--</div>
-    <button class="cbtn" onclick="checkSetTime()" style="margin:4px auto;display:block;">✅ Check!</button>
-    <div id="set-time-result" style="font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;min-height:30px;margin-top:6px;"></div>
-  </div>
-</div>
-<div class="card">
-  <h2>🖼️ Clock Reading Challenge</h2>
-  <p style="margin-bottom:7px;">What time does this clock show?</p>
-  <div class="cq-wrap">
-    <svg id="cq-clock" width="175" height="175" viewBox="0 0 240 240">
-      <circle cx="120" cy="120" r="116" fill="white" stroke="#E0D0F8" stroke-width="5"/>
-      <circle cx="120" cy="120" r="109" fill="#f3e8ff"/>
-      <g id="cq-numbers"></g>
-      <line id="cq-hour" x1="120" y1="120" x2="120" y2="70" stroke="#5c35a0" stroke-width="7" stroke-linecap="round"/>
-      <line id="cq-minute" x1="120" y1="120" x2="120" y2="46" stroke="#FF7EB3" stroke-width="4.5" stroke-linecap="round"/>
-      <circle cx="120" cy="120" r="7" fill="#5c35a0"/>
-    </svg>
-    <div class="quiz-opts" id="cq-options" style="width:100%;max-width:330px;"></div>
-    <div class="quiz-fb" id="cq-feedback"></div>
-  </div>
-</div>
-</div>
-
-<!-- CALENDAR -->
-<div id="calendar-panel" class="panel">
-<div class="card">
-  <h2>📅 February 2026</h2>
-  <p style="margin-bottom:9px;">Today is highlighted! <strong>Click any date</strong> to find out what day of the week it is.</p>
-  <div class="cal-grid" id="cal-grid"></div>
-  <div class="fact-box">📍 Today: <strong id="today-label"></strong></div>
-</div>
-<div class="card">
-  <h2>🗓️ Days of the Week — Drag to Order!</h2>
-  <p style="margin-bottom:9px;">Drag the days into the correct order! <strong>Sunday goes first.</strong></p>
-  <div class="drag-match">
-    <div class="drag-src" id="day-source"></div>
-    <div class="drag-tgt" id="day-targets"></div>
-  </div>
-  <button class="next-btn" onclick="checkDayOrder()" style="margin-top:10px;background:linear-gradient(135deg,#66BB6A,#26A69A);">✅ Check Order!</button>
-  <div id="day-order-result" style="text-align:center;font-family:'Baloo 2',cursive;font-size:1.15rem;font-weight:800;margin-top:9px;min-height:28px;"></div>
-</div>
-<div class="card">
-  <h2>🗓️ All 12 Months — Tap Each!</h2>
-  <div class="months-grid" id="months-grid"></div>
-  <div id="month-info-box" style="min-height:46px;margin-top:11px;text-align:center;font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:800;color:#5c35a0;"></div>
-  <div class="leap-box"><div class="section-title">🐸 Leap Year!</div><p>Every <strong>4th year</strong>, February gets <strong>29 days</strong> — that year has <strong>366 days</strong> and is called a <strong>Leap Year!</strong> Next leap year: 2028.</p></div>
-  <div class="poem-box">
-    <div class="section-title" style="margin-bottom:4px;">🎵 Days-in-a-Month Poem — tap each line!</div>
-    <div id="poem-lines"></div>
-  </div>
-</div>
-</div>
-
-<!-- DIRECTIONS -->
-<div id="directions-panel" class="panel">
-<div class="card">
-  <h2>🧭 Spin the Compass!</h2>
-  <p style="margin-bottom:12px;"><strong>Spin the compass</strong> by dragging. Click each direction label to learn!</p>
-  <div style="display:flex;flex-direction:column;align-items:center;gap:14px;">
-    <div class="compass-outer" id="compass-outer">
-      <div class="compass-inner" id="compass-inner">
-        <div style="display:flex;flex-direction:column;align-items:center;position:relative;height:100%;justify-content:center;">
-          <div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:40px solid #E64A19;"></div>
-          <div style="width:11px;height:11px;background:#5c35a0;border-radius:50%;margin:-1px 0;z-index:2;"></div>
-          <div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:40px solid #bbb;"></div>
+  <!-- VOCAB SECTION -->
+  <div id="chr-vocab" class="section-panel">
+    <div class="card">
+      <div class="section-title">🔤 Christmas Words</div>
+      <div class="vocab-grid">
+        <div class="vocab-card" style="--color1:#e74c3c; --color2:#c0392b;" onclick="speakWord('Holly')">
+          <span class="v-emoji">🌿</span>
+          <div class="v-word">Holly</div>
+          <div class="v-meaning">A plant with red berries used to decorate at Christmas</div>
         </div>
-        <span class="clabel cn" onclick="showDirInfo('North','⬆️ North — When you face the rising Sun (East), your LEFT hand points North!')">N</span>
-        <span class="clabel cs" onclick="showDirInfo('South','⬇️ South — When you face East, your RIGHT hand points South!')">S</span>
-        <span class="clabel ce" onclick="showDirInfo('East','➡️ East — The Sun RISES in the East every morning!')">E</span>
-        <span class="clabel cw" onclick="showDirInfo('West','⬅️ West — The Sun SETS in the West every evening!')">W</span>
+        <div class="vocab-card" style="--color1:#3498db; --color2:#2980b9;" onclick="speakWord('Reindeer')">
+          <span class="v-emoji">🦌</span>
+          <div class="v-word">Reindeer</div>
+          <div class="v-meaning">The animal that pulls Santa's sleigh in the sky</div>
+        </div>
+        <div class="vocab-card" style="--color1:#27ae60; --color2:#1a9641;" onclick="speakWord('Icicles')">
+          <span class="v-emoji">❄️</span>
+          <div class="v-word">Icicles</div>
+          <div class="v-meaning">Thin sticks of ice that hang from roofs in winter</div>
+        </div>
+        <div class="vocab-card" style="--color1:#8e44ad; --color2:#7d3c98;" onclick="speakWord('Mistletoe')">
+          <span class="v-emoji">🌱</span>
+          <div class="v-word">Mistletoe</div>
+          <div class="v-meaning">A plant — people give hugs and kisses under it!</div>
+        </div>
+        <div class="vocab-card" style="--color1:#f39c12; --color2:#e67e22;" onclick="speakWord('Sleigh')">
+          <span class="v-emoji">🛷</span>
+          <div class="v-word">Sleigh</div>
+          <div class="v-meaning">A vehicle that slides on snow, pulled by reindeer</div>
+        </div>
+        <div class="vocab-card" style="--color1:#16a085; --color2:#1abc9c;" onclick="speakWord('Stockings')">
+          <span class="v-emoji">🧦</span>
+          <div class="v-word">Stockings</div>
+          <div class="v-meaning">Big socks hung up to be filled with gifts and toys</div>
+        </div>
+        <div class="vocab-card" style="--color1:#c0392b; --color2:#e74c3c;" onclick="speakWord('Elves')">
+          <span class="v-emoji">🧝</span>
+          <div class="v-word">Elves</div>
+          <div class="v-meaning">Tiny magical helpers who make toys for Santa</div>
+        </div>
+        <div class="vocab-card" style="--color1:#2c3e50; --color2:#34495e;" onclick="speakWord('Angel')">
+          <span class="v-emoji">👼</span>
+          <div class="v-word">Angel</div>
+          <div class="v-meaning">A beautiful heavenly being placed on top of the tree</div>
+        </div>
+      </div>
+      <p style="color:#999; font-size:14px; margin-top:15px; text-align:center;">👆 Tap any card to say the word!</p>
+    </div>
+  </div>
+
+  <!-- QUIZ SECTION -->
+  <div id="chr-quiz" class="section-panel">
+    <div class="card">
+      <div class="section-title">❓ Christmas Quiz!</div>
+      <div class="progress-container">
+        <div class="progress-bar" id="chr-quiz-progress" style="width:0%"></div>
+      </div>
+      <div id="chr-quiz-content"></div>
+    </div>
+  </div>
+
+  <!-- TRUE / FALSE -->
+  <div id="chr-tf" class="section-panel">
+    <div class="card">
+      <div class="section-title">✅ True or False?</div>
+      <p style="color:#666; margin-bottom:20px;">Read each sentence and tap TRUE or FALSE!</p>
+      <div id="chr-tf-content"></div>
+      <button class="check-btn" onclick="checkTF('chr')">Check Answers! 🎯</button>
+      <div id="chr-tf-score" style="margin-top:15px; font-size:18px; font-weight:700; display:none;"></div>
+    </div>
+  </div>
+
+  <!-- RHYME SECTION -->
+  <div id="chr-rhyme" class="section-panel">
+    <div class="card">
+      <div class="section-title">🎵 Find the Rhyming Words!</div>
+      <p style="color:#666; margin-bottom:20px;">Which word rhymes with the given word? Pick the correct one!</p>
+      <div id="chr-rhyme-content"></div>
+    </div>
+  </div>
+
+  <!-- ACROSTIC POEM -->
+  <div id="chr-acrostic" class="section-panel">
+    <div class="card">
+      <div class="section-title">✍️ Write Your Own Acrostic Poem!</div>
+      <p style="color:#666; margin-bottom:5px;">Write a poem about your favourite festival! Each line starts with the letter shown.</p>
+      <p style="color:#764ba2; font-weight:700; margin-bottom:20px;">💡 Idea: Write an acrostic poem using <strong>DIWALI</strong> or <strong>HOLI</strong>!</p>
+      <div style="margin-bottom:25px;">
+        <div class="acrostic-line">
+          <div class="acrostic-letter">C</div>
+          <input class="acrostic-input" placeholder="Write something starting with C...">
+        </div>
+        <div class="acrostic-line">
+          <div class="acrostic-letter">H</div>
+          <input class="acrostic-input" placeholder="Write something starting with H...">
+        </div>
+        <div class="acrostic-line">
+          <div class="acrostic-letter">R</div>
+          <input class="acrostic-input" placeholder="Write something starting with R...">
+        </div>
+        <div class="acrostic-line">
+          <div class="acrostic-letter">I</div>
+          <input class="acrostic-input" placeholder="Write something starting with I...">
+        </div>
+        <div class="acrostic-line">
+          <div class="acrostic-letter">S</div>
+          <input class="acrostic-input" placeholder="Write something starting with S...">
+        </div>
+        <div class="acrostic-line">
+          <div class="acrostic-letter">T</div>
+          <input class="acrostic-input" placeholder="Write something starting with T...">
+        </div>
+        <div class="acrostic-line">
+          <div class="acrostic-letter">M</div>
+          <input class="acrostic-input" placeholder="Write something starting with M...">
+        </div>
+        <div class="acrostic-line">
+          <div class="acrostic-letter">A</div>
+          <input class="acrostic-input" placeholder="Write something starting with A...">
+        </div>
+        <div class="acrostic-line">
+          <div class="acrostic-letter">S</div>
+          <input class="acrostic-input" placeholder="Write something starting with S...">
+        </div>
+      </div>
+      <button class="check-btn" onclick="celebratePoem()">🎉 Share My Poem!</button>
+      <div id="poem-celebrate" style="display:none; margin-top:20px; text-align:center; font-size:22px; font-weight:800; color:#e74c3c;">
+        🌟 Wonderful poem! You're a poet! 🌟
       </div>
     </div>
-    <div class="dir-cards" style="width:100%;">
-      <div class="dir-card dir-n" onclick="showDirInfo('North','⬆️ North — When you face the rising Sun (East), your LEFT hand points North. The compass always points North!')"><span class="dir-letter">N</span><strong>⬆️ North</strong><p style="font-size:.8rem;margin-top:3px">Left hand when facing East</p></div>
-      <div class="dir-card dir-s" onclick="showDirInfo('South','⬇️ South — When you face East, your RIGHT hand points South!')"><span class="dir-letter">S</span><strong>⬇️ South</strong><p style="font-size:.8rem;margin-top:3px">Right hand when facing East</p></div>
-      <div class="dir-card dir-e" onclick="showDirInfo('East','➡️ East — The Sun rises in the East every single morning!')"><span class="dir-letter">E</span><strong>➡️ East</strong><p style="font-size:.8rem;margin-top:3px">Sun rises here every day</p></div>
-      <div class="dir-card dir-w" onclick="showDirInfo('West','⬅️ West — The Sun sets in the West every evening. Your back faces West when you face East!')"><span class="dir-letter">W</span><strong>⬅️ West</strong><p style="font-size:.8rem;margin-top:3px">Sun sets here every day</p></div>
+  </div>
+</div>
+
+<!-- ===================== SEASONS CHAPTER ===================== -->
+<div id="seasons-chapter" class="chapter-screen seasons-bg">
+  <div class="chapter-header">
+    <button class="back-btn" onclick="goHome()">🏠</button>
+    <div class="chapter-nav">
+      <button class="nav-btn active" onclick="showSection('sea','story',event)">📖 Story</button>
+      <button class="nav-btn" onclick="showSection('sea','seasons',event)">🌸 Seasons</button>
+      <button class="nav-btn" onclick="showSection('sea','quiz',event)">❓ Quiz</button>
+      <button class="nav-btn" onclick="showSection('sea','tf',event)">✅ True/False</button>
+      <button class="nav-btn" onclick="showSection('sea','grammar',event)">📝 Adjectives</button>
+      <button class="nav-btn" onclick="showSection('sea','joining',event)">🔗 And/But</button>
+      <button class="nav-btn" onclick="showSection('sea','contractions',event)">✂️ Short Forms</button>
     </div>
-    <div class="fact-box" style="width:100%;">🧲 A <strong>compass</strong> always points to the <strong>North</strong> — travellers use it to find their way!</div>
   </div>
-</div>
-<div class="card">
-  <h2>🙋 Position Words — Move the Girl!</h2>
-  <div class="pos-scene" id="pos-scene">
-    <div class="pos-object" id="pos-tree" style="right:16px;top:12px">🌳</div>
-    <div class="pos-object" id="pos-girl" style="left:42%;top:38%;transform:translateX(-50%)">👧</div>
-    <div class="pos-object" id="pos-boy" style="left:16px;bottom:20px">👦</div>
-  </div>
-  <div class="pos-word-btns">
-    <button class="pos-btn" onclick="moveGirl('left')">👈 Left</button>
-    <button class="pos-btn" onclick="moveGirl('right')">👉 Right</button>
-    <button class="pos-btn" onclick="moveGirl('up')">⬆️ Up</button>
-    <button class="pos-btn" onclick="moveGirl('down')">⬇️ Down</button>
-    <button class="pos-btn" onclick="moveGirl('near')">🤏 Near tree</button>
-    <button class="pos-btn" onclick="moveGirl('far')">📍 Far</button>
-    <button class="pos-btn" onclick="moveGirl('front')">🚶 Front of boy</button>
-    <button class="pos-btn" onclick="moveGirl('behind')">🔙 Behind boy</button>
-    <button class="pos-btn" onclick="moveGirl('above')">⬆ Above all</button>
-    <button class="pos-btn" onclick="moveGirl('below')">⬇ Below</button>
-    <button class="pos-btn" onclick="moveGirl('reset')" style="background:#f3e8ff;">🔄 Reset</button>
-  </div>
-  <div id="pos-label" style="text-align:center;font-family:'Baloo 2',cursive;font-size:1.05rem;font-weight:800;color:#5c35a0;margin-top:7px;min-height:26px;"></div>
-</div>
-<div class="card">
-  <h2>🗺️ Maze — Help Sonu Get Home!</h2>
-  <p style="margin-bottom:7px;">Use arrow buttons to guide 🧒 Sonu to the 🏠 home!</p>
-  <div class="maze-wrap"><canvas class="maze-canvas" id="maze-canvas" width="400" height="300"></canvas></div>
-  <div class="maze-controls">
-    <button class="mbtn" onclick="mazeMovePlayer(0,-1)">⬆️</button>
-    <button class="mbtn" onclick="mazeMovePlayer(-1,0)">⬅️</button>
-    <button class="mbtn" onclick="mazeMovePlayer(1,0)">➡️</button>
-    <button class="mbtn" onclick="mazeMovePlayer(0,1)">⬇️</button>
-    <button class="mbtn" onclick="resetMaze()" style="background:linear-gradient(135deg,#FF7EB3,#FF4081);">🔄 Reset</button>
-  </div>
-  <div id="maze-result" style="text-align:center;font-family:'Baloo 2',cursive;font-size:1.15rem;font-weight:800;color:#5c35a0;margin-top:7px;min-height:26px;"></div>
-</div>
-</div>
 
-<!-- QUIZ -->
-<div id="quiz-panel" class="panel">
-<div class="card">
-  <h2>🎯 Knowledge Quiz!</h2>
-  <p style="margin-bottom:12px;">Answer correctly to earn ⭐ stars and unlock badges!</p>
-  <div class="quiz-progress" id="quiz-progress"></div>
-  <div style="background:var(--card);border-radius:18px;padding:20px;box-shadow:var(--shadow);border:2px solid rgba(255,255,255,.85);">
-    <div class="quiz-q" id="quiz-q"></div>
-    <div class="quiz-opts" id="quiz-opts"></div>
-    <div class="quiz-fb" id="quiz-feedback"></div>
-    <button class="next-btn" id="next-btn" onclick="nextQuestion()" style="display:none;">Next ➡️</button>
+  <!-- STORY SECTION -->
+  <div id="sea-story" class="section-panel active">
+    <div class="card">
+      <div class="section-title">📖 The Four Seasons Story</div>
+      <div class="story-page">
+        <div class="story-text">Once, the four seasons had a <strong style="color:#e74c3c;">quarrel</strong> (fight).</div>
+      </div>
+      <div class="story-page" style="background: linear-gradient(135deg, #fffde7, #fff9c4);">
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+          <div style="background:#f39c12; color:white; padding:8px 18px; border-radius:20px; font-weight:700;">☀️ Summer</div>
+          <div style="font-size:17px; padding:8px 0; font-weight:600;">"I am better than you all!"</div>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+          <div style="background:#3498db; color:white; padding:8px 18px; border-radius:20px; font-weight:700;">❄️ Winter</div>
+          <div style="font-size:17px; padding:8px 0; font-weight:600;">"No, I am the best."</div>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <div style="background:#7f8c8d; color:white; padding:8px 18px; border-radius:20px; font-weight:700;">🍂 Autumn</div>
+          <div style="font-size:17px; padding:8px 0; font-weight:600;">"I am the best!"</div>
+        </div>
+      </div>
+      <div class="story-page">
+        <span class="season-tag spring-tag">🌸 Spring says:</span>
+        <div class="story-text">"I bring lovely flowers to full bloom. Birds chirp merrily. Butterflies dance above the flowers. There is joy everywhere."</div>
+      </div>
+      <div class="story-page" style="background: linear-gradient(135deg, #fff3cd, #ffe0b2);">
+        <span class="season-tag summer-tag">☀️ Summer says:</span>
+        <div class="story-text">"And Summer, it is because of your sunshine that grains grow in the fields and fruits on the trees."</div>
+      </div>
+      <div class="story-page" style="background: linear-gradient(135deg, #fbe9e7, #ffccbc);">
+        <span class="season-tag autumn-tag">🍂 Autumn says:</span>
+        <div class="story-text">"Don't fight, Winter. It is because of you that grains such as rice and wheat are united."</div>
+      </div>
+      <div class="story-page" style="background: linear-gradient(135deg, #e3f2fd, #bbdefb);">
+        <span class="season-tag winter-tag">❄️ Winter says:</span>
+        <div class="story-text">"When I am there, people feel very cold. They wear gloves and sweaters to keep themselves warm. But, they enjoy hot chocolate and bowls of soup. It is time to relax and rest."</div>
+      </div>
+      <div class="story-page" style="background: linear-gradient(135deg, #f3e5f5, #e1bee7);">
+        <div class="story-text" style="font-weight:800; font-size:19px;">🌈 Finally, Spring and Autumn decided to end the quarrel.</div>
+        <div class="story-text" style="margin-top:10px;">"That is true, Autumn. All the seasons are important. We must be <strong>united</strong>."</div>
+        <div class="story-text" style="margin-top:10px;">So, Spring, Summer, Autumn and Winter became friends once more. They promised to never fight again.</div>
+      </div>
+    </div>
   </div>
-  <div style="text-align:center;margin-top:12px;">
-    <button class="next-btn" onclick="initQuiz()" style="background:linear-gradient(135deg,#66BB6A,#26A69A);">🔄 Restart Quiz</button>
-  </div>
-</div>
-</div>
 
-<!-- REWARDS -->
-<div id="rewards-panel" class="panel">
-<div class="card">
-  <h2>🏆 Your Badges!</h2>
-  <p style="margin-bottom:14px;">Earn stars by playing and completing the quiz. Click any badge to see its details!</p>
-  <div class="starbar" style="display:inline-flex;margin:0 auto 18px;">
-    <span class="beat">⭐</span><span>Total Stars:</span>
-    <span class="star-num" id="star-display-2">0</span>
-  </div>
-  <div class="badges-grid" id="badges-grid"></div>
-</div>
-</div>
+  <!-- SEASONS INFO -->
+  <div id="sea-seasons" class="section-panel">
+    <div class="card">
+      <div class="section-title">🌍 All About the Seasons</div>
+      <div class="seasons-cards">
+        <div class="season-fact-card spring-card">
+          <span class="s-emoji">🌸</span>
+          <div class="s-name">Spring</div>
+          <div class="s-desc">Flowers bloom 🌼 Birds chirp 🐦 Butterflies dance 🦋 Joy everywhere!</div>
+        </div>
+        <div class="season-fact-card summer-card">
+          <span class="s-emoji">☀️</span>
+          <div class="s-name">Summer</div>
+          <div class="s-desc">Sunshine ☀️ Grains grow in fields 🌾 Fruits on trees 🍎 Children swim 🏊</div>
+        </div>
+        <div class="season-fact-card autumn-card">
+          <span class="s-emoji">🍂</span>
+          <div class="s-name">Autumn</div>
+          <div class="s-desc">Leaves turn red & orange 🍁 Cool breeze 🌬️ Rice & wheat harvested 🌾</div>
+        </div>
+        <div class="season-fact-card winter-card">
+          <span class="s-emoji">❄️</span>
+          <div class="s-name">Winter</div>
+          <div class="s-desc">Very cold ❄️ Wear gloves & sweaters 🧤 Hot chocolate ☕ Time to rest 😴</div>
+        </div>
+      </div>
+    </div>
 
-<div class="modal-overlay" id="modal">
-  <div class="modal-box">
-    <div style="font-size:3.5rem;" id="modal-icon">🎉</div>
-    <h2 id="modal-title">Awesome!</h2>
-    <p id="modal-msg" style="font-size:1rem;color:#555;"></p>
-    <button class="modal-close" onclick="closeModal()">Yay! ✨</button>
+    <!-- Warm-up activity -->
+    <div class="card">
+      <div class="section-title">🎯 Match the Season!</div>
+      <p style="color:#666; margin-bottom:20px;">Which season does each remind you of? Drag or tap to match!</p>
+      <div id="season-match-content"></div>
+    </div>
+  </div>
+
+  <!-- SEASONS QUIZ -->
+  <div id="sea-quiz" class="section-panel">
+    <div class="card">
+      <div class="section-title">❓ Seasons Quiz!</div>
+      <div class="progress-container">
+        <div class="progress-bar" id="sea-quiz-progress" style="width:0%"></div>
+      </div>
+      <div id="sea-quiz-content"></div>
+    </div>
+  </div>
+
+  <!-- SEASONS T/F -->
+  <div id="sea-tf" class="section-panel">
+    <div class="card">
+      <div class="section-title">✅ True or False?</div>
+      <p style="color:#666; margin-bottom:20px;">Read each sentence and tap TRUE or FALSE!</p>
+      <div id="sea-tf-content"></div>
+      <button class="check-btn" onclick="checkTF('sea')">Check Answers! 🎯</button>
+      <div id="sea-tf-score" style="margin-top:15px; font-size:18px; font-weight:700; display:none;"></div>
+    </div>
+  </div>
+
+  <!-- ADJECTIVES -->
+  <div id="sea-grammar" class="section-panel">
+    <div class="card">
+      <div class="section-title">📝 Adjectives!</div>
+      <div style="background:#e8f4fd; border-radius:16px; padding:18px; margin-bottom:20px;">
+        <p style="font-size:16px; font-weight:700; color:#1a5276; margin-bottom:10px;">🌟 Remember:</p>
+        <p style="font-size:15px; line-height:1.8; color:#2c3e50;">
+          <strong>Adjectives</strong> are describing words! They tell us about:<br>
+          🎨 <strong>Colour</strong> — white clouds, red apple<br>
+          📐 <strong>Shape</strong> — round ball, square box<br>
+          📏 <strong>Size</strong> — small birds, big elephant<br>
+          ✨ <strong>Quality</strong> — cool breeze, hot soup<br>
+          🔢 <strong>Number</strong> — ten pencils, twelve eggs
+        </p>
+      </div>
+      <div id="adj-exercise"></div>
+      <button class="check-btn" onclick="checkAdj()">Check! 🎯</button>
+    </div>
+  </div>
+
+  <!-- JOINING WORDS -->
+  <div id="sea-joining" class="section-panel">
+    <div class="card">
+      <div class="section-title">🔗 Joining Words: AND & BUT</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px;">
+        <div style="background:#e8f4fd; border-radius:16px; padding:18px; border-left:5px solid #3498db;">
+          <div style="font-family:'Fredoka One',cursive; font-size:22px; color:#3498db; margin-bottom:8px;">AND</div>
+          <div style="font-size:14px; color:#444; line-height:1.7;">Used to join similar things<br>📌 I have a cat <strong>and</strong> a parrot.<br>📌 I saw a butterfly <strong>and</strong> a bee.</div>
+        </div>
+        <div style="background:#fef9e7; border-radius:16px; padding:18px; border-left:5px solid #f39c12;">
+          <div style="font-family:'Fredoka One',cursive; font-size:22px; color:#e67e22; margin-bottom:8px;">BUT</div>
+          <div style="font-size:14px; color:#444; line-height:1.7;">Used for opposite/different<br>📌 I like ice cream <strong>but</strong> not milk.<br>📌 Minu is tall <strong>but</strong> her sister is short.</div>
+        </div>
+      </div>
+      <div id="joining-exercise"></div>
+      <button class="check-btn" onclick="checkJoining()">Check! 🎯</button>
+    </div>
+  </div>
+
+  <!-- CONTRACTIONS -->
+  <div id="sea-contractions" class="section-panel">
+    <div class="card">
+      <div class="section-title">✂️ Short Forms with Apostrophe!</div>
+      <div style="background:#f3e5f5; border-radius:16px; padding:15px; margin-bottom:20px;">
+        <p style="font-size:16px; color:#7d3c98; font-weight:700;">💡 When we shorten words, we use ' (apostrophe) to show missing letters!</p>
+        <p style="font-size:15px; color:#444; margin-top:8px;">you are → <strong>you're</strong> &nbsp;|&nbsp; I am → <strong>I'm</strong> &nbsp;|&nbsp; it is → <strong>it's</strong></p>
+      </div>
+      <div class="contraction-grid">
+        <div class="contraction-card"><div class="contraction-full">I am</div><div class="contraction-short">I'm</div></div>
+        <div class="contraction-card"><div class="contraction-full">it is</div><div class="contraction-short">it's</div></div>
+        <div class="contraction-card"><div class="contraction-full">you are</div><div class="contraction-short">you're</div></div>
+        <div class="contraction-card"><div class="contraction-full">you have</div><div class="contraction-short">you've</div></div>
+        <div class="contraction-card"><div class="contraction-full">she will</div><div class="contraction-short">she'll</div></div>
+        <div class="contraction-card"><div class="contraction-full">will not</div><div class="contraction-short">won't</div></div>
+        <div class="contraction-card"><div class="contraction-full">cannot</div><div class="contraction-short">can't</div></div>
+        <div class="contraction-card"><div class="contraction-full">do not</div><div class="contraction-short">don't</div></div>
+        <div class="contraction-card"><div class="contraction-full">does not</div><div class="contraction-short">doesn't</div></div>
+        <div class="contraction-card"><div class="contraction-full">are not</div><div class="contraction-short">aren't</div></div>
+        <div class="contraction-card"><div class="contraction-full">he is</div><div class="contraction-short">he's</div></div>
+        <div class="contraction-card"><div class="contraction-full">we are</div><div class="contraction-short">we're</div></div>
+      </div>
+      <div style="margin-top:25px;">
+        <div class="section-title" style="font-size:20px;">🎮 Circle the Correct Short Form!</div>
+        <div id="contraction-exercise"></div>
+        <button class="check-btn" onclick="checkContractions()">Check! 🎯</button>
+      </div>
+    </div>
   </div>
 </div>
-<div class="toast" id="toast"></div>
 
 <script>
-var stars=parseInt(localStorage.getItem("stars")||"0");
-var unlockedBadges=JSON.parse(localStorage.getItem("badges")||"[]");
-var monthsVisited=new Set(JSON.parse(localStorage.getItem("mv")||"[]"));
-var daysVisited=new Set(JSON.parse(localStorage.getItem("dv")||"[]"));
-var clockH=12,clockM=0,secOn=false,secInt=null;
-var quizIndex=0,quizScore=0,quizAnswered=false,shuffledQ=[];
-var setTimeTgt={h:3,m:0,ampm:"a.m."};
-var dirExplored=new Set();
-var clockClicks=0;
-var cqIdx=0;
-var dayOrderState=Array(7).fill(null);
-var mazeGrid=[],playerX=0,playerY=0,mazeWon=false;
-var MAZE_COLS=8,MAZE_ROWS=6,CELL=50;
+// ====== BACKGROUND STARS ======
+const bgStars = document.getElementById('bgStars');
+const emojis = ['⭐','🌟','✨','💫','🌙','☁️'];
+for(let i=0;i<20;i++){
+  const s=document.createElement('div');
+  s.className='star-bg';
+  s.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+  s.style.left=Math.random()*100+'%';
+  s.style.top=Math.random()*100+'%';
+  s.style.animationDelay=Math.random()*6+'s';
+  s.style.animationDuration=(4+Math.random()*4)+'s';
+  s.style.fontSize=(15+Math.random()*20)+'px';
+  bgStars.appendChild(s);
+}
 
-function saveState(){localStorage.setItem("stars",stars);localStorage.setItem("badges",JSON.stringify(unlockedBadges));localStorage.setItem("mv",JSON.stringify([...monthsVisited]));localStorage.setItem("dv",JSON.stringify([...daysVisited]));}
+// ====== NAVIGATION ======
+function openChapter(chapter) {
+  document.getElementById('home').style.display = 'none';
+  document.querySelectorAll('.chapter-screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(chapter+'-chapter').classList.add('active');
+  if(chapter==='christmas') initChristmas();
+  else initSeasons();
+}
+function goHome() {
+  document.getElementById('home').style.display = 'flex';
+  document.querySelectorAll('.chapter-screen').forEach(s=>s.classList.remove('active'));
+  christmasInited = false;
+  seasonsInited = false;
+}
+function showSection(prefix, section, evt) {
+  const chapterId = (prefix === 'chr' ? 'christmas' : 'seasons') + '-chapter';
+  document.querySelectorAll(`#${chapterId} .section-panel`).forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll(`#${chapterId} .nav-btn`).forEach(b=>b.classList.remove('active'));
+  document.getElementById(`${prefix}-${section}`).classList.add('active');
+  const btn = (evt && evt.target) ? evt.target.closest('.nav-btn') : null;
+  if(btn) btn.classList.add('active');
+}
 
-// BADGES
-var BADGES=[
-  {id:"first_star",icon:"🌟",name:"First Star!",desc:"Earned your very first star"},
-  {id:"clock5",icon:"🕐",name:"Clock Watcher",desc:"Explored the clock many times"},
-  {id:"months_all",icon:"📅",name:"Month Master",desc:"Visited all 12 months"},
-  {id:"quiz_half",icon:"🎯",name:"Quiz Starter",desc:"Got 5 quiz questions right"},
-  {id:"quiz_all",icon:"🏅",name:"Quiz Champion",desc:"Completed the full quiz!"},
-  {id:"perfect",icon:"💎",name:"Perfect Score",desc:"100% correct on the quiz!"},
-  {id:"star10",icon:"⭐",name:"Star Collector",desc:"Earned 10 stars"},
-  {id:"star25",icon:"💫",name:"Super Learner",desc:"Earned 25 stars"},
-  {id:"star50",icon:"🚀",name:"Space Explorer",desc:"Earned 50 stars"},
-  {id:"maze_win",icon:"🗺️",name:"Pathfinder",desc:"Solved the directions maze!"},
-  {id:"days_order",icon:"📆",name:"Week Wizard",desc:"Got the days of the week right"},
-  {id:"all_dir",icon:"🧭",name:"Direction Hero",desc:"Explored all 4 main directions"},
+// ====== POEM LINE EXPLANATIONS ======
+const lineExplanations = [
+  "🎄 C is for Christmas — The poet waits the whole year for Christmas to come. It is their most favourite time!",
+  "🌿 H is for Holly — Holly is a plant with shiny green leaves and red berries. It makes people happy and cheerful at Christmas!",
+  "🦌 R is for Reindeer — Reindeer are special deer that fly through the sky pulling Santa's sleigh!",
+  "❄️ I is for Icicles — Icicles are pointy sticks of ice that hang from rooftops. They drip as they slowly melt!",
+  "🎅 S is for Santa — Santa Claus is rarely seen (seldom = not often). He comes secretly at night!",
+  "🌲 T is for Tree — The Christmas tree is beautiful and bright green. We decorate it with lights and balls!",
+  "🌱 M is for Mistletoe — People share hugs and kisses under the mistletoe. It's a Christmas tradition!",
+  "👼 A is for Angel — A beautiful angel sits right on top of the Christmas tree!",
+  "🧦 S is for Stockings — Big socks are hung by the fireplace. Santa fills them with lovely toys!",
+  "🧝 The last line — Elves are Santa's tiny magical helpers. They make toys for all the girls and boys in the world!"
 ];
-
-function awardStar(n){
-  stars+=n;
-  var el=document.getElementById("star-display");
-  el.textContent=stars;el.classList.add("pop");
-  setTimeout(function(){el.classList.remove("pop");},350);
-  document.getElementById("star-display-2").textContent=stars;
-  checkBadges();saveState();
-  if(n>0)spawnConfetti(14);
-}
-function checkBadges(){
-  var nb=null;
-  function give(id){if(!unlockedBadges.includes(id)){unlockedBadges.push(id);nb=id;}}
-  if(stars>=1)give("first_star");
-  if(clockClicks>=5)give("clock5");
-  if(monthsVisited.size>=12)give("months_all");
-  if(quizScore>=5)give("quiz_half");
-  if(stars>=10)give("star10");
-  if(stars>=25)give("star25");
-  if(stars>=50)give("star50");
-  if(dirExplored.size>=4)give("all_dir");
-  if(nb){var b=BADGES.find(function(x){return x.id===nb;});if(b){showToast(b.icon+" Badge Unlocked: "+b.name+"!");renderBadges();}}
-  document.getElementById("badge-count").textContent=unlockedBadges.length;
-  renderBadges();
-}
-function renderBadges(){
-  var g=document.getElementById("badges-grid");if(!g)return;g.innerHTML="";
-  BADGES.forEach(function(b){
-    var u=unlockedBadges.includes(b.id);
-    var d=document.createElement("div");d.className="badge"+(u?"":" locked");
-    d.innerHTML="<span class='bi'>"+b.icon+"</span><div class='bn'>"+b.name+"</div><div class='bd'>"+b.desc+"</div>"+(u?"":"<div class='lk'>🔒</div>");
-    d.onclick=function(){if(u)showModalMsg(b.icon,b.name,b.desc);else showToast("🔒 Keep playing to unlock!");};
-    g.appendChild(d);
-  });
+function explainLine(i) {
+  const box = document.getElementById('poem-explanation');
+  document.getElementById('poem-exp-text').textContent = lineExplanations[i];
+  box.style.display='block';
+  box.classList.add('pop');
+  setTimeout(()=>box.classList.remove('pop'),300);
+  box.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
-// TOAST/MODAL/CONFETTI
-var toastTimer;
-function showToast(msg){var t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.classList.remove("show");},2800);}
-function showModalMsg(icon,title,msg){document.getElementById("modal-icon").textContent=icon;document.getElementById("modal-title").textContent=title;document.getElementById("modal-msg").textContent=msg;document.getElementById("modal").classList.add("open");}
-function closeModal(){document.getElementById("modal").classList.remove("open");}
-function spawnConfetti(n){n=n||16;var colors=["#FF7EB3","#FFD600","#4FC3F7","#66BB6A","#9C6FDE","#FF8C42","#FF5252"];for(var i=0;i<n;i++){var el=document.createElement("div");el.className="conf";el.style.left=Math.random()*100+"vw";el.style.background=colors[Math.floor(Math.random()*colors.length)];el.style.animationDuration=(1+Math.random()*1.2)+"s";el.style.animationDelay=Math.random()*0.4+"s";el.style.borderRadius=Math.random()>.5?"50%":"2px";var s=(8+Math.random()*8)+"px";el.style.width=el.style.height=s;document.body.appendChild(el);setTimeout(function(){el.remove();},2200);}}
-function showStarCelebration(){spawnConfetti(30);showToast("⭐ You have "+stars+" stars! Keep it up!");}
-
-// PANEL NAV
-function showPanel(id,btn){
-  document.querySelectorAll(".panel").forEach(function(p){p.classList.remove("active");});
-  document.getElementById(id+"-panel").classList.add("active");
-  document.querySelectorAll("nav button").forEach(function(b){b.classList.remove("active");});
-  if(btn)btn.classList.add("active");
-  if(id==="clock"){renderClockNumbers();renderCQNumbers();renderClockQuiz();newSetTimeTgt();}
-  if(id==="calendar"){renderCalendar();}
-  if(id==="rewards"){renderBadges();document.getElementById("star-display-2").textContent=stars;}
-  if(id==="directions"){initMaze();}
-  if(id==="quiz"){initQuiz();}
-}
-
-// MASCOT
-var mq=["Hoot! Drag the sun across the sky! ☀️","You're doing great! 🦉","Try the quiz next!","Spin the compass!","Tap the month cards!","Click the time cards to learn more!"];var mqIdx=0;
-document.getElementById("mascot").onclick=function(){showToast("🦉 "+mq[mqIdx%mq.length]);mqIdx++;};
-
-// SKY DRAGGABLE SUN
-var skyStates=[
-  {pct:0.05,emoji:"🌅",label:"🌅 Morning",bg:"linear-gradient(180deg,#FFE082 0%,#87CEEB 40%,#87CEEB 75%,#5DBB63 75%,#4CAF50 100%)",info:"☀️ The Sun rises in the <strong>East</strong>. This is morning — our day begins! Birds sing and everything wakes up. 🐦"},
-  {pct:0.30,emoji:"🌤️",label:"🌤️ Mid-Morning",bg:"linear-gradient(180deg,#87CEEB 0%,#B3E5FC 75%,#5DBB63 75%,#4CAF50 100%)",info:"🌤️ Mid-morning! The Sun has risen higher. A great time to go to school! ✏️"},
-  {pct:0.50,emoji:"☀️",label:"☀️ Noon",bg:"linear-gradient(180deg,#64B5F6 0%,#87CEEB 75%,#5DBB63 75%,#4CAF50 100%)",info:"<strong>Noon!</strong> The Sun is right over our heads. It is 12:00 in the middle of the day — very bright and hot! 🌡️"},
-  {pct:0.68,emoji:"🌤️",label:"🌤️ Afternoon",bg:"linear-gradient(180deg,#B3E5FC 0%,#87CEEB 75%,#5DBB63 75%,#4CAF50 100%)",info:"🌤️ <strong>Afternoon</strong> — between noon and evening. The Sun starts moving towards the West. 🌤️"},
-  {pct:0.85,emoji:"🌇",label:"🌇 Evening",bg:"linear-gradient(180deg,#FF8A65 0%,#CE93D8 50%,#7B1FA2 75%,#4CAF50 85%,#388E3C 100%)",info:"🌇 The Sun sets in the <strong>West</strong> during evening. The sky turns beautiful orange and pink!"},
-  {pct:0.98,emoji:"🌙",label:"🌙 Night",bg:"linear-gradient(180deg,#1a1a4e 0%,#283593 60%,#3949AB 80%,#2E7D32 85%,#1B5E20 100%)",info:"🌙 <strong>Night</strong> — the Sun has set. Stars come out. 12:00 at night is called <strong>midnight</strong>. Time to sleep! 😴"},
-];
-var lastSkyState=-1;
-var isDraggingSun=false;
-var sunEl=document.getElementById("drag-sun");
-var skyEl=document.getElementById("sky-scene");
-function getSkyState(pct){var best=0;for(var i=0;i<skyStates.length;i++){if(pct>=skyStates[i].pct)best=i;}return best;}
-function updateSky(pct){var i=getSkyState(pct);if(i!==lastSkyState){lastSkyState=i;var s=skyStates[i];skyEl.style.background=s.bg;document.getElementById("sky-label").textContent=s.label;sunEl.textContent=s.emoji;var box=document.getElementById("tod-info");box.style.display="block";box.innerHTML="💡 "+s.info;}}
-function handleSunMove(clientX,clientY){var rect=skyEl.getBoundingClientRect();var pct=Math.max(0,Math.min(.98,(clientX-rect.left)/rect.width));var yPct=Math.max(.05,Math.min(.8,(clientY-rect.top)/rect.height));sunEl.style.left=(pct*100-3)+"%";sunEl.style.top=(yPct*100)+"%";updateSky(pct);}
-sunEl.addEventListener("mousedown",function(e){isDraggingSun=true;e.preventDefault();});
-sunEl.addEventListener("touchstart",function(e){isDraggingSun=true;e.preventDefault();},{passive:false});
-document.addEventListener("mousemove",function(e){if(isDraggingSun)handleSunMove(e.clientX,e.clientY);});
-document.addEventListener("touchmove",function(e){if(isDraggingSun){e.preventDefault();handleSunMove(e.touches[0].clientX,e.touches[0].clientY);}},{passive:false});
-document.addEventListener("mouseup",function(){isDraggingSun=false;});
-document.addEventListener("touchend",function(){isDraggingSun=false;});
-// Clouds
-(function(){var cl=document.getElementById("clouds-layer");for(var i=0;i<4;i++){var c=document.createElement("div");c.className="cloud";c.textContent="☁️";c.style.top=(5+Math.random()*30)+"%";c.style.left="-80px";c.style.animationDuration=(18+Math.random()*20)+"s";c.style.animationDelay=-(Math.random()*20)+"s";c.style.fontSize=(1.1+Math.random())+"rem";c.style.opacity=0.4+Math.random()*.3;c.style.position="absolute";cl.appendChild(c);}})();
-
-// TOD CARDS
-var todData={
-  morning:{title:"🌅 Morning",info:"The Sun rises in the <strong>East</strong>. This is when our day begins! Birds start singing and everything gets bright."},
-  noon:{title:"☀️ Noon",info:"The Sun is right over our head at <strong>noon</strong> — 12:00 in the middle of the day. Neither a.m. nor p.m. — it is exactly noon!"},
-  afternoon:{title:"🌤️ Afternoon",info:"<strong>Afternoon</strong> is the time between noon and evening. The Sun starts moving towards the West."},
-  evening:{title:"🌇 Evening",info:"The Sun sets in the <strong>West</strong> in the evening. The sky turns beautiful orange and pink!"},
-  night:{title:"🌙 Night",info:"After sunset, it is night. Stars appear! 12:00 at night is called <strong>midnight</strong>. Time to rest! 😴"},
-};
-function clickTod(el,tod){
-  var r=document.createElement("div");r.className="ripple";var s=Math.max(el.offsetWidth,el.offsetHeight)*2;r.style.width=r.style.height=s+"px";r.style.left=r.style.top="50%";r.style.marginLeft=r.style.marginTop=(-s/2)+"px";el.appendChild(r);setTimeout(function(){r.remove();},700);
-  var box=document.getElementById("tod-info");box.style.display="block";box.innerHTML="💡 <strong>"+todData[tod].title+"</strong> — "+todData[tod].info;
-}
-
-// UNIT CHAIN
-var units=[
-  {label:"1 second",info:"⏱️ A second is tiny! Count 1... that's one second. 60 of these make a minute."},
-  {label:"60 sec = 1 min",info:"🕐 60 seconds make 1 minute. Count to 60 — that's one minute!"},
-  {label:"60 min = 1 hr",info:"🕐 60 minutes make 1 hour. A school lesson is about 1 hour long!"},
-  {label:"24 hrs = 1 day",info:"🌞 24 hours make 1 full day — from midnight all the way to the next midnight!"},
-  {label:"7 days = 1 week",info:"📅 7 days make 1 week: Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday!"},
-  {label:"~4 wks = 1 month",info:"🗓️ About 4 weeks (plus 2-3 extra days) make 1 month. Months have 28, 30, or 31 days."},
-  {label:"12 months = 1 yr",info:"📆 12 months make 1 year! One year = 365 days (or 366 in a leap year!)."},
-];
-function buildUnitChain(){
-  var chain=document.getElementById("unit-chain");chain.innerHTML="";
-  units.forEach(function(u,i){
-    var b=document.createElement("div");b.className="unit-block";b.textContent=u.label;
-    b.onclick=function(){document.getElementById("unit-info").innerHTML="<div style='animation:popIn .35s cubic-bezier(.36,1.56,.64,1) both'>"+u.info+"</div>";document.querySelectorAll(".unit-block").forEach(function(x){x.classList.remove("active-unit");});b.classList.add("active-unit");};
-    chain.appendChild(b);
-    if(i<units.length-1){var a=document.createElement("div");a.className="unit-arrow";a.textContent="→";chain.appendChild(a);}
-  });
-}
-
-// CLOCK
-function renderClockNumbers(){
-  ["clock-numbers","cq-numbers"].forEach(function(id){
-    var g=document.getElementById(id);if(!g)return;g.innerHTML="";
-    for(var i=0;i<60;i++){var a=(i/60)*Math.PI*2-Math.PI/2;var r1=i%5===0?93:98,r2=103;var line=document.createElementNS("http://www.w3.org/2000/svg","line");line.setAttribute("x1",120+Math.cos(a)*r1);line.setAttribute("y1",120+Math.sin(a)*r1);line.setAttribute("x2",120+Math.cos(a)*r2);line.setAttribute("y2",120+Math.sin(a)*r2);line.setAttribute("stroke",i%5===0?"#9C6FDE":"#ddd");line.setAttribute("stroke-width",i%5===0?"2":"1");g.appendChild(line);}
-    for(var i=1;i<=12;i++){var a=(i/12)*Math.PI*2-Math.PI/2;var x=120+Math.cos(a)*80,y=120+Math.sin(a)*80;var t=document.createElementNS("http://www.w3.org/2000/svg","text");t.setAttribute("x",x);t.setAttribute("y",y);t.setAttribute("text-anchor","middle");t.setAttribute("dominant-baseline","middle");t.setAttribute("font-family","Baloo 2");t.setAttribute("font-weight","700");t.setAttribute("font-size","15");t.setAttribute("fill","#5c35a0");t.textContent=i;g.appendChild(t);}
-  });
-  updateClockHands();
-}
-function setHand(id,deg,len){var el=document.getElementById(id);if(!el)return;var r=(deg-90)*Math.PI/180;el.setAttribute("x2",120+Math.cos(r)*len);el.setAttribute("y2",120+Math.sin(r)*len);}
-function updateClockHands(){var hDeg=((clockH%12)+clockM/60)/12*360;setHand("hour-hand",hDeg,52);setHand("minute-hand",clockM/60*360,72);var h=clockH%12===0?12:clockH%12;document.getElementById("clock-time-text").textContent=h+":"+(clockM.toString().padStart(2,"0"));document.getElementById("clock-ampm-label").textContent=clockH<12?"a.m.":"p.m.";}
-function changeHour(d){clockH=(clockH+d+24)%24;updateClockHands();clockClicks++;checkBadges();saveState();}
-function changeMin(d){clockM=(clockM+d+60)%60;updateClockHands();}
-function setNow(){var n=new Date();clockH=n.getHours();clockM=n.getMinutes();updateClockHands();showToast("🕐 Now showing the real current time!");}
-function toggleSec(){secOn=!secOn;var sh=document.getElementById("second-hand");if(secOn){sh.style.display="";clearInterval(secInt);secInt=setInterval(function(){var s=new Date().getSeconds();setHand("second-hand",s/60*360,68);},1000);showToast("🔴 Second hand is moving!");}else{sh.style.display="none";clearInterval(secInt);}}
-// Clock drag
-var isDragClock=false;
-document.getElementById("clock-wrap").addEventListener("mousedown",function(e){isDragClock=true;e.preventDefault();handleClockDrag(e);});
-document.getElementById("clock-wrap").addEventListener("touchstart",function(e){isDragClock=true;e.preventDefault();handleClockDrag(e);},{passive:false});
-document.addEventListener("mousemove",function(e){if(isDragClock)handleClockDrag(e);});
-document.addEventListener("touchmove",function(e){if(isDragClock){e.preventDefault();handleClockDrag(e);}},{passive:false});
-document.addEventListener("mouseup",function(){isDragClock=false;});
-document.addEventListener("touchend",function(){isDragClock=false;});
-function handleClockDrag(e){var rect=document.getElementById("interactive-clock").getBoundingClientRect();var cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;var pos=e.touches?e.touches[0]:e;var angle=Math.atan2(pos.clientY-cy,pos.clientX-cx);var deg=((angle+Math.PI/2)*180/Math.PI+360)%360;clockM=Math.round(deg/6)%60;updateClockHands();clockClicks++;checkBadges();}
-
-// SET TIME
-function newSetTimeTgt(){var h=Math.floor(Math.random()*12)+1;var mArr=[0,15,30,45];var m=mArr[Math.floor(Math.random()*4)];var ampm=Math.random()>.5?"a.m.":"p.m.";setTimeTgt={h:h,m:m,ampm:ampm};document.getElementById("target-time").textContent=h+":"+(m.toString().padStart(2,"0"))+" "+ampm;document.getElementById("set-time-result").textContent="";}
-function checkSetTime(){var h=clockH%12===0?12:clockH%12;var ca=clockH<12?"a.m.":"p.m.";var hOk=h===setTimeTgt.h;var mOk=Math.abs(clockM-setTimeTgt.m)<=2;var aOk=ca===setTimeTgt.ampm;var res=document.getElementById("set-time-result");if(hOk&&mOk&&aOk){res.textContent="🎉 Correct! +3 ⭐";res.style.color="#2e7d32";awardStar(3);spawnConfetti(25);setTimeout(newSetTimeTgt,2000);}else{res.textContent="❌ Not quite! Check the hour, minutes, and a.m./p.m.!";res.style.color="#c62828";}}
-
-// CLOCK QUIZ
-var cqTimes=[{h:3,m:0},{h:6,m:0},{h:9,m:0},{h:1,m:30},{h:5,m:0},{h:8,m:15},{h:11,m:0},{h:2,m:0},{h:7,m:0},{h:4,m:45},{h:10,m:30},{h:12,m:0}];
-function renderCQNumbers(){var g=document.getElementById("cq-numbers");if(!g)return;g.innerHTML="";for(var i=1;i<=12;i++){var a=(i/12)*Math.PI*2-Math.PI/2;var t=document.createElementNS("http://www.w3.org/2000/svg","text");t.setAttribute("x",120+Math.cos(a)*80);t.setAttribute("y",120+Math.sin(a)*80);t.setAttribute("text-anchor","middle");t.setAttribute("dominant-baseline","middle");t.setAttribute("font-family","Baloo 2");t.setAttribute("font-weight","700");t.setAttribute("font-size","15");t.setAttribute("fill","#5c35a0");t.textContent=i;g.appendChild(t);}}
-function renderClockQuiz(){var t=cqTimes[cqIdx%cqTimes.length];setHand("cq-hour",((t.h%12)+t.m/60)/12*360,52);setHand("cq-minute",t.m/60*360,72);var correct=(t.h===12||t.h===0?12:t.h%12)+":"+(t.m.toString().padStart(2,"0"));var opts=[correct];while(opts.length<4){var fh=Math.floor(Math.random()*12)+1;var fm=[0,15,30,45][Math.floor(Math.random()*4)];var o=fh+":"+(fm.toString().padStart(2,"0"));if(!opts.includes(o))opts.push(o);}opts.sort(function(){return Math.random()-.5;});var wrap=document.getElementById("cq-options");wrap.innerHTML="";document.getElementById("cq-feedback").textContent="";opts.forEach(function(o){var b=document.createElement("button");b.className="qopt";b.textContent=o;b.onclick=function(){wrap.querySelectorAll(".qopt").forEach(function(x){x.disabled=true;if(x.textContent===correct)x.classList.add("correct");});if(o===correct){b.classList.add("correct");document.getElementById("cq-feedback").innerHTML="<span class='fb-ok'>🎉 Correct! +2 ⭐</span>";awardStar(2);spawnConfetti(15);}else{b.classList.add("wrong");document.getElementById("cq-feedback").innerHTML="<span class='fb-bad'>❌ Answer: "+correct+"</span>";}setTimeout(function(){cqIdx++;renderClockQuiz();},2000);};wrap.appendChild(b);});}
-
-// CALENDAR
-function renderCalendar(){
-  var dnames=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-  var fullD=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-  var firstDay=0,dim=28;
-  var grid=document.getElementById("cal-grid");grid.innerHTML="";
-  dnames.forEach(function(d){var h=document.createElement("div");h.className="cal-h";h.textContent=d;grid.appendChild(h);});
-  for(var i=0;i<firstDay;i++){var e=document.createElement("div");e.className="cal-day empty";grid.appendChild(e);}
-  for(var d=1;d<=dim;d++){
-    var cell=document.createElement("div");var dow=(firstDay+d-1)%7;
-    cell.className="cal-day"+(d===18?" today":"")+(daysVisited.has(d)?" visited":"");cell.textContent=d;
-    (function(dd,cell,dow){cell.onclick=function(){daysVisited.add(dd);cell.className="cal-day visited"+(dd===18?" today":"");showToast("📅 "+fullD[dow]+", February "+dd+", 2026");saveState();};})(d,cell,dow);
-    grid.appendChild(cell);
+// ====== SPEAK WORD ======
+function speakWord(word) {
+  if('speechSynthesis' in window) {
+    const u = new SpeechSynthesisUtterance(word);
+    u.lang='en-US'; u.rate=0.8;
+    speechSynthesis.speak(u);
   }
-  document.getElementById("today-label").textContent="Wednesday, February 18, 2026";
-  buildDayOrder();buildMonths();buildPoem();
 }
-// DAYS DRAG
-var DAYS_ORDER=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-function buildDayOrder(){
-  var src=document.getElementById("day-source"),tgt=document.getElementById("day-targets");if(!src||!tgt)return;
-  var shuffled=DAYS_ORDER.slice().sort(function(){return Math.random()-.5;});dayOrderState=Array(7).fill(null);src.innerHTML="";tgt.innerHTML="";
-  shuffled.forEach(function(day){var el=document.createElement("div");el.className="draggable-day";el.textContent=day;el.draggable=true;el.addEventListener("dragstart",function(e){e.dataTransfer.setData("text",day);el.classList.add("dragging");});el.addEventListener("dragend",function(){el.classList.remove("dragging");});src.appendChild(el);});
-  for(var i=0;i<7;i++){
-    (function(idx){var tg=document.createElement("div");tg.className="drop-tgt";tg.textContent=(idx+1)+".";tg.addEventListener("dragover",function(e){e.preventDefault();tg.classList.add("over");});tg.addEventListener("dragleave",function(){tg.classList.remove("over");});tg.addEventListener("drop",function(e){e.preventDefault();tg.classList.remove("over");var day=e.dataTransfer.getData("text");tg.textContent=day;dayOrderState[idx]=day;Array.from(src.querySelectorAll(".draggable-day")).forEach(function(x){if(x.textContent===day)x.remove();});});tgt.appendChild(tg);})(i);
+
+// ====== CHRISTMAS QUIZ ======
+const christmasQuestions = [
+  { q:"What does the poet wait for all year?", opts:["Diwali","Christmas","Summer","School"], ans:1 },
+  { q:"Which plant brings so much cheer?", opts:["Mistletoe","Icicles","Holly","Angel"], ans:2 },
+  { q:"What pulls Santa's sleigh?", opts:["Horses","Elves","Dogs","Reindeer"], ans:3 },
+  { q:"What drips all day in the poem?", opts:["Rain","Holly","Icicles","Stockings"], ans:2 },
+  { q:"Santa is seldom seen. What does 'seldom' mean?", opts:["Always","Often","Rarely","Never"], ans:2 },
+  { q:"What colour is the Christmas tree?", opts:["Red","Blue","White","Green"], ans:3 },
+  { q:"Under which plant do people hug and kiss?", opts:["Holly","Reindeer","Mistletoe","Tree"], ans:2 },
+  { q:"What is loaded with toys?", opts:["Sleigh","Stockings","Bags","Boxes"], ans:1 },
+  { q:"Who makes toys for children?", opts:["Angels","Reindeer","Santa","Elves"], ans:3 },
+  { q:"What kind of poem is CHRISTMAS?", opts:["Rhyming","Haiku","Acrostic","Story"], ans:2 },
+  { q:"Where does the angel sit?", opts:["On the fireplace","On top of the tree","In the sleigh","On stockings"], ans:1 },
+  { q:"Who wrote this Christmas poem?", opts:["Anonymous","Santa","An elf","The teacher"], ans:0 }
+];
+
+let chrQuizIdx=0, chrQuizScore=0, chrAnswered=false;
+
+let christmasInited = false;
+function initChristmas() {
+  if(christmasInited) return;
+  christmasInited = true;
+  initChrQuiz();
+  initChrTF();
+  initChrRhyme();
+}
+
+function initChrQuiz() {
+  chrQuizIdx=0; chrQuizScore=0; chrAnswered=false;
+  renderChrQuestion();
+}
+
+function renderChrQuestion() {
+  const container = document.getElementById('chr-quiz-content');
+  if(chrQuizIdx >= christmasQuestions.length) {
+    renderQuizResult(container, chrQuizScore, christmasQuestions.length, 'chr');
+    return;
   }
-  document.getElementById("day-order-result").textContent="";
+  const q = christmasQuestions[chrQuizIdx];
+  const pct = (chrQuizIdx/christmasQuestions.length*100).toFixed(0);
+  document.getElementById('chr-quiz-progress').style.width=pct+'%';
+  chrAnswered=false;
+  container.innerHTML=`
+    <div class="question-box">
+      <div class="question-num">Question ${chrQuizIdx+1} of ${christmasQuestions.length}</div>
+      <div class="question-text">🎄 ${q.q}</div>
+      <div class="options-grid">
+        ${q.opts.map((o,i)=>`<button class="option-btn" onclick="answerChr(${i})">${['🅐','🅑','🅒','🅓'][i]} ${o}</button>`).join('')}
+      </div>
+      <div id="chr-feedback" class="feedback-msg"></div>
+    </div>
+    <div class="quiz-controls">
+      <div class="score-display">⭐ Score: ${chrQuizScore}/${chrQuizIdx}</div>
+      <button class="next-btn" onclick="nextChrQuestion()" style="display:none" id="chr-next-btn">Next ➡️</button>
+    </div>
+  `;
 }
-function checkDayOrder(){var correct=0;document.querySelectorAll("#day-targets .drop-tgt").forEach(function(tg,i){if(dayOrderState[i]===DAYS_ORDER[i]){tg.classList.add("correct");correct++;}else if(dayOrderState[i]){tg.classList.add("wrong");}});var res=document.getElementById("day-order-result");if(correct===7){res.textContent="🎉 Perfect! All 7 days correct!";res.style.color="#2e7d32";awardStar(5);if(!unlockedBadges.includes("days_order")){unlockedBadges.push("days_order");showToast("📆 Badge: Week Wizard!");checkBadges();}}else{res.textContent="You got "+correct+"/7 right! Try again!";res.style.color="#c62828";}}
 
-// MONTHS
-var MONTH_DATA=[
-  {name:"January",days:31,bg:"linear-gradient(135deg,#B3E5FC,#0288D1)",icon:"❄️"},
-  {name:"February",days:"28/29",bg:"linear-gradient(135deg,#F8BBD0,#E91E63)",icon:"💕"},
-  {name:"March",days:31,bg:"linear-gradient(135deg,#C8E6C9,#388E3C)",icon:"🌱"},
-  {name:"April",days:30,bg:"linear-gradient(135deg,#DCEDC8,#7CB342)",icon:"🌸"},
-  {name:"May",days:31,bg:"linear-gradient(135deg,#FFE082,#F9A825)",icon:"🌻"},
-  {name:"June",days:30,bg:"linear-gradient(135deg,#FFCDD2,#E53935)",icon:"🌞"},
-  {name:"July",days:31,bg:"linear-gradient(135deg,#FF8A65,#D84315)",icon:"🏖️"},
-  {name:"August",days:31,bg:"linear-gradient(135deg,#A5D6A7,#2E7D32)",icon:"🎒"},
-  {name:"September",days:30,bg:"linear-gradient(135deg,#FFCC80,#EF6C00)",icon:"🍂"},
-  {name:"October",days:31,bg:"linear-gradient(135deg,#FF8A65,#BF360C)",icon:"🎃"},
-  {name:"November",days:30,bg:"linear-gradient(135deg,#CE93D8,#6A1B9A)",icon:"🪔"},
-  {name:"December",days:31,bg:"linear-gradient(135deg,#B3E5FC,#0D47A1)",icon:"🎄"},
-];
-function buildMonths(){var mg=document.getElementById("months-grid");if(!mg)return;mg.innerHTML="";MONTH_DATA.forEach(function(m,i){var chip=document.createElement("div");chip.className="month-chip"+(monthsVisited.has(i)?" picked":"");chip.style.background=m.bg;chip.innerHTML="<div>"+m.icon+" <strong>"+m.name+"</strong></div><div class='m-days'>"+m.days+" days</div>";chip.onclick=function(){monthsVisited.add(i);chip.classList.add("picked");document.getElementById("month-info-box").innerHTML="<div style='animation:popIn .35s cubic-bezier(.36,1.56,.64,1) both'>"+m.icon+" <strong>"+m.name+"</strong> has <strong>"+m.days+" days</strong>!</div>";saveState();checkBadges();};mg.appendChild(chip);});}
-
-// POEM
-var POEM_LINES=["Thirty days have September,","April, June and November,","All the rest have thirty-one,","Except February alone,","Which has only twenty-eight days,","And twenty-nine in each leap year."];
-function buildPoem(){var pl=document.getElementById("poem-lines");if(!pl)return;pl.innerHTML="";POEM_LINES.forEach(function(line,i){var el=document.createElement("div");el.className="poem-line";el.textContent=line;el.onclick=function(){document.querySelectorAll(".poem-line").forEach(function(x){x.classList.remove("lit");});el.classList.add("lit");showToast("🎵 "+line);};pl.appendChild(el);});}
-
-// COMPASS
-var compassAngle=0,isDragCompass=false,compStartA=0,compStartRot=0;
-var compOuter=document.getElementById("compass-outer");
-var compInner=document.getElementById("compass-inner");
-function startCompassDrag(e){isDragCompass=true;var pos=e.touches?e.touches[0]:e;var rect=compOuter.getBoundingClientRect();compStartA=Math.atan2(pos.clientY-(rect.top+rect.height/2),pos.clientX-(rect.left+rect.width/2));compStartRot=compassAngle;e.preventDefault();}
-compOuter.addEventListener("mousedown",startCompassDrag);
-compOuter.addEventListener("touchstart",startCompassDrag,{passive:false});
-document.addEventListener("mousemove",function(e){if(!isDragCompass)return;var rect=compOuter.getBoundingClientRect();var a=Math.atan2(e.clientY-(rect.top+rect.height/2),e.clientX-(rect.left+rect.width/2));compassAngle=compStartRot+(a-compStartA)*180/Math.PI;compOuter.style.transform="rotate("+compassAngle+"deg)";compInner.style.transform="rotate("+(-compassAngle)+"deg)";});
-document.addEventListener("touchmove",function(e){if(!isDragCompass)return;e.preventDefault();var touch=e.touches[0];var rect=compOuter.getBoundingClientRect();var a=Math.atan2(touch.clientY-(rect.top+rect.height/2),touch.clientX-(rect.left+rect.width/2));compassAngle=compStartRot+(a-compStartA)*180/Math.PI;compOuter.style.transform="rotate("+compassAngle+"deg)";compInner.style.transform="rotate("+(-compassAngle)+"deg)";},{passive:false});
-document.addEventListener("mouseup",function(){isDragCompass=false;});
-document.addEventListener("touchend",function(){isDragCompass=false;});
-function showDirInfo(dir,desc){dirExplored.add(dir);checkBadges();showModalMsg({North:"⬆️",South:"⬇️",East:"➡️",West:"⬅️"}[dir]||"🧭",dir,desc);}
-
-// POSITION WORDS
-var positions={left:{left:"8%",top:"45%"},right:{left:"70%",top:"45%"},up:{left:"40%",top:"8%"},down:{left:"40%",top:"65%"},near:{left:"60%",top:"18%"},far:{left:"8%",top:"50%"},front:{left:"28%",top:"55%"},behind:{left:"12%",top:"55%"},above:{left:"40%",top:"3%"},below:{left:"40%",top:"68%"},reset:{left:"42%",top:"38%"}};
-var posLabels={left:"👧 is to the LEFT 👈",right:"👧 is to the RIGHT 👉",up:"👧 is UP! ⬆️",down:"👧 is DOWN ⬇️",near:"👧 is NEAR the tree 🌳",far:"👧 is FAR from the tree 📍",front:"👧 is in FRONT of the boy 🚶",behind:"👧 is BEHIND the boy 🔙",above:"👧 is ABOVE ⬆",below:"👧 is BELOW ⬇",reset:"Back to start! 🔄"};
-function moveGirl(dir){var girl=document.getElementById("pos-girl");var p=positions[dir]||positions.reset;girl.style.left=p.left;girl.style.top=p.top;document.getElementById("pos-label").textContent=posLabels[dir]||"";spawnConfetti(4);}
-
-// MAZE
-function initMaze(){
-  var canvas=document.getElementById("maze-canvas");if(!canvas)return;
-  canvas.width=MAZE_COLS*CELL;canvas.height=MAZE_ROWS*CELL;
-  mazeGrid=[];
-  for(var y=0;y<MAZE_ROWS;y++){mazeGrid.push([]);for(var x=0;x<MAZE_COLS;x++){mazeGrid[y].push({r:true,b:true});}}
-  var openW=[[0,0,"r"],[1,0,"b"],[1,0,"r"],[2,0,"r"],[3,0,"r"],[4,0,"r"],[5,0,"r"],[6,0,"b"],[0,1,"r"],[0,1,"b"],[1,1,"r"],[2,1,"r"],[2,1,"b"],[3,1,"b"],[4,1,"r"],[5,1,"b"],[6,1,"r"],[0,2,"b"],[1,2,"r"],[1,2,"b"],[2,2,"r"],[3,2,"r"],[4,2,"b"],[5,2,"r"],[6,2,"b"],[0,3,"r"],[1,3,"r"],[2,3,"b"],[3,3,"r"],[4,3,"r"],[5,3,"r"],[6,3,"b"],[0,4,"r"],[0,4,"b"],[1,4,"b"],[2,4,"r"],[3,4,"r"],[4,4,"r"],[5,4,"b"],[6,4,"r"],[0,5,"r"],[1,5,"r"],[2,5,"r"],[3,5,"r"],[4,5,"r"],[5,5,"r"],[6,5,"r"]];
-  openW.forEach(function(w){if(mazeGrid[w[1]]&&mazeGrid[w[1]][w[0]])mazeGrid[w[1]][w[0]][w[2]]=false;});
-  playerX=0;playerY=0;mazeWon=false;document.getElementById("maze-result").textContent="";drawMaze();
-  document.onkeydown=function(e){if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)){e.preventDefault();var map={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]};var d=map[e.key];mazeMovePlayer(d[0],d[1]);}};
+function answerChr(idx) {
+  if(chrAnswered) return;
+  chrAnswered=true;
+  const q=christmasQuestions[chrQuizIdx];
+  const btns=document.querySelectorAll('#chr-quiz-content .option-btn');
+  btns.forEach(b=>b.disabled=true);
+  btns[idx].classList.add(idx===q.ans?'correct':'wrong');
+  btns[q.ans].classList.add('correct');
+  const fb=document.getElementById('chr-feedback');
+  if(idx===q.ans){chrQuizScore++;fb.textContent='🎉 Correct! Wonderful!';fb.className='feedback-msg correct';}
+  else{fb.textContent='❌ Oops! The correct answer is: '+q.opts[q.ans];fb.className='feedback-msg wrong';}
+  document.getElementById('chr-next-btn').style.display='block';
 }
-function canMove(x,y,dx,dy){if(dx===1)return x<MAZE_COLS-1&&!mazeGrid[y][x].r;if(dy===1)return y<MAZE_ROWS-1&&!mazeGrid[y][x].b;if(dx===-1)return x>0&&!mazeGrid[y][x-1].r;if(dy===-1)return y>0&&!mazeGrid[y-1][x].b;return false;}
-function mazeMovePlayer(dx,dy){if(mazeWon)return;if(canMove(playerX,playerY,dx,dy)){playerX+=dx;playerY+=dy;spawnConfetti(3);drawMaze();if(playerX===MAZE_COLS-1&&playerY===MAZE_ROWS-1){mazeWon=true;document.getElementById("maze-result").textContent="🎉 You found the way home! Amazing!";awardStar(5);spawnConfetti(30);if(!unlockedBadges.includes("maze_win")){unlockedBadges.push("maze_win");showToast("🗺️ Badge: Pathfinder!");checkBadges();}}}else{var canvas=document.getElementById("maze-canvas");canvas.style.transform="translateX(4px)";setTimeout(function(){canvas.style.transform="translateX(-4px)";setTimeout(function(){canvas.style.transform="";},100);},100);}}
-function resetMaze(){initMaze();}
-function drawMaze(){var canvas=document.getElementById("maze-canvas");if(!canvas)return;var ctx=canvas.getContext("2d");ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle="#f3e8ff";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle="#C8E6C9";ctx.fillRect((MAZE_COLS-1)*CELL,(MAZE_ROWS-1)*CELL,CELL,CELL);ctx.font="26px serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("🏠",(MAZE_COLS-1)*CELL+CELL/2,(MAZE_ROWS-1)*CELL+CELL/2);ctx.fillText("🧒",playerX*CELL+CELL/2,playerY*CELL+CELL/2);ctx.strokeStyle="#5c35a0";ctx.lineWidth=3;ctx.lineCap="round";ctx.strokeRect(0,0,canvas.width,canvas.height);for(var y=0;y<MAZE_ROWS;y++){for(var x=0;x<MAZE_COLS;x++){var cx=x*CELL,cy=y*CELL;if(mazeGrid[y][x].r&&x<MAZE_COLS-1){ctx.beginPath();ctx.moveTo(cx+CELL,cy);ctx.lineTo(cx+CELL,cy+CELL);ctx.stroke();}if(mazeGrid[y][x].b&&y<MAZE_ROWS-1){ctx.beginPath();ctx.moveTo(cx,cy+CELL);ctx.lineTo(cx+CELL,cy+CELL);ctx.stroke();}}}ctx.fillStyle="#9C6FDE";ctx.font="bold 11px Nunito";ctx.textAlign="left";ctx.fillText("START",4,14);}
+function nextChrQuestion(){chrQuizIdx++;renderChrQuestion();}
 
-// QUIZ
-var QUESTIONS=[
-  {q:"What time of day does the Sun rise?",opts:["Morning","Evening","Midnight","Noon"],ans:"Morning",icon:"🌅"},
-  {q:"How many hours are there in one day?",opts:["12","48","24","7"],ans:"24",icon:"⏰"},
-  {q:"12 o'clock at night is called...?",opts:["Noon","Midnight","Evening","Dusk"],ans:"Midnight",icon:"🌙"},
-  {q:"Time between midnight and noon uses...?",opts:["p.m.","a.m.","noon","PM"],ans:"a.m.",icon:"☀️"},
-  {q:"How many days are in a week?",opts:["5","6","7","8"],ans:"7",icon:"📅"},
-  {q:"How many months in a year?",opts:["10","11","12","13"],ans:"12",icon:"🗓️"},
-  {q:"The Sun sets in which direction?",opts:["North","East","South","West"],ans:"West",icon:"🌇"},
-  {q:"When facing East, what is behind you?",opts:["North","South","East","West"],ans:"West",icon:"🧭"},
-  {q:"February normally has how many days?",opts:["30","31","28","29"],ans:"28",icon:"📆"},
-  {q:"A year with 366 days is a...?",opts:["Big year","Leap year","Long year","Bonus year"],ans:"Leap year",icon:"🐸"},
-  {q:"How many seconds are in a minute?",opts:["100","50","30","60"],ans:"60",icon:"⏱️"},
-  {q:"Which day comes after Wednesday?",opts:["Tuesday","Monday","Thursday","Friday"],ans:"Thursday",icon:"📅"},
-  {q:"Facing East, right hand points to...?",opts:["North","West","East","South"],ans:"South",icon:"🧭"},
-  {q:"A compass always points towards...?",opts:["South","East","North","West"],ans:"North",icon:"🧲"},
-  {q:"How many minutes in one hour?",opts:["100","60","30","24"],ans:"60",icon:"🕐"},
-  {q:"Which month has 30 days?",opts:["January","March","April","July"],ans:"April",icon:"🌸"},
-  {q:"What tells us the exact time?",opts:["Calendar","Compass","Clock","Map"],ans:"Clock",icon:"🕐"},
-  {q:"The Sun rises in which direction?",opts:["North","South","West","East"],ans:"East",icon:"🌅"},
-  {q:"How many days in a normal year?",opts:["364","365","366","360"],ans:"365",icon:"📆"},
-  {q:"Which is the last month of the year?",opts:["November","October","January","December"],ans:"December",icon:"🎄"},
-  {q:"The short hand on a clock shows...?",opts:["Seconds","Minutes","Hours","Days"],ans:"Hours",icon:"🕐"},
-  {q:"Which day is between Monday and Wednesday?",opts:["Sunday","Tuesday","Thursday","Friday"],ans:"Tuesday",icon:"📅"},
+function renderQuizResult(container, score, total, prefix) {
+  document.getElementById(`${prefix}-quiz-progress`).style.width='100%';
+  const pct=Math.round(score/total*100);
+  const emoji = pct>=80?'🏆':pct>=60?'🌟':'💪';
+  const msg = pct>=80?'Amazing! You\'re a star!':pct>=60?'Great job! Keep learning!':'Good try! Read the story again!';
+  container.innerHTML=`
+    <div class="score-celebration">
+      <span class="trophy">${emoji}</span>
+      <div class="score-big">${score}/${total}</div>
+      <div class="score-label">${msg}</div>
+      <div class="stars-row" style="justify-content:center">
+        ${Array(5).fill(0).map((_,i)=>`<span class="${i<Math.round(pct/20)?'earned-star':'empty-star'}">⭐</span>`).join('')}
+      </div>
+      <button class="restart-btn" onclick="${prefix==='chr'?'initChrQuiz':'initSeaQuiz'}()" style="margin-top:20px;">Try Again! 🔄</button>
+    </div>`;
+}
+
+// ====== CHRISTMAS T/F ======
+const chrTFData = [
+  { text: "1. Santa pulls the sleigh.", answer: false, explain: "Reindeer pull the sleigh!" },
+  { text: "2. Santa is seen on Sundays.", answer: false, explain: "Santa is seldom (rarely) seen!" },
+  { text: "3. Holly brings much cheer.", answer: true, explain: "Yes! Holly brings so much cheer." },
+  { text: "4. The tree is lovely and green.", answer: true, explain: "Yes! The tree is lovely and green." },
+  { text: "5. Stockings are hung for flowers.", answer: false, explain: "Stockings are hung for toys, not flowers!" }
 ];
-function initQuiz(){shuffledQ=QUESTIONS.slice().sort(function(){return Math.random()-.5;});quizIndex=0;quizScore=0;quizAnswered=false;renderQuizProg();showQuestion();}
-function renderQuizProg(){var p=document.getElementById("quiz-progress");p.innerHTML="";shuffledQ.forEach(function(_,i){var d=document.createElement("div");d.className="q-dot"+(i<quizIndex?" done":i===quizIndex?" curr":"");p.appendChild(d);});}
-function showQuestion(){if(quizIndex>=shuffledQ.length){showQuizEnd();return;}var q=shuffledQ[quizIndex];document.getElementById("quiz-q").textContent=q.icon+" "+q.q;var opts=document.getElementById("quiz-opts");opts.innerHTML="";document.getElementById("quiz-feedback").textContent="";document.getElementById("next-btn").style.display="none";quizAnswered=false;q.opts.slice().sort(function(){return Math.random()-.5;}).forEach(function(o){var b=document.createElement("button");b.className="qopt";b.textContent=o;b.onclick=function(){answerQ(o,q.ans,b);};opts.appendChild(b);});renderQuizProg();}
-function answerQ(chosen,correct,btn){if(quizAnswered)return;quizAnswered=true;document.querySelectorAll(".qopt").forEach(function(b){b.disabled=true;if(b.textContent===correct)b.classList.add("correct");});var fb=document.getElementById("quiz-feedback");if(chosen===correct){btn.classList.add("correct");fb.innerHTML="<span class='fb-ok'>🎉 Correct! +2 ⭐</span>";quizScore++;awardStar(2);spawnConfetti(16);}else{btn.classList.add("wrong");fb.innerHTML="<span class='fb-bad'>❌ The answer is: "+correct+"</span>";}document.getElementById("next-btn").style.display="block";}
-function nextQuestion(){quizIndex++;if(quizIndex>=shuffledQ.length){showQuizEnd();return;}showQuestion();}
-function showQuizEnd(){document.getElementById("quiz-q").textContent="🎊 Quiz Complete!";document.getElementById("quiz-opts").innerHTML="";var pct=Math.round(quizScore/shuffledQ.length*100);var emoji=pct===100?"💎":pct>=80?"🏆":pct>=60?"🌟":"😊";document.getElementById("quiz-feedback").innerHTML="<span class='fb-ok'>"+emoji+" You got "+quizScore+"/"+shuffledQ.length+" correct! ("+pct+"%)</span>";document.getElementById("next-btn").style.display="none";spawnConfetti(35);if(!unlockedBadges.includes("quiz_all")){unlockedBadges.push("quiz_all");showToast("🏅 Badge: Quiz Champion!");}if(pct===100&&!unlockedBadges.includes("perfect")){unlockedBadges.push("perfect");showToast("💎 Badge: Perfect Score!");}checkBadges();saveState();if(pct>=80)setTimeout(function(){showModalMsg(emoji,"Quiz Complete!","You scored "+quizScore+"/"+shuffledQ.length+"! You are a superstar! 🌟");},800);}
 
-// INIT
-(function(){
-  document.getElementById("star-display").textContent=stars;
-  document.getElementById("star-display-2").textContent=stars;
-  document.getElementById("badge-count").textContent=unlockedBadges.length;
-  buildUnitChain();renderClockNumbers();renderCQNumbers();renderCalendar();renderBadges();initQuiz();initMaze();
-  setTimeout(function(){showToast("🦉 Hello! Drag the sun across the sky to begin! ☀️");},1200);
-})();
+function initChrTF() {
+  const container=document.getElementById('chr-tf-content');
+  container.innerHTML = chrTFData.map((item,i)=>`
+    <div class="tf-item" id="chr-tf-${i}">
+      <div class="tf-text">${item.text}</div>
+      <div class="tf-buttons">
+        <button class="tf-btn t-btn" onclick="selectTF('chr',${i},'T')">TRUE</button>
+        <button class="tf-btn f-btn" onclick="selectTF('chr',${i},'F')">FALSE</button>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('chr-tf-score').style.display='none';
+}
+
+function selectTF(prefix, idx, val) {
+  const item=document.getElementById(`${prefix}-tf-${idx}`);
+  item.querySelectorAll('.tf-btn').forEach(b=>b.classList.remove('selected-t','selected-f'));
+  item.dataset.answer=val;
+  if(val==='T') item.querySelector('.t-btn').classList.add('selected-t');
+  else item.querySelector('.f-btn').classList.add('selected-f');
+}
+
+function checkTF(prefix) {
+  const data = prefix==='chr'?chrTFData:seaTFData;
+  let score=0;
+  data.forEach((item,i)=>{
+    const el=document.getElementById(`${prefix}-tf-${i}`);
+    const given=el.dataset.answer;
+    const correct=item.answer?'T':'F';
+    el.classList.remove('revealed-true','revealed-false');
+    // Remove old explanations before adding new ones
+    el.querySelectorAll('.explain-text').forEach(e=>e.remove());
+    if(given===correct){score++;el.classList.add('revealed-true');}
+    else el.classList.add('revealed-false');
+    const explain=document.createElement('div');
+    explain.className='explain-text';
+    explain.style.cssText='font-size:13px;color:#666;margin-top:8px;font-style:italic;width:100%;';
+    explain.textContent=item.explain;
+    el.appendChild(explain);
+  });
+  const scoreEl=document.getElementById(`${prefix}-tf-score`);
+  const pct=Math.round(score/data.length*100);
+  scoreEl.innerHTML=`${pct>=80?'🎉':'💪'} You got ${score} out of ${data.length} correct! ${pct>=80?'Excellent!':'Keep practising!'}`;
+  scoreEl.style.display='block';
+  scoreEl.style.color=pct>=80?'#27ae60':'#e74c3c';
+}
+
+// ====== CHRISTMAS RHYMES ======
+const chrRhymeData = [
+  { word:"year", options:["door","cheer","book","tree"], ans:"cheer" },
+  { word:"day", options:["seen","ball","play","door"], ans:"play" },
+  { word:"seen", options:["green","day","cheer","toys"], ans:"green" }
+];
+function initChrRhyme() {
+  const container=document.getElementById('chr-rhyme-content');
+  container.innerHTML=chrRhymeData.map((r,ri)=>`
+    <div class="rhyme-set">
+      <div class="rhyme-word">🎵 "${r.word}" rhymes with...</div>
+      <div class="rhyme-options">
+        ${r.options.map(o=>`<button class="rhyme-opt" onclick="checkRhyme(this,'${o}','${r.ans}')">${o}</button>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+function checkRhyme(btn, choice, ans) {
+  btn.closest('.rhyme-options').querySelectorAll('.rhyme-opt').forEach(b=>{b.disabled=true;});
+  btn.classList.add(choice===ans?'correct':'wrong');
+  if(choice!==ans) btn.closest('.rhyme-options').querySelectorAll('.rhyme-opt').forEach(b=>{if(b.textContent===ans)b.classList.add('correct');});
+}
+
+// Celebrate Acrostic
+function celebratePoem() {
+  document.getElementById('poem-celebrate').style.display='block';
+}
+
+// ====== SEASONS INIT ======
+const seasonsQuestions = [
+  { q:"Why did the four seasons quarrel?", opts:["Each thought it was the best","They were bored","They wanted to rest","They disliked rain"], ans:0 },
+  { q:"Which season brings flowers to full bloom?", opts:["Summer","Winter","Autumn","Spring"], ans:3 },
+  { q:"What does Summer help to grow?", opts:["Flowers and ice","Grains and fruits","Snow and rivers","Leaves and rivers"], ans:1 },
+  { q:"What does Winter help fill up?", opts:["Fields","Markets","Rivers and lakes","Clouds"], ans:2 },
+  { q:"What do people wear in Winter to stay warm?", opts:["Raincoats and boots","Gloves and sweaters","T-shirts and shorts","Hats and sunglasses"], ans:1 },
+  { q:"What do people enjoy drinking in Winter?", opts:["Cold water","Milkshake","Hot chocolate and soup","Lemonade"], ans:2 },
+  { q:"Who decided to end the quarrel?", opts:["Summer and Winter","Spring and Autumn","Reindeer and elves","All four together"], ans:1 },
+  { q:"What do the seasons promise at the end?", opts:["To never speak again","To never fight again","To leave the world","To become one season"], ans:1 },
+  { q:"What word means 'fight' in the story?", opts:["United","Quarrel","Chirp","Bloom"], ans:1 },
+  { q:"What word means 'be together as one'?", opts:["Fight","Seldom","United","Lovely"], ans:2 },
+  { q:"What do birds do in Spring?", opts:["Sleep","Migrate","Chirp merrily","Shiver"], ans:2 },
+  { q:"In Autumn, what colour do leaves turn?", opts:["Blue and green","Red and orange","White and grey","Pink and purple"], ans:1 }
+];
+
+const seaTFData = [
+  { text: "1. All the seasons agreed that Summer was the best.", answer: false, explain: "Each season thought it was the best — they quarrelled!" },
+  { text: "2. Lovely flowers bloomed when Spring came.", answer: true, explain: "Yes! Spring brings lovely flowers to full bloom." },
+  { text: "3. Summer felt Winter was not cold enough.", answer: false, explain: "Winter felt Summer was too proud!" },
+  { text: "4. Winter and Summer did not listen to each other.", answer: true, explain: "Yes! But Summer and Winter did not listen to each other." },
+  { text: "5. Autumn decided to end the quarrel.", answer: false, explain: "Spring and Autumn decided to end the quarrel together." },
+  { text: "6. The seasons became friends again.", answer: true, explain: "Yes! They became friends and promised never to fight again." }
+];
+
+let seaQuizIdx=0, seaQuizScore=0, seaAnswered=false;
+
+let seasonsInited = false;
+function initSeasons() {
+  if(seasonsInited) return;
+  seasonsInited = true;
+  initSeaQuiz();
+  initSeaTF();
+  initAdjExercise();
+  initJoiningExercise();
+  initContractionExercise();
+  initSeasonMatch();
+}
+
+function initSeaQuiz() {
+  seaQuizIdx=0; seaQuizScore=0; seaAnswered=false;
+  renderSeaQuestion();
+}
+function renderSeaQuestion() {
+  const container=document.getElementById('sea-quiz-content');
+  if(seaQuizIdx >= seasonsQuestions.length) {
+    renderQuizResult(container, seaQuizScore, seasonsQuestions.length, 'sea');
+    return;
+  }
+  const q=seasonsQuestions[seaQuizIdx];
+  const pct=(seaQuizIdx/seasonsQuestions.length*100).toFixed(0);
+  document.getElementById('sea-quiz-progress').style.width=pct+'%';
+  seaAnswered=false;
+  container.innerHTML=`
+    <div class="question-box">
+      <div class="question-num">Question ${seaQuizIdx+1} of ${seasonsQuestions.length}</div>
+      <div class="question-text">🌈 ${q.q}</div>
+      <div class="options-grid">
+        ${q.opts.map((o,i)=>`<button class="option-btn" onclick="answerSea(${i})">${['🅐','🅑','🅒','🅓'][i]} ${o}</button>`).join('')}
+      </div>
+      <div id="sea-feedback" class="feedback-msg"></div>
+    </div>
+    <div class="quiz-controls">
+      <div class="score-display">⭐ Score: ${seaQuizScore}/${seaQuizIdx}</div>
+      <button class="next-btn" onclick="nextSeaQuestion()" style="display:none" id="sea-next-btn">Next ➡️</button>
+    </div>
+  `;
+}
+function answerSea(idx) {
+  if(seaAnswered) return;
+  seaAnswered=true;
+  const q=seasonsQuestions[seaQuizIdx];
+  const btns=document.querySelectorAll('#sea-quiz-content .option-btn');
+  btns.forEach(b=>b.disabled=true);
+  btns[idx].classList.add(idx===q.ans?'correct':'wrong');
+  btns[q.ans].classList.add('correct');
+  const fb=document.getElementById('sea-feedback');
+  if(idx===q.ans){seaQuizScore++;fb.textContent='🎉 Correct! Wonderful!';fb.className='feedback-msg correct';}
+  else{fb.textContent='❌ Oops! The correct answer is: '+q.opts[q.ans];fb.className='feedback-msg wrong';}
+  document.getElementById('sea-next-btn').style.display='block';
+}
+function nextSeaQuestion(){seaQuizIdx++;renderSeaQuestion();}
+
+function initSeaTF() {
+  const container=document.getElementById('sea-tf-content');
+  container.innerHTML=seaTFData.map((item,i)=>`
+    <div class="tf-item" id="sea-tf-${i}">
+      <div class="tf-text">${item.text}</div>
+      <div class="tf-buttons">
+        <button class="tf-btn t-btn" onclick="selectTF('sea',${i},'T')">TRUE</button>
+        <button class="tf-btn f-btn" onclick="selectTF('sea',${i},'F')">FALSE</button>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('sea-tf-score').style.display='none';
+}
+
+// ADJECTIVES
+const adjData = [
+  { before:"I saw a", after:"elephant at the zoo.", choices:["big","yellow","long","square"], ans:"big" },
+  { before:"My sister gifted me a", after:"pencil case.", choices:["black","yellow","square","long"], ans:"yellow" },
+  { before:"The giraffe has a", after:"neck.", choices:["big","small","long","black"], ans:"long" },
+  { before:"The", after:"lemons are in the basket.", choices:["two","small","delicious","big"], ans:"two" },
+  { before:"I saw some", after:"clouds in the sky.", choices:["white","small","round","hot"], ans:"white" },
+  { before:"Children love to eat", after:"mangoes and red watermelons.", choices:["ripe","cool","warm","cold"], ans:"ripe" }
+];
+
+function initAdjExercise() {
+  const container=document.getElementById('adj-exercise');
+  container.innerHTML=adjData.map((item,i)=>`
+    <div class="blank-exercise">
+      <div class="adj-sentence">${item.before} <input class="adj-input" id="adj-inp-${i}" placeholder="?"> ${item.after}</div>
+      <div class="word-bank">${item.choices.map(c=>`<span class="word-chip" onclick="fillAdj(${i},'${c}',this)">${c}</span>`).join('')}</div>
+    </div>
+  `).join('');
+}
+function fillAdj(idx, word, chip) {
+  document.getElementById(`adj-inp-${idx}`).value=word;
+}
+function checkAdj() {
+  let score=0;
+  adjData.forEach((item,i)=>{
+    const inp=document.getElementById(`adj-inp-${i}`);
+    inp.classList.remove('correct-ans','wrong-ans');
+    if(inp.value.toLowerCase().trim()===item.ans.toLowerCase()){score++;inp.classList.add('correct-ans');}
+    else{inp.classList.add('wrong-ans');inp.placeholder=item.ans;}
+  });
+  alert(`🎯 You got ${score} out of ${adjData.length} correct! ${score===adjData.length?'🎉 Perfect!':'Keep practising!'}`);
+}
+
+// JOINING WORDS
+const joinData = [
+  { s1:"The dog has a bone.", s2:"The ball.", ans:"and", q:"The dog has a bone ___ the ball." },
+  { s1:"We play cricket.", s2:"We play football.", ans:"and", q:"We play cricket ___ we play football." },
+  { s1:"Minu is tall.", s2:"Her brother is short.", ans:"but", q:"Minu is tall ___ her brother is short." },
+  { s1:"The bird made a nest.", s2:"The bird laid eggs in it.", ans:"and", q:"The bird made a nest ___ laid eggs in it." },
+  { s1:"The dog is sleeping.", s2:"The cat is playing.", ans:"and", q:"The dog is sleeping ___ the cat is playing." },
+  { s1:"My grandfather is strict.", s2:"He is kind.", ans:"but", q:"My grandfather is strict ___ he is kind." }
+];
+function initJoiningExercise() {
+  const container=document.getElementById('joining-exercise');
+  container.innerHTML=joinData.map((item,i)=>`
+    <div class="join-sentence">
+      <strong>${i+1}.</strong> ${item.s1.replace(/\./,'')} 
+      <select class="join-select" id="join-sel-${i}">
+        <option value="">pick</option>
+        <option value="and">and</option>
+        <option value="but">but</option>
+      </select> 
+      ${item.s2}
+    </div>
+  `).join('');
+}
+function checkJoining() {
+  let score=0;
+  joinData.forEach((item,i)=>{
+    const sel=document.getElementById(`join-sel-${i}`);
+    sel.classList.remove('correct-ans','wrong-ans');
+    if(sel.value===item.ans){score++;sel.classList.add('correct-ans');}
+    else{sel.classList.add('wrong-ans');}
+  });
+  alert(`🔗 You got ${score} out of ${joinData.length}! ${score===joinData.length?'🎉 Excellent!':'Tip: Use "and" for similar things, "but" for opposite things.'}`);
+}
+
+// CONTRACTIONS
+const contractionData = [
+  { full:"he will", opts:["he'l","he'll","hew'll"], ans:"he'll" },
+  { full:"we are", opts:["we'e","wea'e","we're"], ans:"we're" },
+  { full:"will not", opts:["won't","willn't","wi'not"], ans:"won't" },
+  { full:"she is", opts:["sh'is","she's","sh's"], ans:"she's" },
+  { full:"cannot", opts:["c'nnot","cann't","can't"], ans:"can't" }
+];
+function initContractionExercise() {
+  const container=document.getElementById('contraction-exercise');
+  container.innerHTML=contractionData.map((item,i)=>`
+    <div class="blank-exercise" style="margin-bottom:12px;">
+      <div style="font-size:17px; font-weight:700; margin-bottom:10px;">${i+1}. <span style="color:#764ba2;">${item.full}</span> → 
+        <select class="join-select" id="cont-sel-${i}">
+          <option value="">pick</option>
+          ${item.opts.map(o=>`<option value="${o}">${o}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+  `).join('');
+}
+function checkContractions() {
+  let score=0;
+  contractionData.forEach((item,i)=>{
+    const sel=document.getElementById(`cont-sel-${i}`);
+    sel.classList.remove('correct-ans','wrong-ans');
+    if(sel.value===item.ans){score++;sel.classList.add('correct-ans');}
+    else{sel.classList.add('wrong-ans');}
+  });
+  alert(`✂️ You got ${score} out of ${contractionData.length}! ${score===contractionData.length?'🎉 Perfect! You know your short forms!':'Review the apostrophe cards above!'}`);
+}
+
+// SEASON MATCHING
+const seasonMatchItems = [
+  { item:"🌸 Flowers bloom", season:"Spring", color:"#27ae60" },
+  { item:"☀️ Sunshine and fruits", season:"Summer", color:"#f39c12" },
+  { item:"🍂 Leaves turn red", season:"Autumn", color:"#d35400" },
+  { item:"❄️ Snow falls", season:"Winter", color:"#2980b9" },
+  { item:"🐦 Birds chirp happily", season:"Spring", color:"#27ae60" },
+  { item:"🧤 Wear gloves", season:"Winter", color:"#2980b9" },
+  { item:"🌾 Grains like rice harvested", season:"Autumn", color:"#d35400" },
+  { item:"🏊 Children love to swim", season:"Summer", color:"#f39c12" }
+];
+function initSeasonMatch() {
+  const container=document.getElementById('season-match-content');
+  container.innerHTML=seasonMatchItems.map((item,i)=>`
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; flex-wrap:wrap;">
+      <div style="flex:1; font-size:16px; font-weight:600; background:#f8f9fa; padding:12px 16px; border-radius:12px;">${item.item}</div>
+      <select style="border:3px solid #e0e0e0; border-radius:12px; padding:8px 14px; font-family:'Nunito',sans-serif; font-weight:700; font-size:15px; outline:none; background:white;" id="smatch-${i}">
+        <option value="">Which season?</option>
+        <option value="Spring">🌸 Spring</option>
+        <option value="Summer">☀️ Summer</option>
+        <option value="Autumn">🍂 Autumn</option>
+        <option value="Winter">❄️ Winter</option>
+      </select>
+      <span id="smatch-fb-${i}" style="font-size:20px;"></span>
+    </div>
+  `).join('')+`<button class="check-btn" onclick="checkSeasonMatch()">Check Matches! 🎯</button>
+  <div id="smatch-score" style="margin-top:15px; font-size:18px; font-weight:700; display:none;"></div>`;
+}
+function checkSeasonMatch() {
+  let score=0;
+  seasonMatchItems.forEach((item,i)=>{
+    const sel=document.getElementById(`smatch-${i}`);
+    const fb=document.getElementById(`smatch-fb-${i}`);
+    sel.style.borderColor='#e0e0e0'; // reset
+    if(sel.value===item.season){score++;fb.textContent='✅';sel.style.borderColor='#27ae60';}
+    else{fb.textContent= sel.value==='' ? '❓' : '❌';sel.style.borderColor='#e74c3c';}
+  });
+  const scoreEl=document.getElementById('smatch-score');
+  scoreEl.textContent=`${score>=7?'🎉':'💪'} ${score} out of ${seasonMatchItems.length} correct! ${score>=7?'Excellent!':'Try again!'}`;
+  scoreEl.style.display='block';
+  scoreEl.style.color=score>=7?'#27ae60':'#e74c3c';
+}
 </script>
 </body>
 </html>
